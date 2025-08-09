@@ -1,6 +1,6 @@
 {
   "name": "hemat-defi-thrift",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Hemat - USDT-Powered DeFi Thrift & Insurance Platform on Kaia",
   "main": "index.js",
   "scripts": {
