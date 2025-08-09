@@ -1,6 +1,7 @@
 import { configureChains, createConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
-import { getDefaultWallets } from '@rainbow-me/rainbowkit'
+import { injectedWallet, metaMaskWallet, walletConnectWallet } from '@rainbow-me/rainbowkit/wallets'
+import { connectorsForWallets } from '@rainbow-me/rainbowkit'
 
 // Kaia network configurations
 export const kaiaTestnet = {
@@ -54,12 +55,17 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
   [publicProvider()]
 )
 
-// Configure wallets
-const { connectors } = getDefaultWallets({
-  appName: 'Hemat DeFi Platform',
-  projectId: process.env.VITE_WALLETCONNECT_PROJECT_ID || 'demo-project-id',
-  chains,
-})
+// Configure wallets (excluding Safe wallet to avoid dependency issues)
+const connectors = connectorsForWallets([
+  {
+    groupName: 'Recommended',
+    wallets: [
+      injectedWallet({ chains }),
+      metaMaskWallet({ projectId: process.env.VITE_WALLETCONNECT_PROJECT_ID || 'demo-project-id', chains }),
+      walletConnectWallet({ projectId: process.env.VITE_WALLETCONNECT_PROJECT_ID || 'demo-project-id', chains }),
+    ],
+  },
+])
 
 // Create wagmi config
 export const wagmiConfig = createConfig({
