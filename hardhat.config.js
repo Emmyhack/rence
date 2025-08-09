@@ -11,15 +11,16 @@ console.log("PRIVATE_KEY:", process.env.PRIVATE_KEY ? "***CONFIGURED***" : "NOT_
 module.exports = {
   solidity: {
     version: "0.8.20",
-          settings: {
-        optimizer: {
-          enabled: true,
-          runs: 1000  // Higher runs for smaller code size
-        },
-        viaIR: true  // Enable intermediate representation for better optimization
-      }
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 1000  // Higher runs for smaller code size
+      },
+      viaIR: true  // Enable intermediate representation for better optimization
+    }
   },
   networks: {
+    // Local development
     hardhat: {
       chainId: 31337,
       gas: 12000000,
@@ -52,7 +53,8 @@ module.exports = {
       kaia: process.env.KAIASCOPE_API_KEY || "abc",
       kairos: process.env.KAIASCOPE_API_KEY || "abc"
     }
+  },
+  mocha: {
+    timeout: 40000
   }
 };
-
-// Make sure to set PRIVATE_KEY in your .env file for deployments

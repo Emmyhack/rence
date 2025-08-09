@@ -1,11 +1,13 @@
 {
-  "name": "hemat-defi-platform",
+  "name": "hemat-defi-thrift",
   "version": "1.0.0",
-  "description": "USDT-Powered DeFi Thrift & Insurance Platform on Kaia",
+  "description": "Hemat - USDT-Powered DeFi Thrift & Insurance Platform on Kaia",
   "main": "index.js",
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.js --network kairos",
+    "deploy:mainnet": "hardhat run scripts/deploy.js --network kaia",
     "deploy:kairos": "hardhat run scripts/deploy.js --network kairos",
     "deploy:kaia": "hardhat run scripts/deploy.js --network kaia",
     "verify": "hardhat verify",
@@ -18,6 +20,7 @@
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@nomiclabs/hardhat-waffle": "^2.0.6",
+    "@openzeppelin/contracts": "^5.4.0",
     "@openzeppelin/hardhat-upgrades": "^1.28.0",
     "chai": "^4.3.7",
     "dotenv": "^16.5.0",
@@ -28,8 +31,7 @@
     "solidity-coverage": "^0.8.5"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.0",
-    "@openzeppelin/contracts-upgradeable": "^4.9.0"
+    "@openzeppelin/contracts": "^5.4.0"
   },
   "keywords": [
     "DeFi",
