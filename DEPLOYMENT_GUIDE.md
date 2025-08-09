@@ -1,4 +1,4 @@
-# 🚀 Hemat Platform - Deployment Guide
+# Hemat Platform - Deployment Guide
 
 ## Prerequisites
 
@@ -17,7 +17,7 @@ npm install -g pm2  # for production
 
 ---
 
-## 🔧 Setup Instructions
+## Setup Instructions
 
 ### 1. Install Dependencies
 
@@ -73,7 +73,7 @@ Your environment files are already configured with:
 
 ---
 
-## 🚀 Deployment Steps
+##  Deployment Steps
 
 ### Step 1: Deploy Smart Contracts
 
@@ -87,7 +87,7 @@ npm run deploy:kairos
 
 **Expected Output:**
 ```
-🚀 Starting Hemat Platform deployment...
+  Starting Hemat Platform deployment...
 📄 Deploying MockUSDT...
 ✅ MockUSDT deployed to: 0x1234...
 📄 Deploying EscrowVault...
@@ -100,7 +100,7 @@ npm run deploy:kairos
 ✅ MockDeFiAdapter deployed to: 0x1357...
 📄 Deploying HematFactory...
 ✅ HematFactory deployed to: 0x2468...
-🎉 Hemat Platform deployment completed successfully!
+   Hemat Platform deployment completed successfully!
 ```
 
 ### Step 2: Update Frontend Contract Addresses
@@ -142,7 +142,7 @@ npm run frontend:build
 
 ---
 
-## 🧪 Testing Deployment
+## Testing Deployment
 
 ### 1. Test Smart Contracts
 ```bash
@@ -178,7 +178,7 @@ curl http://localhost:5000/health
 
 ---
 
-## 🔐 Security Configuration
+## Security Configuration
 
 ### Your Wallet Details
 - **Network**: Kaia Testnet (Kairos)
@@ -198,7 +198,7 @@ curl http://localhost:5000/health
 
 ---
 
-## 📊 Platform Features Ready
+## Platform Features Ready
 
 ### Smart Contract Features
 ✅ **HematFactory**: Group creation and management  
@@ -223,7 +223,7 @@ curl http://localhost:5000/health
 
 ---
 
-## 🎯 Quick Start Commands
+## Quick Start Commands
 
 ```bash
 # Full platform deployment
@@ -273,26 +273,24 @@ npx prisma migrate reset # Reset database (development only)
 
 ---
 
-## 🎉 Platform Ready!
+## Platform Ready!
 
 Your Hemat platform is now configured and ready for:
 
-🚀 **Development**: All services running locally  
-🧪 **Testing**: Smart contracts and API endpoints  
-🔐 **Security**: Enterprise-grade protection  
-📱 **Mobile**: Responsive across all devices  
-⚡ **Performance**: Optimized for production  
+ **Development**: All services running locally  
+ **Testing**: Smart contracts and API endpoints  
+ **Security**: Enterprise-grade protection  
+ **Mobile**: Responsive across all devices  
+ **Performance**: Optimized for production  
 
-**Your wallet is connected and ready to deploy! 🎯**
+**Your wallet is connected and ready to deploy! **
 
 ---
 
-## 📞 Support
+## Support
 
 For deployment issues or questions:
 - **Documentation**: Check `docs/` folder
 - **Logs**: Monitor `backend/logs/app.log`
 - **Database**: Use `npx prisma studio` for debugging
 - **Contracts**: Verify on KaiaScope after deployment
-
-**Happy Building! 🏗️**
