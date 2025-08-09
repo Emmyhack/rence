@@ -40,7 +40,7 @@
     "framer-motion": "^10.11.0",
     "react-dropzone": "^14.2.3",
     "react-qr-code": "^2.0.11",
-    "qrcode.js": "^1.0.0",
+    "qrcode": "^1.5.4",
     "clipboard-copy": "^4.0.1",
     "react-confetti": "^6.1.0"
   },
