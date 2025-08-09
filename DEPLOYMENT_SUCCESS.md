@@ -77,9 +77,9 @@ npm run frontend:dev
 
 ---
 
-## 🎯 **Platform Features Now Available**
+## **Platform Features Now Available**
 
-### 🏭 **Factory Contract**
+###  **Factory Contract**
 - ✅ Create new thrift groups
 - ✅ Join existing groups  
 - ✅ Basic group management
