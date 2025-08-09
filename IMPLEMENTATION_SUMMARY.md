@@ -5,11 +5,11 @@ Implementation Date: January 2025
 Blockchain: Kaia Network  
 Status: MVP Complete
 
-## 🎯 Overview
+## Overview
 
 Hemat is a comprehensive DeFi-native thrift savings and insurance protocol that combines traditional communal thrift models (Ajo/Esusu) with modern blockchain infrastructure. The platform is built on Kaia blockchain using USDT as the canonical unit for stability and features automated smart contracts, yield optimization, and transparent insurance pools.
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 ### Smart Contracts (Solidity)
 - **HematFactory**: Main factory contract for creating and managing groups
@@ -32,7 +32,7 @@ Hemat is a comprehensive DeFi-native thrift savings and insurance protocol that 
 - **State Management**: Redux Toolkit with persistence
 - **Real-time Updates**: Socket.io integration for live data
 
-## 🎯 Core Features Implemented
+## Core Features Implemented
 
 ### 1. Three Thrift Models
 
@@ -120,7 +120,7 @@ Hemat is a comprehensive DeFi-native thrift savings and insurance protocol that 
 - JWT authentication
 - CORS protection
 
-## 📊 Database Schema
+## Database Schema
 
 ### Core Tables
 - **Users**: Wallet addresses, KYC, trust scores, platform stats
@@ -133,7 +133,7 @@ Hemat is a comprehensive DeFi-native thrift savings and insurance protocol that 
 - **Notifications**: Real-time user notifications
 - **DailyStats**: Platform analytics aggregation
 
-## 🚀 Deployment Configuration
+##  Deployment Configuration
 
 ### Kaia Blockchain Integration
 ```javascript
@@ -166,7 +166,7 @@ REACT_APP_CHAIN_ID=1001
 REACT_APP_HEMAT_FACTORY_ADDRESS=factory_address
 ```
 
-## 📈 Key Platform Metrics
+## Key Platform Metrics
 
 ### Group Management
 - Maximum 10 groups per creator
@@ -181,7 +181,7 @@ REACT_APP_HEMAT_FACTORY_ADDRESS=factory_address
 - Emergency mode with reduced caps
 - Reserve fund minimum thresholds
 
-## 🎨 User Experience
+## User Experience
 
 ### Homepage Features
 - Hero section with platform overview
@@ -204,7 +204,7 @@ REACT_APP_HEMAT_FACTORY_ADDRESS=factory_address
 - Cycle progression
 - Analytics dashboard
 
-## 🔧 Technical Stack
+##  Technical Stack
 
 ### Smart Contracts
 - Solidity 0.8.20
@@ -229,7 +229,7 @@ REACT_APP_HEMAT_FACTORY_ADDRESS=factory_address
 - Redux Toolkit state management
 - Framer Motion animations
 
-## 🚨 Security Considerations
+## Security Considerations
 
 ### Smart Contract Auditing
 - Formal audit recommended before mainnet
@@ -243,7 +243,7 @@ REACT_APP_HEMAT_FACTORY_ADDRESS=factory_address
 - Regular security monitoring
 - Incident response procedures
 
-## 📋 Next Steps
+## Next Steps
 
 ### Phase 1 Completion (Current)
 ✅ Smart contract infrastructure  
@@ -266,7 +266,7 @@ REACT_APP_HEMAT_FACTORY_ADDRESS=factory_address
 ⏳ Regulatory compliance tools  
 ⏳ Community governance  
 
-## 🔗 Key Files & Directories
+## Key Files & Directories
 
 ```
 hemat-platform/
@@ -290,7 +290,7 @@ hemat-platform/
 └── hardhat.config.js             # Hardhat configuration
 ```
 
-## 🎉 Implementation Status
+## Implementation Status
 
 **Overall Completion: 85%**
 
@@ -301,7 +301,7 @@ hemat-platform/
 ⏳ **Testing**: Comprehensive test suite pending  
 ⏳ **Documentation**: API documentation needed  
 
-## 🤝 Getting Started
+## Getting Started
 
 1. **Install Dependencies**
    ```bash
@@ -331,7 +331,7 @@ hemat-platform/
    npm run frontend:dev
    ```
 
-## 📞 Support & Contact
+## Support & Contact
 
 For technical questions or implementation details, refer to the comprehensive codebase documentation and inline comments throughout the smart contracts and application code.
 
