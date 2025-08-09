@@ -97,15 +97,15 @@ contract MockDeFiAdapter is IDeFiAdapter, Ownable {
      * @return balance Current balance including principal and yield
      */
     function strategyBalance() external view override returns (uint256 balance) {
-        uint256 pendingYield = _calculatePendingYield();
-        return totalDeposited + accumulatedYield + pendingYield;
+        uint256 currentPendingYield = _calculatePendingYield();
+        return totalDeposited + accumulatedYield + currentPendingYield;
     }
     
     /**
      * @dev Get pending yield amount
      * @return pendingYield Amount of yield that can be harvested
      */
-    function pendingYield() external view override returns (uint256 pendingYield) {
+    function pendingYield() external view override returns (uint256) {
         return _calculatePendingYield() + accumulatedYield;
     }
     

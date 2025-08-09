@@ -39,7 +39,7 @@ contract StakeManager is ReentrancyGuard, AccessControl, IHematTypes {
     // Events
     event StakeDeposited(uint256 indexed groupId, address indexed member, uint256 amount);
     event StakeWithdrawn(uint256 indexed groupId, address indexed member, uint256 amount);
-    event StakeSlashed(uint256 indexed groupId, address indexed member, uint256 amount);
+    // event StakeSlashed(uint256 indexed groupId, address indexed member, uint256 amount); // Defined in IHematTypes
     event TrustScoreUpdated(uint256 indexed groupId, address indexed member, uint256 oldScore, uint256 newScore);
     event MemberBlacklisted(uint256 indexed groupId, address indexed member);
     event MemberWhitelisted(uint256 indexed groupId, address indexed member);

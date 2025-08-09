@@ -11,12 +11,13 @@ console.log("PRIVATE_KEY:", process.env.PRIVATE_KEY ? "***CONFIGURED***" : "NOT_
 module.exports = {
   solidity: {
     version: "0.8.20",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200
+          settings: {
+        optimizer: {
+          enabled: true,
+          runs: 1000  // Higher runs for smaller code size
+        },
+        viaIR: true  // Enable intermediate representation for better optimization
       }
-    }
   },
   networks: {
     hardhat: {

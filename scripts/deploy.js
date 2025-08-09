@@ -74,18 +74,17 @@ async function main() {
   await defiAdapter.deployed();
   console.log("MockDeFiAdapter deployed to:", defiAdapter.address);
   
-  // Deploy HematFactory
-  console.log("📝 Deploying HematFactory...");
-  const HematFactory = await ethers.getContractFactory("HematFactory");
+  // Deploy HematFactoryMini (MVP version)
+  console.log("📝 Deploying HematFactoryMini...");
+  const HematFactory = await ethers.getContractFactory("HematFactoryMini");
   const hematFactory = await HematFactory.deploy(
     config.usdtAddress,
     escrowVault.address,
     stakeManager.address,
-    insurancePool.address,
-    config.adminAddress
+    insurancePool.address
   );
   await hematFactory.deployed();
-  console.log("HematFactory deployed to:", hematFactory.address);
+  console.log("HematFactoryMini deployed to:", hematFactory.address);
   
   // Configure contracts
   console.log("⚙️ Configuring contracts...");

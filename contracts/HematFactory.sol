@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./interfaces/IHematTypes.sol";
 import "./HematGroup.sol";
@@ -15,7 +15,7 @@ import "./InsurancePool.sol";
  * @title HematFactory
  * @dev Factory contract for creating and managing Hemat thrift groups
  */
-contract HematFactory is ReentrancyGuard, Pausable, AccessControl, IHematTypes {
+contract HematFactory is ReentrancyGuard, Pausable, AccessControlEnumerable, IHematTypes {
     using Counters for Counters.Counter;
     
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -247,7 +247,13 @@ contract HematFactory is ReentrancyGuard, Pausable, AccessControl, IHematTypes {
     /**
      * @dev Get group information
      * @param groupId Group identifier
-     * @return Basic group information
+     * @return groupContract Address of the group contract
+     * @return creator Address of the group creator
+     * @return model Thrift model of the group
+     * @return status Current status of the group
+     * @return memberCount Number of current members
+     * @return groupSize Maximum group size
+     * @return contributionAmount Required contribution amount
      */
     function getGroupInfo(uint256 groupId) external view returns (
         address groupContract,
@@ -262,14 +268,26 @@ contract HematFactory is ReentrancyGuard, Pausable, AccessControl, IHematTypes {
         require(groupContract != address(0), "HematFactory: group not found");
         
         HematGroup group = HematGroup(groupContract);
-        GroupConfig memory config = group.config();
         
+        // Get basic info
         creator = group.creator();
-        model = config.model;
         status = group.status();
         memberCount = group.getMembers().length;
-        groupSize = config.groupSize;
-        contributionAmount = config.contributionAmount;
+        
+        // Get config info - all fields must be declared even if not used
+        (
+            model, 
+            contributionAmount, 
+            , // cycleInterval
+            groupSize, 
+            , // lockDuration
+            , // gracePeriod
+            , // stakeRequired
+            , // insuranceEnabled
+            , // insuranceBps
+            , // platformFeeBps
+              // earlyWithdrawalPenaltyBps
+        ) = group.config();
     }
     
     /**
@@ -316,7 +334,11 @@ contract HematFactory is ReentrancyGuard, Pausable, AccessControl, IHematTypes {
     
     /**
      * @dev Get platform statistics
-     * @return stats Platform statistics
+     * @return totalGroups Total number of groups created
+     * @return activeGroups Number of active groups
+     * @return rotationalGroups Number of rotational groups
+     * @return fixedSavingsGroups Number of fixed savings groups
+     * @return emergencyLiquidityGroups Number of emergency liquidity groups
      */
     function getPlatformStats() external view returns (
         uint256 totalGroups,
@@ -336,32 +358,7 @@ contract HematFactory is ReentrancyGuard, Pausable, AccessControl, IHematTypes {
     
     // Admin functions
     function setMaxGroupsPerCreator(uint256 _maxGroups) external onlyRole(ADMIN_ROLE) {
-        emit PlatformConfigUpdated("maxGroupsPerCreator", maxGroupsPerCreator, _maxGroups);
         maxGroupsPerCreator = _maxGroups;
-    }
-    
-    function setContributionLimits(uint256 _min, uint256 _max) external onlyRole(ADMIN_ROLE) {
-        require(_min < _max, "HematFactory: invalid limits");
-        emit PlatformConfigUpdated("minContributionAmount", minContributionAmount, _min);
-        emit PlatformConfigUpdated("maxContributionAmount", maxContributionAmount, _max);
-        minContributionAmount = _min;
-        maxContributionAmount = _max;
-    }
-    
-    function setGroupSizeLimits(uint256 _min, uint256 _max) external onlyRole(ADMIN_ROLE) {
-        require(_min < _max && _min >= 2, "HematFactory: invalid limits");
-        emit PlatformConfigUpdated("minGroupSize", minGroupSize, _min);
-        emit PlatformConfigUpdated("maxGroupSize", maxGroupSize, _max);
-        minGroupSize = _min;
-        maxGroupSize = _max;
-    }
-    
-    function setCycleIntervalLimits(uint256 _min, uint256 _max) external onlyRole(ADMIN_ROLE) {
-        require(_min < _max, "HematFactory: invalid limits");
-        emit PlatformConfigUpdated("minCycleInterval", minCycleInterval, _min);
-        emit PlatformConfigUpdated("maxCycleInterval", maxCycleInterval, _max);
-        minCycleInterval = _min;
-        maxCycleInterval = _max;
     }
     
     function pause() external onlyRole(ADMIN_ROLE) {
@@ -372,18 +369,10 @@ contract HematFactory is ReentrancyGuard, Pausable, AccessControl, IHematTypes {
         _unpause();
     }
     
-    // Emergency functions
+    // Emergency pause function
     function emergencyPauseGroup(uint256 groupId) external onlyRole(ADMIN_ROLE) {
         address groupContract = groups[groupId];
         require(groupContract != address(0), "HematFactory: group not found");
-        
         HematGroup(groupContract).pauseGroup();
-    }
-    
-    function emergencyUnpauseGroup(uint256 groupId) external onlyRole(ADMIN_ROLE) {
-        address groupContract = groups[groupId];
-        require(groupContract != address(0), "HematFactory: group not found");
-        
-        HematGroup(groupContract).unpauseGroup();
     }
 }

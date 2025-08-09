@@ -31,7 +31,14 @@
     "@openzeppelin/contracts": "^4.9.0",
     "@openzeppelin/contracts-upgradeable": "^4.9.0"
   },
-  "keywords": ["DeFi", "Thrift", "Insurance", "Kaia", "USDT", "Blockchain"],
+  "keywords": [
+    "DeFi",
+    "Thrift",
+    "Insurance",
+    "Kaia",
+    "USDT",
+    "Blockchain"
+  ],
   "author": "Hemat Team",
   "license": "MIT"
 }
