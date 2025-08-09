@@ -1,0 +1,457 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Management
+model User {
+  id                String   @id @default(cuid())
+  address           String   @unique
+  email             String?  @unique
+  username          String?  @unique
+  firstName         String?
+  lastName          String?
+  phoneNumber       String?
+  profileImageUrl   String?
+  
+  // KYC Information
+  kycStatus         KycStatus @default(PENDING)
+  kycDocuments      KycDocument[]
+  kycVerifiedAt     DateTime?
+  
+  // Platform stats
+  trustScore        Int      @default(100)
+  totalContributed  Decimal  @default(0) @db.Decimal(18, 6)
+  totalReceived     Decimal  @default(0) @db.Decimal(18, 6)
+  groupsJoined      Int      @default(0)
+  groupsCreated     Int      @default(0)
+  successfulPayments Int     @default(0)
+  defaultedPayments Int      @default(0)
+  
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  lastActiveAt      DateTime @default(now())
+  
+  // Relations
+  createdGroups     Group[]  @relation("GroupCreator")
+  memberships       GroupMember[]
+  contributions     Contribution[]
+  payouts           Payout[]
+  insuranceClaims   InsuranceClaim[]
+  notifications     Notification[]
+  
+  @@map("users")
+}
+
+model KycDocument {
+  id          String    @id @default(cuid())
+  userId      String
+  type        DocumentType
+  fileUrl     String
+  fileName    String
+  fileSize    Int
+  status      DocumentStatus @default(PENDING)
+  rejectionReason String?
+  uploadedAt  DateTime  @default(now())
+  verifiedAt  DateTime?
+  
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("kyc_documents")
+}
+
+// Group Management
+model Group {
+  id                String      @id @default(cuid())
+  onChainId         Int         @unique
+  contractAddress   String      @unique
+  
+  // Basic info
+  name              String?
+  description       String?
+  creatorId         String
+  
+  // Configuration
+  model             ThriftModel
+  contributionAmount Decimal    @db.Decimal(18, 6)
+  cycleInterval     Int         // seconds
+  groupSize         Int
+  lockDuration      Int?        // seconds, for fixed savings
+  gracePeriod       Int         @default(172800) // 2 days default
+  stakeRequired     Decimal     @default(0) @db.Decimal(18, 6)
+  insuranceEnabled  Boolean     @default(false)
+  insuranceBps      Int         @default(200) // 2%
+  platformFeeBps    Int         @default(100) // 1%
+  earlyWithdrawalPenaltyBps Int @default(500) // 5%
+  
+  // State
+  status            GroupStatus @default(CREATED)
+  currentCycle      Int         @default(1)
+  cycleStartTime    DateTime    @default(now())
+  nextPayoutMember  Int         @default(0)
+  maturityTime      DateTime?
+  
+  // Stats
+  totalContributed  Decimal     @default(0) @db.Decimal(18, 6)
+  totalPaidOut      Decimal     @default(0) @db.Decimal(18, 6)
+  totalYieldGenerated Decimal   @default(0) @db.Decimal(18, 6)
+  
+  // Timestamps
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  activatedAt       DateTime?
+  completedAt       DateTime?
+  
+  // Relations
+  creator           User        @relation("GroupCreator", fields: [creatorId], references: [id])
+  members           GroupMember[]
+  contributions     Contribution[]
+  payouts           Payout[]
+  cycles            Cycle[]
+  insuranceClaims   InsuranceClaim[]
+  events            GroupEvent[]
+  
+  @@map("groups")
+}
+
+model GroupMember {
+  id              String    @id @default(cuid())
+  groupId         String
+  userId          String
+  position        Int       // Position in payout order for rotational
+  
+  // Stats
+  stakeAmount     Decimal   @default(0) @db.Decimal(18, 6)
+  totalContributed Decimal  @default(0) @db.Decimal(18, 6)
+  totalReceived   Decimal   @default(0) @db.Decimal(18, 6)
+  successfulPayments Int    @default(0)
+  missedPayments  Int       @default(0)
+  trustScore      Int       @default(100)
+  
+  // Status
+  isActive        Boolean   @default(true)
+  hasWithdrawn    Boolean   @default(false) // For fixed savings
+  
+  // Timestamps
+  joinedAt        DateTime  @default(now())
+  lastPaymentAt   DateTime?
+  
+  // Relations
+  group           Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contributions   Contribution[]
+  payouts         Payout[]
+  
+  @@unique([groupId, userId])
+  @@map("group_members")
+}
+
+model Cycle {
+  id              String    @id @default(cuid())
+  groupId         String
+  cycleNumber     Int
+  
+  // Timing
+  startTime       DateTime
+  endTime         DateTime?
+  payoutTime      DateTime?
+  
+  // Stats
+  targetAmount    Decimal   @db.Decimal(18, 6)
+  collectedAmount Decimal   @default(0) @db.Decimal(18, 6)
+  membersContributed Int    @default(0)
+  membersExpected Int
+  
+  // Status
+  isComplete      Boolean   @default(false)
+  payoutExecuted  Boolean   @default(false)
+  
+  // Relations
+  group           Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  contributions   Contribution[]
+  payout          Payout?
+  
+  @@unique([groupId, cycleNumber])
+  @@map("cycles")
+}
+
+// Financial Transactions
+model Contribution {
+  id              String          @id @default(cuid())
+  groupId         String
+  userId          String
+  cycleId         String?
+  
+  // Transaction details
+  amount          Decimal         @db.Decimal(18, 6)
+  insuranceAmount Decimal         @default(0) @db.Decimal(18, 6)
+  netAmount       Decimal         @db.Decimal(18, 6)
+  cycleNumber     Int
+  
+  // Blockchain
+  txHash          String?         @unique
+  blockNumber     Int?
+  blockTimestamp  DateTime?
+  
+  // Status
+  status          PaymentStatus   @default(PENDING)
+  confirmedAt     DateTime?
+  
+  // Timestamps
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Relations
+  group           Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  member          GroupMember     @relation(fields: [groupId, userId], references: [groupId, userId])
+  cycle           Cycle?          @relation(fields: [cycleId], references: [id])
+  
+  @@map("contributions")
+}
+
+model Payout {
+  id              String    @id @default(cuid())
+  groupId         String
+  userId          String
+  cycleId         String?
+  
+  // Transaction details
+  amount          Decimal   @db.Decimal(18, 6)
+  platformFee     Decimal   @default(0) @db.Decimal(18, 6)
+  netAmount       Decimal   @db.Decimal(18, 6)
+  cycleNumber     Int
+  
+  // Blockchain
+  txHash          String?   @unique
+  blockNumber     Int?
+  blockTimestamp  DateTime?
+  
+  // Status
+  status          PayoutStatus @default(PENDING)
+  executedAt      DateTime?
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  group           Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  member          GroupMember @relation(fields: [groupId, userId], references: [groupId, userId])
+  cycle           Cycle?    @relation(fields: [cycleId], references: [id])
+  
+  @@unique([cycleId]) // One payout per cycle
+  @@map("payouts")
+}
+
+// Insurance System
+model InsuranceClaim {
+  id              String      @id @default(cuid())
+  groupId         String
+  userId          String
+  
+  // Claim details
+  amount          Decimal     @db.Decimal(18, 6)
+  claimType       ClaimType
+  description     String
+  evidenceUrl     String?     // IPFS hash
+  evidenceCID     String?     // IPFS CID
+  
+  // Processing
+  status          ClaimStatus @default(SUBMITTED)
+  processorNotes  String?
+  rejectionReason String?
+  approvedAmount  Decimal?    @db.Decimal(18, 6)
+  
+  // Blockchain
+  txHash          String?     @unique
+  blockNumber     Int?
+  
+  // Timestamps
+  submittedAt     DateTime    @default(now())
+  processedAt     DateTime?
+  paidAt          DateTime?
+  
+  // Relations
+  group           Group       @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("insurance_claims")
+}
+
+// Events and Notifications
+model GroupEvent {
+  id          String    @id @default(cuid())
+  groupId     String
+  type        EventType
+  title       String
+  description String?
+  data        Json?     // Additional event data
+  
+  // Blockchain
+  txHash      String?
+  blockNumber Int?
+  
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  
+  // Relations
+  group       Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  
+  @@map("group_events")
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  userId      String
+  type        NotificationType
+  title       String
+  message     String
+  data        Json?            // Additional notification data
+  
+  // Status
+  isRead      Boolean          @default(false)
+  readAt      DateTime?
+  
+  // Timestamps
+  createdAt   DateTime         @default(now())
+  
+  // Relations
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("notifications")
+}
+
+// Analytics and Reports
+model DailyStats {
+  id                    String   @id @default(cuid())
+  date                  DateTime @unique @db.Date
+  
+  // User stats
+  newUsers              Int      @default(0)
+  activeUsers           Int      @default(0)
+  totalUsers            Int      @default(0)
+  
+  // Group stats
+  newGroups             Int      @default(0)
+  activeGroups          Int      @default(0)
+  completedGroups       Int      @default(0)
+  totalGroups           Int      @default(0)
+  
+  // Financial stats
+  totalContributions    Decimal  @default(0) @db.Decimal(18, 6)
+  totalPayouts          Decimal  @default(0) @db.Decimal(18, 6)
+  totalInsuranceClaims  Decimal  @default(0) @db.Decimal(18, 6)
+  totalYieldGenerated   Decimal  @default(0) @db.Decimal(18, 6)
+  totalVolume           Decimal  @default(0) @db.Decimal(18, 6)
+  
+  // Platform stats
+  platformFeesCollected Decimal  @default(0) @db.Decimal(18, 6)
+  insurancePoolBalance  Decimal  @default(0) @db.Decimal(18, 6)
+  
+  createdAt             DateTime @default(now())
+  
+  @@map("daily_stats")
+}
+
+// Enums
+enum KycStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum DocumentType {
+  PASSPORT
+  NATIONAL_ID
+  DRIVERS_LICENSE
+  UTILITY_BILL
+  BANK_STATEMENT
+  SELFIE
+}
+
+enum DocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ThriftModel {
+  ROTATIONAL
+  FIXED_SAVINGS
+  EMERGENCY_LIQUIDITY
+}
+
+enum GroupStatus {
+  CREATED
+  ACTIVE
+  COMPLETED
+  PAUSED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  LATE
+  DEFAULTED
+  COVERED_BY_INSURANCE
+  FAILED
+}
+
+enum PayoutStatus {
+  PENDING
+  EXECUTED
+  FAILED
+}
+
+enum ClaimType {
+  EMERGENCY_MEDICAL
+  ACCIDENT
+  LOSS_OF_INCOME
+  NATURAL_DISASTER
+  OTHER
+}
+
+enum ClaimStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  PAID
+}
+
+enum EventType {
+  GROUP_CREATED
+  MEMBER_JOINED
+  CONTRIBUTION_MADE
+  PAYOUT_EXECUTED
+  CYCLE_COMPLETED
+  GROUP_COMPLETED
+  INSURANCE_CLAIM_SUBMITTED
+  INSURANCE_CLAIM_PROCESSED
+  DEFAULT_HANDLED
+  YIELD_HARVESTED
+}
+
+enum NotificationType {
+  PAYMENT_DUE
+  PAYMENT_RECEIVED
+  PAYOUT_AVAILABLE
+  PAYOUT_RECEIVED
+  CYCLE_COMPLETED
+  GROUP_COMPLETED
+  INSURANCE_CLAIM_UPDATE
+  TRUST_SCORE_CHANGE
+  SYSTEM_ANNOUNCEMENT
+}

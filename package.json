@@ -1,9 +1,37 @@
 {
-  "name": "hardhat-project",
+  "name": "hemat-defi-platform",
+  "version": "1.0.0",
+  "description": "USDT-Powered DeFi Thrift & Insurance Platform on Kaia",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:kairos": "hardhat run scripts/deploy.js --network kairos",
+    "deploy:kaia": "hardhat run scripts/deploy.js --network kaia",
+    "verify": "hardhat verify",
+    "node": "hardhat node",
+    "backend:dev": "cd backend && npm run dev",
+    "frontend:dev": "cd frontend && npm run dev",
+    "backend:build": "cd backend && npm run build",
+    "frontend:build": "cd frontend && npm run build"
+  },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@nomiclabs/hardhat-waffle": "^2.0.6",
+    "@openzeppelin/hardhat-upgrades": "^1.28.0",
+    "chai": "^4.3.7",
     "dotenv": "^16.5.0",
+    "ethereum-waffle": "^4.0.10",
     "ethers": "^5.8.0",
-    "hardhat": "^2.25.0"
-  }
+    "hardhat": "^2.25.0",
+    "hardhat-gas-reporter": "^1.0.9",
+    "solidity-coverage": "^0.8.5"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.0",
+    "@openzeppelin/contracts-upgradeable": "^4.9.0"
+  },
+  "keywords": ["DeFi", "Thrift", "Insurance", "Kaia", "USDT", "Blockchain"],
+  "author": "Hemat Team",
+  "license": "MIT"
 }
