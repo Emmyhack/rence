@@ -1,36 +1,31 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import { combineReducers } from '@reduxjs/toolkit';
 
-// Import slice reducers
+// Import slices
 import walletReducer from './slices/walletSlice';
-import userReducer from './slices/userSlice';
 import groupsReducer from './slices/groupsSlice';
-import notificationsReducer from './slices/notificationsSlice';
-import uiReducer from './slices/uiSlice';
+import insuranceReducer from './slices/insuranceSlice';
+import stakingReducer from './slices/stakingSlice';
+
+// Root reducer
+const rootReducer = combineReducers({
+  wallet: walletReducer,
+  groups: groupsReducer,
+  insurance: insuranceReducer,
+  staking: stakingReducer,
+});
 
 // Persist configuration
 const persistConfig = {
   key: 'hemat-root',
   storage,
-  whitelist: ['wallet', 'user'], // Only persist wallet and user data
-  blacklist: ['notifications', 'ui'], // Don't persist temporary data
+  whitelist: ['wallet'], // Only persist wallet state
 };
 
-// Root reducer
-const rootReducer = combineReducers({
-  wallet: walletReducer,
-  user: userReducer,
-  groups: groupsReducer,
-  notifications: notificationsReducer,
-  ui: uiReducer,
-});
-
-// Persisted reducer
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// Configure store
+// Store configuration
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
@@ -45,6 +40,6 @@ export const store = configureStore({
 // Persistor
 export const persistor = persistStore(store);
 
-// Export types
+// Root state type
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

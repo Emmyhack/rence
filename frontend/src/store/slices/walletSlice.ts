@@ -1,39 +1,122 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { hematService } from '@services/web3/hematService';
 
-interface WalletState {
-  address: string | null
-  isConnected: boolean
-  balance: string
-  chainId: number | null
+export interface WalletState {
+  isConnected: boolean;
+  address: string | null;
+  usdtBalance: string;
+  isLoading: boolean;
+  error: string | null;
 }
 
 const initialState: WalletState = {
-  address: null,
   isConnected: false,
-  balance: '0',
-  chainId: null,
-}
+  address: null,
+  usdtBalance: '0',
+  isLoading: false,
+  error: null,
+};
+
+// Async thunks
+export const connectWallet = createAsyncThunk(
+  'wallet/connectWallet',
+  async (_, { rejectWithValue }) => {
+    try {
+      const address = await hematService.connectWallet();
+      if (address) {
+        const balance = await hematService.getUSDTBalance(address);
+        return { address, balance };
+      }
+      return rejectWithValue('Failed to connect wallet');
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Unknown error');
+    }
+  }
+);
+
+export const disconnectWallet = createAsyncThunk(
+  'wallet/disconnectWallet',
+  async () => {
+    // Reset wallet state
+    return null;
+  }
+);
+
+export const updateBalance = createAsyncThunk(
+  'wallet/updateBalance',
+  async (address: string, { rejectWithValue }) => {
+    try {
+      const balance = await hematService.getUSDTBalance(address);
+      return balance;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Unknown error');
+    }
+  }
+);
 
 const walletSlice = createSlice({
   name: 'wallet',
   initialState,
   reducers: {
-    setWalletConnected: (state, action: PayloadAction<{ address: string; chainId: number }>) => {
-      state.address = action.payload.address
-      state.chainId = action.payload.chainId
-      state.isConnected = true
-    },
-    setWalletDisconnected: (state) => {
-      state.address = null
-      state.chainId = null
-      state.isConnected = false
-      state.balance = '0'
+    setAddress: (state, action: PayloadAction<string>) => {
+      state.address = action.payload;
+      state.isConnected = true;
     },
     setBalance: (state, action: PayloadAction<string>) => {
-      state.balance = action.payload
+      state.usdtBalance = action.payload;
+    },
+    setError: (state, action: PayloadAction<string>) => {
+      state.error = action.payload;
+    },
+    clearError: (state) => {
+      state.error = null;
+    },
+    resetWallet: (state) => {
+      state.isConnected = false;
+      state.address = null;
+      state.usdtBalance = '0';
+      state.error = null;
     },
   },
-})
+  extraReducers: (builder) => {
+    builder
+      // Connect wallet
+      .addCase(connectWallet.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(connectWallet.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isConnected = true;
+        state.address = action.payload.address;
+        state.usdtBalance = action.payload.balance;
+        state.error = null;
+      })
+      .addCase(connectWallet.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // Disconnect wallet
+      .addCase(disconnectWallet.fulfilled, (state) => {
+        state.isConnected = false;
+        state.address = null;
+        state.usdtBalance = '0';
+        state.error = null;
+      })
+      // Update balance
+      .addCase(updateBalance.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateBalance.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.usdtBalance = action.payload;
+      })
+      .addCase(updateBalance.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+  },
+});
 
-export const { setWalletConnected, setWalletDisconnected, setBalance } = walletSlice.actions
-export default walletSlice.reducer
+export const { setAddress, setBalance, setError, clearError, resetWallet } = walletSlice.actions;
+export default walletSlice.reducer;
