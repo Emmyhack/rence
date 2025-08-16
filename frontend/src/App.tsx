@@ -19,7 +19,7 @@ import GroupDetailPage from '@pages/GroupDetailPage';
 import CreateGroupPage from '@pages/CreateGroupPage';
 import DashboardPage from '@pages/DashboardPage';
 import InsurancePage from '@pages/InsurancePage';
-import AnalyticsPage from '@pages/AnalyticsPage';
+
 import ProfilePage from '@pages/ProfilePage';
 import NotFoundPage from '@pages/NotFoundPage';
 
@@ -69,7 +69,7 @@ function App() {
                       <Route path="/dashboard" element={<DashboardPage />} />
                       <Route path="/create-group" element={<CreateGroupPage />} />
                       <Route path="/insurance" element={<InsurancePage />} />
-                      <Route path="/analytics" element={<AnalyticsPage />} />
+
                       <Route path="/profile" element={<ProfilePage />} />
                       
                       {/* 404 Route */}
