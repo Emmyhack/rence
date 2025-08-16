@@ -16,7 +16,7 @@
     "frontend:dev": "cd frontend && npm run dev",
     "backend:build": "cd backend && npm run build",
     "frontend:build": "cd frontend && npm install && npm run build",
-    "build": "npm run frontend:build"
+    "build": "npm run frontend:build && rm -rf dist && cp -r frontend/dist dist"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.2.3",
