@@ -3,9 +3,8 @@
   "installCommand": "npm install",
   "buildCommand": "npm run build",
   "framework": null,
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/((?!.*\\..*|_next).*)", "destination": "/index.html" }
   ],
   "headers": [
     {
