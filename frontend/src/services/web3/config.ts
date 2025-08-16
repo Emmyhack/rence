@@ -69,7 +69,7 @@ const connectors = connectorsForWallets([
 
 // Create wagmi config
 export const wagmiConfig = createConfig({
-  autoConnect: true,
+  autoConnect: false,
   connectors,
   publicClient,
   webSocketPublicClient,
