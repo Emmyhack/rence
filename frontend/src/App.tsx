@@ -48,7 +48,7 @@ function App() {
           <RainbowKitProvider
             chains={chains}
             theme={darkTheme({
-              accentColor: '#3b82f6',
+              accentColor: '#0ea5e9',
               accentColorForeground: 'white',
               borderRadius: 'large',
               fontStack: 'system',
@@ -58,7 +58,7 @@ function App() {
             <QueryClientProvider client={queryClient}>
               <ErrorBoundary>
                 <Router>
-                  <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+                  <div className="min-h-screen bg-gradient-to-br from-surface-950 via-surface-900 to-surface-950">
                     <Layout>
                       <Routes>
                         {/* Public Routes */}
@@ -84,37 +84,37 @@ function App() {
                       toastOptions={{
                         duration: 5000,
                         style: {
-                          background: '#1f2937',
-                          color: '#f9fafb',
-                          border: '1px solid #374151',
+                          background: '#1e293b',
+                          color: '#f8fafc',
+                          border: '1px solid #334155',
                           borderRadius: '12px',
                           boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
                         },
                         success: {
                           duration: 3000,
                           iconTheme: {
-                            primary: '#10b981',
-                            secondary: '#f9fafb',
+                            primary: '#14b8a6',
+                            secondary: '#f8fafc',
                           },
                           style: {
-                            background: '#064e3b',
-                            border: '1px solid #059669',
+                            background: '#042f2e',
+                            border: '1px solid #0d9488',
                           },
                         },
                         error: {
                           duration: 5000,
                           iconTheme: {
                             primary: '#ef4444',
-                            secondary: '#f9fafb',
+                            secondary: '#f8fafc',
                           },
                           style: {
-                            background: '#7f1d1d',
+                            background: '#450a0a',
                             border: '1px solid #dc2626',
                           },
                         },
                         loading: {
                           style: {
-                            background: '#1e293b',
+                            background: '#0f172a',
                             border: '1px solid #475569',
                           },
                         },
