@@ -22,19 +22,19 @@ const HomePage: React.FC = () => {
 
   const features = [
     {
-      icon: CurrencyDollarIcon,
+      icon: <CurrencyDollarIcon className="w-6 h-6" />,
       title: 'Rotational Savings (Ajo)',
       description: 'Traditional rotating savings where members contribute fixed amounts and take turns receiving the pot.',
       benefits: ['Guaranteed payouts', 'Community-driven', 'Cultural familiarity'],
     },
     {
-      icon: ShieldCheckIcon,
+      icon: <ShieldCheckIcon className="w-6 h-6" />,
       title: 'Fixed Savings Pool',
       description: 'Lock your funds for a fixed period and earn yield from DeFi strategies on idle funds.',
       benefits: ['Earn yield', 'Capital protection', 'Fixed maturity'],
     },
     {
-      icon: ChartBarIcon,
+      icon: <ChartBarIcon className="w-6 h-6" />,
       title: 'Emergency Insurance',
       description: 'Access emergency liquidity through community insurance pool for verified emergencies.',
       benefits: ['Quick access', 'Community support', 'Verified claims'],
@@ -178,6 +178,11 @@ const HomePage: React.FC = () => {
                       className="w-full"
                       src="/images/hero-dashboard.png"
                       alt="Hemat Dashboard Preview"
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement;
+                        target.onerror = null;
+                        target.src = 'https://dummyimage.com/800x500/e5e7eb/111827.png&text=Dashboard+Preview';
+                      }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-indigo-600 to-transparent opacity-20"></div>
                   </div>
@@ -307,6 +312,11 @@ const HomePage: React.FC = () => {
                 className="mx-auto rounded-lg shadow-lg"
                 src="/images/benefits-illustration.png"
                 alt="Hemat Benefits"
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLImageElement;
+                  target.onerror = null;
+                  target.src = 'https://dummyimage.com/800x500/e5e7eb/111827.png&text=Benefits+Illustration';
+                }}
               />
             </motion.div>
           </div>
@@ -334,7 +344,12 @@ const HomePage: React.FC = () => {
                 transition={{ duration: 0.6, delay: index * 0.2 }}
                 viewport={{ once: true }}
               >
-                <TestimonialCard {...testimonial} />
+                <TestimonialCard 
+                  quote={testimonial.content}
+                  author={testimonial.name}
+                  role={testimonial.role}
+                  avatar={testimonial.avatar}
+                />
               </motion.div>
             ))}
           </div>

@@ -1,0 +1,1 @@
+Place avatar images here, e.g., adaora.jpg, kwame.jpg, fatima.jpg.

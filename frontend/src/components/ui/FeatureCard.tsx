@@ -3,7 +3,7 @@ import React from 'react'
 interface FeatureCardProps {
   title: string
   description: string
-  icon?: React.ReactNode
+  icon?: React.ReactNode | React.ComponentType<any>
   action?: {
     label: string
     onClick: () => void
@@ -16,11 +16,12 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   icon, 
   action 
 }) => {
+  const IconEl = typeof icon === 'function' ? (React.createElement(icon as React.ComponentType<any>, { className: 'w-6 h-6' })) : icon;
   return (
     <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow duration-200">
       {icon && (
         <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4">
-          <div className="text-blue-600">{icon}</div>
+          <div className="text-blue-600">{IconEl}</div>
         </div>
       )}
       

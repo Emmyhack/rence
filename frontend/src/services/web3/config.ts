@@ -56,14 +56,19 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 )
 
 // Configure wallets (excluding Safe wallet to avoid dependency issues)
+const walletConnectProjectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || undefined;
 const connectors = connectorsForWallets([
   {
     groupName: 'Recommended',
-    wallets: [
-      injectedWallet({ chains }),
-      metaMaskWallet({ projectId: process.env.VITE_WALLETCONNECT_PROJECT_ID || 'demo-project-id', chains }),
-      walletConnectWallet({ projectId: process.env.VITE_WALLETCONNECT_PROJECT_ID || 'demo-project-id', chains }),
-    ],
+    wallets: walletConnectProjectId
+      ? [
+          injectedWallet({ chains }),
+          metaMaskWallet({ projectId: walletConnectProjectId, chains }),
+          walletConnectWallet({ projectId: walletConnectProjectId, chains }),
+        ]
+      : [
+          injectedWallet({ chains }),
+        ],
   },
 ])
 
