@@ -190,43 +190,43 @@ const CreateGroupPage: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-yellow-500" />
-          <h2 className="mt-4 text-lg font-medium text-gray-900">Wallet not connected</h2>
-          <p className="mt-2 text-sm text-gray-500">Please connect your wallet to create a group.</p>
+          <h2 className="mt-4 text-lg font-medium text-white">Wallet not connected</h2>
+          <p className="mt-2 text-sm text-gray-400">Please connect your wallet to create a group.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Create New Thrift Group</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold text-white">Create New Thrift Group</h1>
+          <p className="mt-2 text-gray-300">
             Set up a new thrift group with your preferred configuration and invite members to join.
           </p>
         </div>
 
         {/* Platform Stats */}
         {platformStats && (
-          <div className="mb-8 bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Platform Limits</h3>
+          <div className="mb-8 glass-card p-6">
+            <h3 className="text-lg font-medium text-white mb-4">Platform Limits</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <p className="text-sm text-gray-500">Min Contribution</p>
-                <p className="text-lg font-semibold text-gray-900">{platformStats.minContribution} USDT</p>
+                <p className="text-sm text-gray-400">Min Contribution</p>
+                <p className="text-lg font-semibold text-white">{platformStats.minContribution} USDT</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-gray-500">Max Contribution</p>
-                <p className="text-lg font-semibold text-gray-900">{platformStats.maxContribution} USDT</p>
+                <p className="text-sm text-gray-400">Max Contribution</p>
+                <p className="text-lg font-semibold text-white">{platformStats.maxContribution} USDT</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-gray-500">Min Group Size</p>
-                <p className="text-lg font-semibold text-gray-900">{platformStats.minGroupSize}</p>
+                <p className="text-sm text-gray-400">Min Group Size</p>
+                <p className="text-lg font-semibold text-white">{platformStats.minGroupSize}</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-gray-500">Max Group Size</p>
-                <p className="text-lg font-semibold text-gray-900">{platformStats.maxGroupSize}</p>
+                <p className="text-sm text-gray-400">Max Group Size</p>
+                <p className="text-lg font-semibold text-white">{platformStats.maxGroupSize}</p>
               </div>
             </div>
           </div>
@@ -234,8 +234,8 @@ const CreateGroupPage: React.FC = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           {/* Thrift Model Selection */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Thrift Model</h3>
+          <div className="glass-card p-6">
+            <h3 className="text-lg font-medium text-white mb-4">Thrift Model</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
                 {
@@ -264,8 +264,8 @@ const CreateGroupPage: React.FC = () => {
                   key={model.id}
                   className={`relative p-4 border-2 rounded-lg cursor-pointer transition-all ${
                     selectedModel === model.id
-                      ? 'border-indigo-500 bg-indigo-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-600/60 bg-gradient-to-br from-blue-600/10 to-indigo-600/10'
+                      : 'border-gray-700 hover:border-gray-600'
                   }`}
                   onClick={() => setSelectedModel(model.id)}
                 >
@@ -276,21 +276,21 @@ const CreateGroupPage: React.FC = () => {
                     className="sr-only"
                   />
                   <div className="flex items-center mb-3">
-                    <model.icon className="h-6 w-6 text-indigo-600 mr-2" />
-                    <h4 className="font-medium text-gray-900">{model.name}</h4>
+                    <model.icon className="h-6 w-6 text-blue-400 mr-2" />
+                    <h4 className="font-medium text-white">{model.name}</h4>
                   </div>
-                  <p className="text-sm text-gray-600 mb-3">{model.description}</p>
-                  <ul className="text-xs text-gray-500 space-y-1">
+                  <p className="text-sm text-gray-300 mb-3">{model.description}</p>
+                  <ul className="text-xs text-gray-400 space-y-1">
                     {model.features.map((feature, index) => (
                       <li key={index} className="flex items-center">
-                        <CheckCircleIcon className="h-3 w-3 text-green-500 mr-1" />
+                        <CheckCircleIcon className="h-3 w-3 text-green-400 mr-1" />
                         {feature}
                       </li>
                     ))}
                   </ul>
                   {selectedModel === model.id && (
                     <div className="absolute top-2 right-2">
-                      <CheckCircleIcon className="h-5 w-5 text-indigo-600" />
+                      <CheckCircleIcon className="h-5 w-5 text-blue-400" />
                     </div>
                   )}
                 </div>
@@ -299,20 +299,20 @@ const CreateGroupPage: React.FC = () => {
           </div>
 
           {/* Basic Configuration */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Basic Configuration</h3>
+          <div className="glass-card p-6">
+            <h3 className="text-lg font-medium text-white mb-4">Basic Configuration</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Contribution Amount (USDT)
                 </label>
                 <div className="relative">
-                  <CurrencyDollarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <CurrencyDollarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
                   <input
                     type="number"
                     step="0.01"
                     {...register('contributionAmount')}
-                    className="pl-10 w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    className="pl-10 w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                     placeholder="100.00"
                   />
                 </div>
@@ -322,19 +322,19 @@ const CreateGroupPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Cycle Interval (seconds)
                 </label>
                 <div className="relative">
-                  <ClockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <ClockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
                   <input
                     type="number"
                     {...register('cycleInterval')}
-                    className="pl-10 w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    className="pl-10 w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                     placeholder="604800"
                   />
                 </div>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-400">
                   {formatTime(watch('cycleInterval'))}
                 </p>
                 {errors.cycleInterval && (
@@ -343,15 +343,15 @@ const CreateGroupPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Group Size
                 </label>
                 <div className="relative">
-                  <UsersIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <UsersIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
                   <input
                     type="number"
                     {...register('groupSize')}
-                    className="pl-10 w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    className="pl-10 w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                     placeholder="10"
                   />
                 </div>
@@ -361,20 +361,20 @@ const CreateGroupPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Lock Duration (seconds)
                 </label>
                 <div className="relative">
-                  <ClockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <ClockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
                   <input
                     type="number"
                     {...register('lockDuration')}
-                    className="pl-10 w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    className="pl-10 w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                     placeholder="2592000"
                     disabled={selectedModel === 0}
                   />
                 </div>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-400">
                   {formatTime(watch('lockDuration'))}
                 </p>
                 {errors.lockDuration && (
@@ -385,20 +385,20 @@ const CreateGroupPage: React.FC = () => {
           </div>
 
           {/* Advanced Configuration */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Advanced Configuration</h3>
+          <div className="glass-card p-6">
+            <h3 className="text-lg font-medium text-white mb-4">Advanced Configuration</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Grace Period (seconds)
                 </label>
                 <input
                   type="number"
                   {...register('gracePeriod')}
-                  className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                  className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                   placeholder="172800"
                 />
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-400">
                   {formatTime(watch('gracePeriod'))}
                 </p>
                 {errors.gracePeriod && (
@@ -407,14 +407,14 @@ const CreateGroupPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Required Stake (USDT)
                 </label>
                 <input
                   type="number"
                   step="0.01"
                   {...register('stakeRequired')}
-                  className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                  className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                   placeholder="50.00"
                 />
                 {errors.stakeRequired && (
@@ -423,16 +423,16 @@ const CreateGroupPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Platform Fee (basis points)
                 </label>
                 <input
                   type="number"
                   {...register('platformFeeBps')}
-                  className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                  className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                   placeholder="100"
                 />
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-400">
                   {formatBps(watch('platformFeeBps'))}
                 </p>
                 {errors.platformFeeBps && (
@@ -441,17 +441,17 @@ const CreateGroupPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Early Withdrawal Penalty (basis points)
                 </label>
                 <input
                   type="number"
                   {...register('earlyWithdrawalPenaltyBps')}
-                  className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                  className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                   placeholder="500"
                   disabled={selectedModel === 0}
                 />
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-400">
                   {formatBps(watch('earlyWithdrawalPenaltyBps'))}
                 </p>
                 {errors.earlyWithdrawalPenaltyBps && (
@@ -462,32 +462,32 @@ const CreateGroupPage: React.FC = () => {
           </div>
 
           {/* Insurance Configuration */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Insurance Configuration</h3>
+          <div className="glass-card p-6">
+            <h3 className="text-lg font-medium text-white mb-4">Insurance Configuration</h3>
             <div className="space-y-4">
               <div className="flex items-center">
                 <input
                   type="checkbox"
                   {...register('insuranceEnabled')}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-700 rounded"
                 />
-                <label className="ml-2 block text-sm text-gray-900">
+                <label className="ml-2 block text-sm text-gray-200">
                   Enable insurance coverage for this group
                 </label>
               </div>
 
               {insuranceEnabled && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Insurance Premium Rate (basis points)
                   </label>
                   <input
                     type="number"
                     {...register('insuranceBps')}
-                    className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                     placeholder="200"
                   />
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-1 text-xs text-gray-400">
                     {formatBps(watch('insuranceBps'))}
                   </p>
                   {errors.insuranceBps && (
@@ -500,12 +500,12 @@ const CreateGroupPage: React.FC = () => {
 
           {/* Error Display */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4">
+            <div className="bg-red-900/20 border border-red-700/50 rounded-md p-4">
               <div className="flex">
                 <ExclamationTriangleIcon className="h-5 w-5 text-red-400" />
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-red-800">Error</h3>
-                  <p className="mt-1 text-sm text-red-700">{error}</p>
+                  <h3 className="text-sm font-medium text-red-300">Error</h3>
+                  <p className="mt-1 text-sm text-red-200">{error}</p>
                 </div>
               </div>
             </div>
@@ -516,7 +516,7 @@ const CreateGroupPage: React.FC = () => {
             <button
               type="submit"
               disabled={!isValid || isLoading}
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>

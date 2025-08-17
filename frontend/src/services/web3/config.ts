@@ -2,6 +2,7 @@ import { configureChains, createConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
 import { injectedWallet, metaMaskWallet, walletConnectWallet } from '@rainbow-me/rainbowkit/wallets'
 import { connectorsForWallets } from '@rainbow-me/rainbowkit'
+import { kaikasWallet } from './wallets/kaikasWallet'
 
 // Kaia network configurations
 export const kaiaTestnet = {
@@ -63,11 +64,13 @@ const connectors = connectorsForWallets([
     wallets: walletConnectProjectId
       ? [
           injectedWallet({ chains }),
+          kaikasWallet({ chains }),
           metaMaskWallet({ projectId: walletConnectProjectId, chains }),
           walletConnectWallet({ projectId: walletConnectProjectId, chains }),
         ]
       : [
           injectedWallet({ chains }),
+          kaikasWallet({ chains }),
         ],
   },
 ])

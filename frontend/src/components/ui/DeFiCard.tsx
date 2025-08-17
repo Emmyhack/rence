@@ -8,6 +8,7 @@ import {
   SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { hematService, DeFiInfo } from '@services/web3/hematService';
+import { fetchKaiaChainTvl, fetchTopKaiaYields, YieldPool } from '@services/defiFeeds';
 
 interface DeFiCardProps {
   className?: string;
@@ -17,10 +18,24 @@ const DeFiCard: React.FC<DeFiCardProps> = ({ className = '' }) => {
   const [defiInfo, setDefiInfo] = useState<DeFiInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isHarvesting, setIsHarvesting] = useState(false);
+  const [chainTvl, setChainTvl] = useState<number | null>(null)
+  const [topPools, setTopPools] = useState<YieldPool[]>([])
 
   useEffect(() => {
     loadDeFiInfo();
+    loadFeeds();
   }, []);
+
+  const loadFeeds = async () => {
+    try {
+      const [tvl, pools] = await Promise.all([
+        fetchKaiaChainTvl(),
+        fetchTopKaiaYields(5),
+      ])
+      setChainTvl(tvl)
+      setTopPools(pools)
+    } catch {}
+  }
 
   const loadDeFiInfo = async () => {
     try {
@@ -142,6 +157,29 @@ const DeFiCard: React.FC<DeFiCardProps> = ({ className = '' }) => {
             </div>
           </div>
         </div>
+
+        {/* Chain Feed */}
+        <div className="mb-6 p-4 bg-gray-800/50 rounded-xl border border-gray-700">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-400">Kaia Chain TVL (DefiLlama)</p>
+            <p className="text-sm text-white">{chainTvl ? `$${chainTvl.toLocaleString()}` : 'N/A'}</p>
+          </div>
+        </div>
+
+        {/* Top Pools */}
+        {topPools.length > 0 && (
+          <div className="mb-6">
+            <h4 className="text-sm text-gray-400 mb-2">Top Kaia Pools</h4>
+            <div className="space-y-2">
+              {topPools.map((p) => (
+                <div key={p.pool} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-xl border border-gray-700">
+                  <div className="text-sm text-white">{p.project} · {p.symbol}</div>
+                  <div className="text-sm text-gray-300">APY: {p.apy.toFixed(2)}% · TVL: ${Math.round(p.tvlUsd).toLocaleString()}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Last Harvest Info */}
         {parseInt(defiInfo.lastHarvestAt) > 0 && (
