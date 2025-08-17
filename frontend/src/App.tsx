@@ -51,7 +51,6 @@ function App() {
               accentColorForeground: 'white',
               borderRadius: 'large',
               fontStack: 'system',
-              overlayBlur: 'medium',
             })}
             showRecentTransactions={true}
           >
