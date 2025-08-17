@@ -30,6 +30,8 @@ import { hematService } from '@services/web3/hematService';
 import LoadingSpinner from '@components/ui/LoadingSpinner';
 import GroupCard from '@components/groups/GroupCard';
 import DeFiCard from '@components/ui/DeFiCard';
+import ActivityFeed from '@components/ui/ActivityFeed';
+import { getUserOnchainActivities, ActivityItem } from '@services/web3/activityService';
 
 const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
@@ -46,6 +48,7 @@ const DashboardPage: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'overview' | 'groups' | 'defi' | 'staking' | 'insurance'>('overview');
   const [yieldInfo, setYieldInfo] = useState<any>(null);
+  const [activities, setActivities] = useState<ActivityItem[]>([]);
 
   useEffect(() => {
     if (!isConnected || !address) {
@@ -60,6 +63,22 @@ const DashboardPage: React.FC = () => {
     dispatch(fetchStakeInfo(address));
     loadYieldInfo();
   }, [isConnected, address, navigate, dispatch]);
+
+  useEffect(() => {
+    const loadActivities = async () => {
+      try {
+        if (!address) return;
+        const groups = [...(createdGroups || []), ...(userGroups || [])]
+          .map(g => ({ id: g.id, address: g.address }));
+        if (groups.length === 0) { setActivities([]); return; }
+        const result = await getUserOnchainActivities(address, groups);
+        setActivities(result.slice(0, 20));
+      } catch (e) {
+        console.error('Error loading on-chain activities:', e);
+      }
+    };
+    loadActivities();
+  }, [address, createdGroups, userGroups]);
 
   const loadYieldInfo = async () => {
     try {
@@ -282,6 +301,9 @@ const DashboardPage: React.FC = () => {
                 )}
               </div>
             </div>
+
+            {/* On-chain Activity */}
+            <ActivityFeed items={activities} />
 
             {/* DeFi Overview */}
             <div>
