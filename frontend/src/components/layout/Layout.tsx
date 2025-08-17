@@ -11,11 +11,13 @@ import {
   ShieldCheckIcon,
   UserIcon,
   WalletIcon,
+  Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 
 import { useAppDispatch, useAppSelector } from '@hooks/redux';
 import { connectWallet, disconnectWallet } from '@store/slices/walletSlice';
 import { hematService } from '@services/web3/hematService';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -30,7 +32,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     { name: 'Create Group', href: '/create-group', icon: PlusIcon },
     { name: 'Dashboard', href: '/dashboard', icon: ChartBarIcon },
     { name: 'Insurance', href: '/insurance', icon: ShieldCheckIcon },
-    { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
     { name: 'Profile', href: '/profile', icon: UserIcon },
   ];
 
@@ -72,7 +73,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Mobile menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
@@ -82,13 +83,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             exit={{ opacity: 0, x: -300 }}
             className="fixed inset-0 z-50 lg:hidden"
           >
-            <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setMobileMenuOpen(false)} />
-            <div className="fixed inset-y-0 left-0 flex w-full max-w-xs flex-col bg-white">
-              <div className="flex h-16 items-center justify-between px-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Hemat</h2>
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />
+            <div className="fixed inset-y-0 left-0 flex w-full max-w-xs flex-col bg-gray-900/95 backdrop-blur-md border-r border-gray-800">
+              <div className="flex h-16 items-center justify-between px-4 border-b border-gray-800">
+                <h2 className="text-lg font-semibold text-white gradient-text">Hemat</h2>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-white transition-colors"
                 >
                   <XMarkIcon className="h-6 w-6" />
                 </button>
@@ -101,22 +102,17 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                       key={item.name}
                       to={item.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                        isActive
-                          ? 'bg-indigo-100 text-indigo-700'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      }`}
+                      className={isActive ? 'nav-link-active' : 'nav-link'}
                     >
-                      <item.icon
-                        className={`mr-3 h-5 w-5 ${
-                          isActive ? 'text-indigo-500' : 'text-gray-400 group-hover:text-gray-500'
-                        }`}
-                      />
+                      <item.icon className="mr-3 h-5 w-5" />
                       {item.name}
                     </Link>
                   );
                 })}
               </nav>
+              <div className="border-t border-gray-800 p-4">
+                <ConnectButton />
+              </div>
             </div>
           </motion.div>
         )}
@@ -124,18 +120,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex flex-col flex-grow bg-white border-r border-gray-200">
-          {/* Logo */}
-          <div className="flex items-center h-16 px-6 border-b border-gray-200">
-            <Link to="/" className="flex items-center">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center mr-3">
-                <span className="text-white font-bold text-lg">H</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">Hemat</span>
-            </Link>
+        <div className="flex flex-col flex-grow bg-gray-900/95 backdrop-blur-md border-r border-gray-800">
+          <div className="flex items-center h-16 px-4 border-b border-gray-800">
+            <h1 className="text-xl font-bold text-white gradient-text">Hemat</h1>
           </div>
-
-          {/* Navigation */}
           <nav className="flex-1 space-y-1 px-2 py-4">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href;
@@ -143,105 +131,87 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                    isActive
-                      ? 'bg-indigo-100 text-indigo-700'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
+                  className={isActive ? 'nav-link-active' : 'nav-link'}
                 >
-                  <item.icon
-                    className={`mr-3 h-5 w-5 ${
-                      isActive ? 'text-indigo-500' : 'text-gray-400 group-hover:text-gray-500'
-                    }`}
-                  />
+                  <item.icon className="mr-3 h-5 w-5" />
                   {item.name}
                 </Link>
               );
             })}
           </nav>
-
-          {/* Wallet Info */}
-          <div className="p-4 border-t border-gray-200">
-            {isConnected ? (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500">Connected</span>
-                  <span className="text-green-600 font-medium">●</span>
-                </div>
-                <div className="text-xs text-gray-500 break-all">
-                  {formatAddress(address!)}
-                </div>
-                <div className="text-sm font-medium text-gray-900">
-                  {parseFloat(usdtBalance).toFixed(2)} USDT
-                </div>
-                <button
-                  onClick={handleDisconnectWallet}
-                  className="w-full px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-md hover:bg-red-100"
-                >
-                  Disconnect
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={handleConnectWallet}
-                className="w-full px-3 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 flex items-center justify-center"
-              >
-                <WalletIcon className="h-4 w-4 mr-2" />
-                Connect Wallet
-              </button>
-            )}
+          <div className="border-t border-gray-800 p-4">
+            <ConnectButton />
           </div>
         </div>
       </div>
 
       {/* Main content */}
       <div className="lg:pl-64">
-        {/* Top bar */}
-        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-          <button
-            type="button"
-            className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
-            onClick={() => setMobileMenuOpen(true)}
-          >
-            <span className="sr-only">Open sidebar</span>
-            <Bars3Icon className="h-6 w-6" />
-          </button>
-
-          {/* Mobile wallet info */}
-          <div className="flex flex-1 items-center gap-x-4 self-stretch lg:hidden">
-            <div className="flex items-center gap-x-4 lg:gap-x-6">
-              {isConnected ? (
-                <div className="flex items-center gap-x-2">
-                  <span className="text-sm text-gray-500">●</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {formatAddress(address!)}
-                  </span>
-                </div>
-              ) : (
-                <button
-                  onClick={handleConnectWallet}
-                  className="px-3 py-1 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
-                >
-                  Connect
-                </button>
-              )}
+        {/* Top navigation */}
+        <div className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-md border-b border-gray-800">
+          <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center">
+              <button
+                type="button"
+                className="lg:hidden -m-2.5 p-2.5 text-gray-400 hover:text-white"
+                onClick={() => setMobileMenuOpen(true)}
+              >
+                <span className="sr-only">Open sidebar</span>
+                <Bars3Icon className="h-6 w-6" />
+              </button>
+              <div className="ml-4 lg:ml-0">
+                <h2 className="text-lg font-semibold text-white">
+                  {navigation.find(item => item.href === location.pathname)?.name || 'Hemat'}
+                </h2>
+              </div>
             </div>
-          </div>
-
-          {/* Page title */}
-          <div className="flex flex-1 items-center gap-x-4 self-stretch lg:gap-x-6">
-            <div className="flex flex-1">
-              <h1 className="text-lg font-semibold text-gray-900">
-                {navigation.find(item => item.href === location.pathname)?.name || 'Hemat'}
-              </h1>
+            
+            <div className="flex items-center space-x-4">
+              {/* Wallet connection status */}
+              {isConnected && address && (
+                <div className="hidden sm:flex items-center space-x-3">
+                  <div className="flex items-center space-x-2 bg-gray-800 rounded-xl px-3 py-2 border border-gray-700">
+                    <WalletIcon className="h-4 w-4 text-green-400" />
+                    <span className="text-sm text-gray-300">{formatAddress(address)}</span>
+                  </div>
+                  {usdtBalance && (
+                    <div className="flex items-center space-x-2 bg-gray-800 rounded-xl px-3 py-2 border border-gray-700">
+                      <span className="text-sm text-gray-300">Balance:</span>
+                      <span className="text-sm font-medium text-green-400">{hematService.formatUSDT(usdtBalance)} USDT</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Connect button for desktop */}
+              <div className="hidden sm:block">
+                <ConnectButton />
+              </div>
+              
+              {/* Settings button */}
+              <button className="p-2 text-gray-400 hover:text-white transition-colors">
+                <Cog6ToothIcon className="h-5 w-5" />
+              </button>
             </div>
           </div>
         </div>
 
         {/* Page content */}
-        <main className="py-6">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            {children}
+        <main className="flex-1">
+          <div className="py-6">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={location.pathname}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {children}
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
         </main>
       </div>
