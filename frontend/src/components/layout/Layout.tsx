@@ -59,7 +59,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	}, [dispatch, isConnected]);
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+		<div className="min-h-screen bg-gradient-to-br from-surface-950 via-surface-900 to-surface-950">
 			{/* Mobile menu */}
 			<AnimatePresence>
 				{mobileMenuOpen && (
@@ -69,13 +69,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 						exit={{ opacity: 0, x: -300 }}
 						className="fixed inset-0 z-50 lg:hidden"
 					>
-						<div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />
-						<div className="fixed inset-y-0 left-0 flex w-full max-w-xs flex-col bg-gray-900/95 backdrop-blur-md border-r border-gray-800">
-							<div className="flex h-16 items-center justify-between px-4 border-b border-gray-800">
-								<h2 className="text-lg font-semibold text-white gradient-text">Hemat</h2>
+						<div className="fixed inset-0 bg-black/60 backdrop-blur-md" onClick={() => setMobileMenuOpen(false)} />
+						<div className="fixed inset-y-0 left-0 flex w-full max-w-xs flex-col bg-surface-950/95 backdrop-blur-xl border-r border-surface-800/50">
+							<div className="flex h-16 items-center justify-between px-4 border-b border-surface-800/50">
+								<h2 className="text-lg font-semibold text-white text-gradient-ocean">Hemat</h2>
 								<button
 									onClick={() => setMobileMenuOpen(false)}
-									className="text-gray-400 hover:text-white transition-colors"
+									className="text-neutral-400 hover:text-neutral-100 transition-colors"
 								>
 									<XMarkIcon className="h-6 w-6" />
 								</button>
@@ -96,7 +96,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 									);
 								})}
 							</nav>
-							<div className="border-t border-gray-800 p-4">
+							<div className="border-t border-surface-800/50 p-4">
 								<ConnectButton />
 							</div>
 						</div>
@@ -106,9 +106,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 			{/* Desktop sidebar */}
 			<div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-				<div className="flex flex-col flex-grow bg-gray-900/95 backdrop-blur-md border-r border-gray-800">
-					<div className="flex items-center h-16 px-4 border-b border-gray-800">
-						<h1 className="text-xl font-bold text-white gradient-text">Hemat</h1>
+				<div className="flex flex-col flex-grow bg-surface-950/95 backdrop-blur-xl border-r border-surface-800/50">
+					<div className="flex items-center h-16 px-4 border-b border-surface-800/50">
+						<h1 className="text-xl font-bold text-white text-gradient-ocean">Hemat</h1>
 					</div>
 					<nav className="flex-1 space-y-1 px-2 py-4">
 						{navigation.map((item) => {
@@ -125,7 +125,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 							);
 						})}
 					</nav>
-					<div className="border-t border-gray-800 p-4">
+					<div className="border-t border-surface-800/50 p-4">
 						<ConnectButton />
 					</div>
 				</div>
@@ -134,12 +134,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 			{/* Main content */}
 			<div className="lg:pl-64">
 				{/* Top navigation */}
-				<div className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-md border-b border-gray-800">
+				<div className="sticky top-0 z-40 bg-surface-950/95 backdrop-blur-xl border-b border-surface-800/50">
 					<div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
 						<div className="flex items-center">
 							<button
 								type="button"
-								className="lg:hidden -m-2.5 p-2.5 text-gray-400 hover:text-white"
+								className="lg:hidden -m-2.5 p-2.5 text-neutral-400 hover:text-neutral-100"
 								onClick={() => setMobileMenuOpen(true)}
 							>
 								<span className="sr-only">Open sidebar</span>
@@ -159,7 +159,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 							</div>
 							
 							{/* Settings button */}
-							<button className="p-2 text-gray-400 hover:text-white transition-colors">
+							<button className="p-2 text-neutral-400 hover:text-neutral-100 transition-colors">
 								<Cog6ToothIcon className="h-5 w-5" />
 							</button>
 						</div>
