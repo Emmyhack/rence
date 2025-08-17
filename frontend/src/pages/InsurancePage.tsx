@@ -128,8 +128,8 @@ const InsurancePage: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-yellow-500" />
-          <h2 className="mt-4 text-lg font-medium text-gray-900">Wallet not connected</h2>
-          <p className="mt-2 text-sm text-gray-500">Please connect your wallet to access insurance features.</p>
+          <h2 className="mt-4 text-lg font-medium text-white">Wallet not connected</h2>
+          <p className="mt-2 text-sm text-gray-400">Please connect your wallet to access insurance features.</p>
         </div>
       </div>
     );
@@ -142,12 +142,12 @@ const InsurancePage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Insurance Center</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold text-white">Insurance Center</h1>
+          <p className="mt-2 text-gray-300">
             Manage your insurance coverage and submit claims for emergency situations.
           </p>
         </div>
@@ -158,15 +158,15 @@ const InsurancePage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white rounded-lg shadow p-6"
+            className="glass-card p-6"
           >
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <ShieldCheckIcon className="h-8 w-8 text-green-600" />
+                <ShieldCheckIcon className="h-8 w-8 text-green-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Active Coverage</p>
-                <p className="text-2xl font-semibold text-gray-900">
+                <p className="text-sm font-medium text-gray-400">Active Coverage</p>
+                <p className="text-2xl font-semibold text-white">
                   {allGroups.filter(g => g.insuranceEnabled).length}
                 </p>
               </div>
@@ -177,15 +177,15 @@ const InsurancePage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white rounded-lg shadow p-6"
+            className="glass-card p-6"
           >
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <DocumentTextIcon className="h-8 w-8 text-blue-600" />
+                <DocumentTextIcon className="h-8 w-8 text-blue-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Total Claims</p>
-                <p className="text-2xl font-semibold text-gray-900">{userClaims.length}</p>
+                <p className="text-sm font-medium text-gray-400">Total Claims</p>
+                <p className="text-2xl font-semibold text-white">{userClaims.length}</p>
               </div>
             </div>
           </motion.div>
@@ -194,15 +194,15 @@ const InsurancePage: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white rounded-lg shadow p-6"
+            className="glass-card p-6"
           >
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <CurrencyDollarIcon className="h-8 w-8 text-purple-600" />
+                <CurrencyDollarIcon className="h-8 w-8 text-purple-400" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Pool Reserves</p>
-                <p className="text-2xl font-semibold text-gray-900">
+                <p className="text-sm font-medium text-gray-400">Pool Reserves</p>
+                <p className="text-2xl font-semibold text-white">
                   {poolStats ? `${poolStats.reserveRatio}%` : 'N/A'}
                 </p>
               </div>
@@ -211,8 +211,8 @@ const InsurancePage: React.FC = () => {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white rounded-lg shadow mb-8">
-          <div className="border-b border-gray-200">
+        <div className="glass-card mb-8">
+          <div className="border-b border-gray-800">
             <nav className="-mb-px flex space-x-8 px-6">
               {tabs.map((tab) => (
                 <button
@@ -220,8 +220,8 @@ const InsurancePage: React.FC = () => {
                   onClick={() => setSelectedTab(tab.id as any)}
                   className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${
                     selectedTab === tab.id
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-blue-500 text-blue-400'
+                      : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-700'
                   }`}
                 >
                   <tab.icon className="h-5 w-5 mr-2" />
@@ -240,7 +240,7 @@ const InsurancePage: React.FC = () => {
                 className="space-y-6"
               >
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Insurance Coverage</h3>
+                  <h3 className="text-lg font-medium text-white mb-4">Insurance Coverage</h3>
                   {allGroups.filter(g => g.insuranceEnabled).length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {allGroups
@@ -248,15 +248,15 @@ const InsurancePage: React.FC = () => {
                         .map((group) => (
                           <div
                             key={group.address}
-                            className="bg-gray-50 rounded-lg p-4 border-l-4 border-green-500"
+                            className="glass-card p-4 border-l-4 border-green-500/50"
                           >
                             <div className="flex items-center justify-between mb-2">
-                              <h4 className="font-medium text-gray-900">Group #{group.id}</h4>
-                              <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                              <h4 className="font-medium text-white">Group #{group.id}</h4>
+                              <span className="text-xs text-green-300 bg-green-900/30 px-2 py-1 rounded-full border border-green-700/50">
                                 Covered
                               </span>
                             </div>
-                            <div className="space-y-1 text-sm text-gray-600">
+                            <div className="space-y-1 text-sm text-gray-300">
                               <p>Contribution: {parseFloat(group.contributionAmount).toFixed(2)} USDT</p>
                               <p>Members: {group.members.length}/{group.groupSize}</p>
                               <p>Premium: 2% of contributions</p>
@@ -267,8 +267,8 @@ const InsurancePage: React.FC = () => {
                   ) : (
                     <div className="text-center py-8">
                       <ShieldCheckIcon className="mx-auto h-12 w-12 text-gray-400" />
-                      <h3 className="mt-2 text-sm font-medium text-gray-900">No insurance coverage</h3>
-                      <p className="mt-1 text-sm text-gray-500">
+                      <h3 className="mt-2 text-sm font-medium text-white">No insurance coverage</h3>
+                      <p className="mt-1 text-sm text-gray-400">
                         Join groups with insurance enabled to get coverage.
                       </p>
                     </div>
@@ -278,23 +278,23 @@ const InsurancePage: React.FC = () => {
                 {/* Pool Statistics */}
                 {poolStats && (
                   <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Pool Statistics</h3>
+                    <h3 className="text-lg font-medium text-white mb-4">Pool Statistics</h3>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <div className="bg-gray-50 rounded-lg p-4 text-center">
-                        <p className="text-sm text-gray-500">Total Premiums</p>
-                        <p className="text-lg font-semibold text-gray-900">{poolStats.totalPremiums} USDT</p>
+                      <div className="glass-card p-4 text-center">
+                        <p className="text-sm text-gray-400">Total Premiums</p>
+                        <p className="text-lg font-semibold text-white">{poolStats.totalPremiums} USDT</p>
                       </div>
-                      <div className="bg-gray-50 rounded-lg p-4 text-center">
-                        <p className="text-sm text-gray-500">Total Claims</p>
-                        <p className="text-lg font-semibold text-gray-900">{poolStats.totalClaims} USDT</p>
+                      <div className="glass-card p-4 text-center">
+                        <p className="text-sm text-gray-400">Total Claims</p>
+                        <p className="text-lg font-semibold text-white">{poolStats.totalClaims} USDT</p>
                       </div>
-                      <div className="bg-gray-50 rounded-lg p-4 text-center">
-                        <p className="text-sm text-gray-500">Reserve Ratio</p>
-                        <p className="text-lg font-semibold text-gray-900">{poolStats.reserveRatio}%</p>
+                      <div className="glass-card p-4 text-center">
+                        <p className="text-sm text-gray-400">Reserve Ratio</p>
+                        <p className="text-lg font-semibold text-white">{poolStats.reserveRatio}%</p>
                       </div>
-                      <div className="bg-gray-50 rounded-lg p-4 text-center">
-                        <p className="text-sm text-gray-500">Min Reserve</p>
-                        <p className="text-lg font-semibold text-gray-900">{poolStats.minReserveRatio}%</p>
+                      <div className="glass-card p-4 text-center">
+                        <p className="text-sm text-gray-400">Min Reserve</p>
+                        <p className="text-lg font-semibold text-white">{poolStats.minReserveRatio}%</p>
                       </div>
                     </div>
                   </div>
@@ -310,10 +310,10 @@ const InsurancePage: React.FC = () => {
                 className="space-y-6"
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-medium text-gray-900">My Insurance Claims</h3>
+                  <h3 className="text-lg font-medium text-white">My Insurance Claims</h3>
                   <button
                     onClick={() => setSelectedTab('submit')}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                   >
                     <PlusIcon className="h-4 w-4 mr-2" />
                     Submit New Claim
@@ -331,12 +331,12 @@ const InsurancePage: React.FC = () => {
                       return (
                         <div
                           key={claim.id}
-                          className="bg-gray-50 rounded-lg p-6 border-l-4 border-indigo-500"
+                          className="glass-card p-6 border-l-4 border-indigo-500/50"
                         >
                           <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center">
-                              <StatusIcon className="h-5 w-5 text-gray-400 mr-2" />
-                              <h4 className="font-medium text-gray-900">Claim #{claim.id}</h4>
+                              <StatusIcon className="h-5 w-5 text-gray-500 mr-2" />
+                              <h4 className="font-medium text-white">Claim #{claim.id}</h4>
                             </div>
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getClaimStatusColor(claim.status)}`}>
                               {getClaimStatusName(claim.status)}
@@ -345,31 +345,31 @@ const InsurancePage: React.FC = () => {
                           
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
-                              <span className="text-sm text-gray-600">Amount:</span>
-                              <span className="ml-2 font-medium">{parseFloat(claim.amount).toFixed(2)} USDT</span>
+                              <span className="text-sm text-gray-400">Amount:</span>
+                              <span className="ml-2 font-medium text-white">{parseFloat(claim.amount).toFixed(2)} USDT</span>
                             </div>
                             <div>
-                              <span className="text-sm text-gray-600">Group ID:</span>
-                              <span className="ml-2 font-medium">{claim.groupId}</span>
+                              <span className="text-sm text-gray-400">Group ID:</span>
+                              <span className="ml-2 font-medium text-white">{claim.groupId}</span>
                             </div>
                             <div>
-                              <span className="text-sm text-gray-600">Submitted:</span>
-                              <span className="ml-2 font-medium">{formatDate(claim.submittedAt)}</span>
+                              <span className="text-sm text-gray-400">Submitted:</span>
+                              <span className="ml-2 font-medium text-white">{formatDate(claim.submittedAt)}</span>
                             </div>
                             {claim.processedAt !== '0' && (
                               <div>
-                                <span className="text-sm text-gray-600">Processed:</span>
-                                <span className="ml-2 font-medium">{formatDate(claim.processedAt)}</span>
+                                <span className="text-sm text-gray-400">Processed:</span>
+                                <span className="ml-2 font-medium text-white">{formatDate(claim.processedAt)}</span>
                               </div>
                             )}
                           </div>
 
-                          <div className="bg-white rounded-lg p-4">
-                            <h5 className="font-medium text-gray-900 mb-2">Evidence & Reason</h5>
-                            <p className="text-sm text-gray-600 mb-2">
+                          <div className="glass-card p-4">
+                            <h5 className="font-medium text-white mb-2">Evidence & Reason</h5>
+                            <p className="text-sm text-gray-300 mb-2">
                               <strong>Evidence:</strong> {claim.evidenceCID}
                             </p>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-gray-300">
                               <strong>Reason:</strong> Emergency situation requiring immediate funds
                             </p>
                           </div>
@@ -380,14 +380,14 @@ const InsurancePage: React.FC = () => {
                 ) : (
                   <div className="text-center py-8">
                     <DocumentTextIcon className="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 className="mt-2 text-sm font-medium text-gray-900">No claims yet</h3>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <h3 className="mt-2 text-sm font-medium text-white">No claims yet</h3>
+                    <p className="mt-1 text-sm text-gray-400">
                       You haven't submitted any insurance claims yet.
                     </p>
                     <div className="mt-6">
                       <button
                         onClick={() => setSelectedTab('submit')}
-                        className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                        className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                       >
                         <PlusIcon className="h-4 w-4 mr-2" />
                         Submit First Claim
@@ -406,8 +406,8 @@ const InsurancePage: React.FC = () => {
                 className="space-y-6"
               >
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-4">Submit Insurance Claim</h3>
-                  <p className="text-sm text-gray-600 mb-6">
+                  <h3 className="text-lg font-medium text-white mb-4">Submit Insurance Claim</h3>
+                  <p className="text-sm text-gray-300 mb-6">
                     Submit a claim for emergency situations. Make sure you have proper evidence and documentation.
                   </p>
                 </div>
@@ -415,12 +415,12 @@ const InsurancePage: React.FC = () => {
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   {/* Group Selection */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
                       Select Group
                     </label>
                     <select
                       {...register('groupId')}
-                      className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                      className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                     >
                       <option value="">Choose a group...</option>
                       {allGroups
@@ -438,14 +438,14 @@ const InsurancePage: React.FC = () => {
 
                   {/* Claim Amount */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
                       Claim Amount (USDT)
                     </label>
                     <input
                       type="number"
                       step="0.01"
                       {...register('amount')}
-                      className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                      className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                       placeholder="0.00"
                     />
                     {errors.amount && (
@@ -455,13 +455,13 @@ const InsurancePage: React.FC = () => {
 
                   {/* Evidence Description */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
                       Evidence Description
                     </label>
                     <textarea
                       {...register('evidenceCID')}
                       rows={3}
-                      className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                      className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                       placeholder="Describe the evidence and documentation you have..."
                     />
                     {errors.evidenceCID && (
@@ -471,13 +471,13 @@ const InsurancePage: React.FC = () => {
 
                   {/* Reason */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
                       Reason for Claim
                     </label>
                     <textarea
                       {...register('reason')}
                       rows={3}
-                      className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                      className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                       placeholder="Explain why you need this emergency funding..."
                     />
                     {errors.reason && (
@@ -490,7 +490,7 @@ const InsurancePage: React.FC = () => {
                     <button
                       type="submit"
                       disabled={!isValid || isLoading}
-                      className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isLoading ? (
                         <>

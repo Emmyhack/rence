@@ -14,35 +14,35 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
   avatar 
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+    <div className="glass-card p-6">
       <div className="flex items-start space-x-4">
         {avatar ? (
           <img 
             src={avatar} 
             alt={author}
-            className="w-12 h-12 rounded-full object-cover"
+            className="w-12 h-12 rounded-full object-cover border border-gray-700"
             onError={(e) => {
               const target = e.currentTarget as HTMLImageElement;
               target.onerror = null;
-              target.src = 'https://dummyimage.com/96x96/e5e7eb/111827.png&text=' + encodeURIComponent(author.charAt(0));
+              target.src = 'https://dummyimage.com/96x96/111827/9ca3af.png&text=' + encodeURIComponent(author.charAt(0));
             }}
           />
         ) : (
-          <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
-            <span className="text-gray-600 font-medium">
+          <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-gray-700">
+            <span className="text-gray-300 font-medium">
               {author.charAt(0)}
             </span>
           </div>
         )}
         
         <div className="flex-1">
-          <blockquote className="text-gray-700 italic mb-3">
+          <blockquote className="text-gray-300 italic mb-3">
             "{quote}"
           </blockquote>
           
           <div>
-            <p className="font-medium text-gray-900">{author}</p>
-            {role && <p className="text-sm text-gray-600">{role}</p>}
+            <p className="font-medium text-white">{author}</p>
+            {role && <p className="text-sm text-gray-400">{role}</p>}
           </div>
         </div>
       </div>

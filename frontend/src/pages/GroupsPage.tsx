@@ -117,20 +117,20 @@ const GroupsPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Thrift Groups</h1>
-              <p className="mt-2 text-gray-600">
+              <h1 className="text-3xl font-bold text-white">Thrift Groups</h1>
+              <p className="mt-2 text-gray-300">
                 Discover and join thrift groups that match your savings goals.
               </p>
             </div>
             <button
               onClick={() => navigate('/create-group')}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
             >
               <PlusIcon className="h-4 w-4 mr-2" />
               Create Group
@@ -140,44 +140,44 @@ const GroupsPage: React.FC = () => {
 
         {/* Platform Stats */}
         {platformStats && (
-          <div className="mb-8 bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Platform Overview</h3>
+          <div className="mb-8 glass-card p-6">
+            <h3 className="text-lg font-medium text-white mb-4">Platform Overview</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center">
-                <p className="text-sm text-gray-500">Total Groups</p>
-                <p className="text-2xl font-semibold text-gray-900">{platformStats.totalGroups}</p>
+                <p className="text-sm text-gray-400">Total Groups</p>
+                <p className="text-2xl font-semibold text-white">{platformStats.totalGroups}</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-gray-500">Active Groups</p>
-                <p className="text-2xl font-semibold text-green-600">{platformStats.totalActive}</p>
+                <p className="text-sm text-gray-400">Active Groups</p>
+                <p className="text-2xl font-semibold text-green-400">{platformStats.totalActive}</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-gray-500">Min Contribution</p>
-                <p className="text-lg font-semibold text-gray-900">{platformStats.minContribution} USDT</p>
+                <p className="text-sm text-gray-400">Min Contribution</p>
+                <p className="text-lg font-semibold text-white">{platformStats.minContribution} USDT</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-gray-500">Max Contribution</p>
-                <p className="text-lg font-semibold text-gray-900">{platformStats.maxContribution} USDT</p>
+                <p className="text-sm text-gray-400">Max Contribution</p>
+                <p className="text-lg font-semibold text-white">{platformStats.maxContribution} USDT</p>
               </div>
             </div>
           </div>
         )}
 
         {/* Filters and Search */}
-        <div className="bg-white rounded-lg shadow mb-8">
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Filters & Search</h3>
+        <div className="glass-card mb-8">
+          <div className="p-6 border-b border-gray-700/50">
+            <h3 className="text-lg font-medium text-white mb-4">Filters & Search</h3>
             
             {/* Search */}
             <div className="mb-4">
               <div className="relative">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
                 <input
                   type="text"
                   placeholder="Search groups by address..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                  className="pl-10 w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -186,13 +186,13 @@ const GroupsPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Model Filter */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Thrift Model
                 </label>
                 <select
                   value={selectedModel || ''}
                   onChange={(e) => setSelectedModel(e.target.value ? parseInt(e.target.value) : null)}
-                  className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                  className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
                 >
                   {modelOptions.map((option) => (
                     <option key={option.value} value={option.value || ''}>
@@ -204,13 +204,13 @@ const GroupsPage: React.FC = () => {
 
               {/* Status Filter */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Group Status
                 </label>
                 <select
                   value={selectedStatus || ''}
                   onChange={(e) => setSelectedStatus(e.target.value ? parseInt(e.target.value) : null)}
-                  className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                  className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
                 >
                   {statusOptions.map((option) => (
                     <option key={option.value} value={option.value || ''}>
@@ -222,13 +222,13 @@ const GroupsPage: React.FC = () => {
 
               {/* Sort */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Sort By
                 </label>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                  className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
                 >
                   {sortOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -241,14 +241,14 @@ const GroupsPage: React.FC = () => {
           </div>
 
           {/* Results Summary */}
-          <div className="px-6 py-4 bg-gray-50">
+          <div className="px-6 py-4 bg-gray-900 border-t border-gray-800 rounded-b-lg">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-400">
                 Showing {filteredAndSortedGroups.length} of {groups.length} groups
               </p>
               <div className="flex items-center space-x-2">
-                <FunnelIcon className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-500">Filters applied</span>
+                <FunnelIcon className="h-4 w-4 text-gray-500" />
+                <span className="text-sm text-gray-400">Filters applied</span>
               </div>
             </div>
           </div>
@@ -262,8 +262,8 @@ const GroupsPage: React.FC = () => {
         ) : filteredAndSortedGroups.length === 0 ? (
           <div className="text-center py-12">
             <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No groups found</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <h3 className="mt-2 text-sm font-medium text-white">No groups found</h3>
+            <p className="mt-1 text-sm text-gray-400">
               {searchTerm || selectedModel !== null || selectedStatus !== null
                 ? 'Try adjusting your filters or search terms.'
                 : 'No thrift groups have been created yet.'}
@@ -272,7 +272,7 @@ const GroupsPage: React.FC = () => {
               <div className="mt-6">
                 <button
                   onClick={() => navigate('/create-group')}
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                 >
                   <PlusIcon className="h-4 w-4 mr-2" />
                   Create First Group
@@ -302,7 +302,7 @@ const GroupsPage: React.FC = () => {
         {/* Load More (if needed) */}
         {filteredAndSortedGroups.length > 0 && filteredAndSortedGroups.length < groups.length && (
           <div className="mt-8 text-center">
-            <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            <button className="inline-flex items-center px-4 py-2 border border-gray-700 text-sm font-medium rounded-md text-gray-200 bg-gray-900 hover:bg-gray-800">
               Load More Groups
             </button>
           </div>

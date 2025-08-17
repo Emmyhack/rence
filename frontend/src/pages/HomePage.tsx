@@ -72,7 +72,7 @@ const HomePage: React.FC = () => {
   ];
 
   return (
-    <div className="bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-y-0 h-full w-full" aria-hidden="true">
@@ -115,11 +115,11 @@ const HomePage: React.FC = () => {
                       DeFi Meets Tradition
                     </span>
                     <span className="mt-1 block text-4xl tracking-tight font-extrabold sm:text-5xl xl:text-6xl">
-                      <span className="block text-gray-900">Hemat</span>
+                      <span className="block text-white">Hemat</span>
                       <span className="block text-indigo-600">Thrift & Insurance</span>
                     </span>
                   </h1>
-                  <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
+                  <p className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
                     USDT-powered thrift savings and insurance platform on Kaia blockchain. 
                     Join traditional communal savings with modern DeFi benefits.
                   </p>
@@ -136,14 +136,14 @@ const HomePage: React.FC = () => {
                       <>
                         <Link
                           to="/dashboard"
-                          className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200"
+                          className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-colors duration-200"
                         >
                           Go to Dashboard
                           <ArrowRightIcon className="ml-2 h-5 w-5" />
                         </Link>
                         <Link
                           to="/create-group"
-                          className="inline-flex items-center justify-center px-6 py-3 border border-indigo-600 text-base font-medium rounded-md text-indigo-600 hover:bg-indigo-50 transition-colors duration-200"
+                          className="inline-flex items-center justify-center px-6 py-3 border border-blue-700 text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-200"
                         >
                           Create Group
                         </Link>
@@ -152,12 +152,12 @@ const HomePage: React.FC = () => {
                       <>
                         <Link
                           to="/groups"
-                          className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200"
+                          className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-colors duration-200"
                         >
                           Explore Groups
                           <ArrowRightIcon className="ml-2 h-5 w-5" />
                         </Link>
-                        <button className="inline-flex items-center justify-center px-6 py-3 border border-indigo-600 text-base font-medium rounded-md text-indigo-600 hover:bg-indigo-50 transition-colors duration-200">
+                        <button className="inline-flex items-center justify-center px-6 py-3 border border-blue-700 text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-200">
                           Connect Wallet
                         </button>
                       </>
@@ -173,7 +173,7 @@ const HomePage: React.FC = () => {
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
                 <div className="relative mx-auto w-full rounded-lg shadow-lg lg:max-w-md">
-                  <div className="relative block w-full bg-white rounded-lg overflow-hidden">
+                  <div className="relative block w-full bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
                     <img
                       className="w-full"
                       src="/images/hero-dashboard.png"
@@ -242,13 +242,13 @@ const HomePage: React.FC = () => {
       )}
 
       {/* Features Section */}
-      <div className="py-16 bg-gray-50 overflow-hidden lg:py-24">
+      <div className="py-16 bg-transparent overflow-hidden lg:py-24">
         <div className="relative max-w-xl mx-auto px-4 sm:px-6 lg:px-8 lg:max-w-7xl">
           <div className="relative">
-            <h2 className="text-center text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+            <h2 className="text-center text-3xl leading-8 font-extrabold tracking-tight text-white sm:text-4xl">
               Three Ways to Save
             </h2>
-            <p className="mt-4 max-w-3xl mx-auto text-center text-xl text-gray-500">
+            <p className="mt-4 max-w-3xl mx-auto text-center text-xl text-gray-300">
               Choose the savings model that best fits your financial goals and community needs.
             </p>
           </div>
@@ -270,14 +270,14 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Benefits Section */}
-      <div className="bg-white py-16 lg:py-24">
+      <div className="py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
             <div>
-              <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+              <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
                 Why Choose Hemat?
               </h2>
-              <p className="mt-3 max-w-3xl text-lg text-gray-500">
+              <p className="mt-3 max-w-3xl text-lg text-gray-300">
                 We combine the best of traditional community savings with modern blockchain technology 
                 to create a secure, transparent, and profitable savings experience.
               </p>
@@ -324,13 +324,13 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Testimonials Section */}
-      <div className="bg-gray-50 py-16 lg:py-24">
+      <div className="py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+            <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
               What Our Community Says
             </h2>
-            <p className="mt-4 text-lg text-gray-500">
+            <p className="mt-4 text-lg text-gray-300">
               Real stories from real people building wealth with Hemat
             </p>
           </div>
@@ -375,7 +375,7 @@ const HomePage: React.FC = () => {
             <div className="mt-8 flex justify-center space-x-4">
               <Link
                 to="/groups"
-                className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 transition-colors duration-200"
+                className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-200"
               >
                 Browse Groups
               </Link>
