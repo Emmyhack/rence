@@ -26,6 +26,7 @@ import NotFoundPage from '@pages/NotFoundPage';
 // Styles
 import '@rainbow-me/rainbowkit/styles.css';
 import './index.css';
+import ErrorBoundary from '@components/common/ErrorBoundary';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -55,71 +56,73 @@ function App() {
             showRecentTransactions={true}
           >
             <QueryClientProvider client={queryClient}>
-              <Router>
-                <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-                  <Layout>
-                    <Routes>
-                      {/* Public Routes */}
-                      <Route path="/" element={<HomePage />} />
-                      <Route path="/groups" element={<GroupsPage />} />
-                      <Route path="/groups/:id" element={<GroupDetailPage />} />
-                      
-                      {/* Protected Routes */}
-                      <Route path="/dashboard" element={<DashboardPage />} />
-                      <Route path="/create-group" element={<CreateGroupPage />} />
-                      <Route path="/insurance" element={<InsurancePage />} />
+              <ErrorBoundary>
+                <Router>
+                  <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+                    <Layout>
+                      <Routes>
+                        {/* Public Routes */}
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/groups" element={<GroupsPage />} />
+                        <Route path="/groups/:id" element={<GroupDetailPage />} />
+                        
+                        {/* Protected Routes */}
+                        <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route path="/create-group" element={<CreateGroupPage />} />
+                        <Route path="/insurance" element={<InsurancePage />} />
 
-                      <Route path="/profile" element={<ProfilePage />} />
-                      
-                      {/* 404 Route */}
-                      <Route path="*" element={<NotFoundPage />} />
-                    </Routes>
-                  </Layout>
-                  
-                  {/* Global Toast Notifications */}
-                  <Toaster
-                    position="top-right"
-                    toastOptions={{
-                      duration: 5000,
-                      style: {
-                        background: '#1f2937',
-                        color: '#f9fafb',
-                        border: '1px solid #374151',
-                        borderRadius: '12px',
-                        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
-                      },
-                      success: {
-                        duration: 3000,
-                        iconTheme: {
-                          primary: '#10b981',
-                          secondary: '#f9fafb',
-                        },
-                        style: {
-                          background: '#064e3b',
-                          border: '1px solid #059669',
-                        },
-                      },
-                      error: {
+                        <Route path="/profile" element={<ProfilePage />} />
+                        
+                        {/* 404 Route */}
+                        <Route path="*" element={<NotFoundPage />} />
+                      </Routes>
+                    </Layout>
+                    
+                    {/* Global Toast Notifications */}
+                    <Toaster
+                      position="top-right"
+                      toastOptions={{
                         duration: 5000,
-                        iconTheme: {
-                          primary: '#ef4444',
-                          secondary: '#f9fafb',
-                        },
                         style: {
-                          background: '#7f1d1d',
-                          border: '1px solid #dc2626',
+                          background: '#1f2937',
+                          color: '#f9fafb',
+                          border: '1px solid #374151',
+                          borderRadius: '12px',
+                          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
                         },
-                      },
-                      loading: {
-                        style: {
-                          background: '#1e293b',
-                          border: '1px solid #475569',
+                        success: {
+                          duration: 3000,
+                          iconTheme: {
+                            primary: '#10b981',
+                            secondary: '#f9fafb',
+                          },
+                          style: {
+                            background: '#064e3b',
+                            border: '1px solid #059669',
+                          },
                         },
-                      },
-                    }}
-                  />
-                </div>
-              </Router>
+                        error: {
+                          duration: 5000,
+                          iconTheme: {
+                            primary: '#ef4444',
+                            secondary: '#f9fafb',
+                          },
+                          style: {
+                            background: '#7f1d1d',
+                            border: '1px solid #dc2626',
+                          },
+                        },
+                        loading: {
+                          style: {
+                            background: '#1e293b',
+                            border: '1px solid #475569',
+                          },
+                        },
+                      }}
+                    />
+                  </div>
+                </Router>
+              </ErrorBoundary>
             </QueryClientProvider>
           </RainbowKitProvider>
         </WagmiConfig>
