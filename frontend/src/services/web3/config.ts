@@ -1,5 +1,6 @@
 import { configureChains, createConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { injectedWallet, metaMaskWallet, walletConnectWallet } from '@rainbow-me/rainbowkit/wallets'
 import { connectorsForWallets } from '@rainbow-me/rainbowkit'
 import { kaikasWallet } from './wallets/kaikasWallet'
@@ -53,7 +54,16 @@ export const kaiaMainnet = {
 // Configure chains
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [kaiaTestnet, kaiaMainnet],
-  [publicProvider()]
+  [
+    jsonRpcProvider({
+      rpc: (chain) => {
+        if (chain.id === kaiaTestnet.id) return { http: kaiaTestnet.rpcUrls.default.http[0] }
+        if (chain.id === kaiaMainnet.id) return { http: kaiaMainnet.rpcUrls.default.http[0] }
+        return null
+      },
+    }),
+    publicProvider(),
+  ]
 )
 
 // Configure wallets (excluding Safe wallet to avoid dependency issues)
