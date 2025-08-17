@@ -174,7 +174,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     <WalletIcon className="h-4 w-4 text-green-400" />
                     <span className="text-sm text-gray-300">{formatAddress(address)}</span>
                   </div>
-                  {usdtBalance && (
+                  {typeof usdtBalance === 'string' && usdtBalance !== '' && (
                     <div className="flex items-center space-x-2 bg-gray-800 rounded-xl px-3 py-2 border border-gray-700">
                       <span className="text-sm text-gray-300">Balance:</span>
                       <span className="text-sm font-medium text-green-400">{hematService.formatUSDT(usdtBalance)} USDT</span>

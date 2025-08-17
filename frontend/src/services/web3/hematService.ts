@@ -119,10 +119,14 @@ export class HematService {
   }
 
   private async initializeContracts() {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      this.provider = new ethers.providers.Web3Provider(window.ethereum);
-      this.signer = this.provider.getSigner();
-      this.contracts = getContractInstances(this.signer);
+    if (typeof window !== 'undefined') {
+      const anyWindow: any = window as any;
+      const injected = anyWindow.ethereum || anyWindow.klaytn;
+      if (injected) {
+        this.provider = new ethers.providers.Web3Provider(injected);
+        this.signer = this.provider.getSigner();
+        this.contracts = getContractInstances(this.signer);
+      }
     }
   }
 
@@ -134,7 +138,18 @@ export class HematService {
       }
       
       if (this.provider) {
-        const accounts = await this.provider.send('eth_requestAccounts', []);
+        let accounts: string[] = [];
+        try {
+          accounts = await this.provider.send('eth_requestAccounts', []);
+        } catch (e) {
+          // Fallback for Kaikas-specific method names if needed
+          const injected: any = (window as any).klaytn || (window as any).ethereum;
+          if (injected?.request) {
+            accounts = await injected.request({ method: 'eth_requestAccounts' }).catch(async () => {
+              return injected.request({ method: 'klaytn_requestAccounts' });
+            });
+          }
+        }
         const address = accounts[0];
         this.signer = this.provider.getSigner();
         this.contracts = getContractInstances(this.signer);

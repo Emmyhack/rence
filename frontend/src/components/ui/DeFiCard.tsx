@@ -20,6 +20,7 @@ const DeFiCard: React.FC<DeFiCardProps> = ({ className = '' }) => {
   const [isHarvesting, setIsHarvesting] = useState(false);
   const [chainTvl, setChainTvl] = useState<number | null>(null)
   const [topPools, setTopPools] = useState<YieldPool[]>([])
+  const [feedsLoading, setFeedsLoading] = useState(true)
 
   useEffect(() => {
     loadDeFiInfo();
@@ -28,13 +29,18 @@ const DeFiCard: React.FC<DeFiCardProps> = ({ className = '' }) => {
 
   const loadFeeds = async () => {
     try {
+      setFeedsLoading(true)
       const [tvl, pools] = await Promise.all([
         fetchKaiaChainTvl(),
         fetchTopKaiaYields(5),
       ])
       setChainTvl(tvl)
       setTopPools(pools)
-    } catch {}
+    } catch {
+      setTopPools([])
+    } finally {
+      setFeedsLoading(false)
+    }
   }
 
   const loadDeFiInfo = async () => {
@@ -162,12 +168,14 @@ const DeFiCard: React.FC<DeFiCardProps> = ({ className = '' }) => {
         <div className="mb-6 p-4 bg-gray-800/50 rounded-xl border border-gray-700">
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-400">Kaia Chain TVL (DefiLlama)</p>
-            <p className="text-sm text-white">{chainTvl ? `$${chainTvl.toLocaleString()}` : 'N/A'}</p>
+            <p className="text-sm text-white">{feedsLoading ? 'Loading…' : chainTvl ? `$${chainTvl.toLocaleString()}` : 'N/A'}</p>
           </div>
         </div>
 
         {/* Top Pools */}
-        {topPools.length > 0 && (
+        {feedsLoading ? (
+          <div className="mb-2 text-sm text-gray-500">Loading top pools…</div>
+        ) : topPools.length > 0 ? (
           <div className="mb-6">
             <h4 className="text-sm text-gray-400 mb-2">Top Kaia Pools</h4>
             <div className="space-y-2">
@@ -179,6 +187,8 @@ const DeFiCard: React.FC<DeFiCardProps> = ({ className = '' }) => {
               ))}
             </div>
           </div>
+        ) : (
+          <div className="mb-2 text-sm text-gray-500">No Kaia pools available right now.</div>
         )}
 
         {/* Last Harvest Info */}
