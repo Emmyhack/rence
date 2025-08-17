@@ -48,8 +48,8 @@ function App() {
           <RainbowKitProvider
             chains={chains}
             theme={darkTheme({
-              accentColor: '#3b82f6',
-              accentColorForeground: 'white',
+              accentColor: '#BFF009',
+              accentColorForeground: '#040404',
               borderRadius: 'large',
               fontStack: 'system',
             })}
@@ -58,7 +58,10 @@ function App() {
             <QueryClientProvider client={queryClient}>
               <ErrorBoundary>
                 <Router>
-                  <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+                  <div className="min-h-screen bg-kaia-background relative overflow-hidden">
+                    {/* Background gradient effect */}
+                    <div className="absolute inset-0 bg-kaia-radial opacity-5 pointer-events-none"></div>
+                    
                     <Layout>
                       <Routes>
                         {/* Public Routes */}
@@ -84,38 +87,42 @@ function App() {
                       toastOptions={{
                         duration: 5000,
                         style: {
-                          background: '#1f2937',
-                          color: '#f9fafb',
-                          border: '1px solid #374151',
-                          borderRadius: '12px',
+                          background: '#1A1A1A',
+                          color: '#FFFFFF',
+                          border: '1px solid #3D3D3D',
+                          borderRadius: '32px',
                           boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
+                          backdropFilter: 'blur(32px)',
                         },
                         success: {
                           duration: 3000,
                           iconTheme: {
-                            primary: '#10b981',
-                            secondary: '#f9fafb',
+                            primary: '#BFF009',
+                            secondary: '#040404',
                           },
                           style: {
-                            background: '#064e3b',
-                            border: '1px solid #059669',
+                            background: 'rgba(191, 240, 9, 0.1)',
+                            border: '1px solid #BFF009',
+                            color: '#BFF009',
                           },
                         },
                         error: {
                           duration: 5000,
                           iconTheme: {
-                            primary: '#ef4444',
-                            secondary: '#f9fafb',
+                            primary: '#EF4444',
+                            secondary: '#FFFFFF',
                           },
                           style: {
-                            background: '#7f1d1d',
-                            border: '1px solid #dc2626',
+                            background: 'rgba(239, 68, 68, 0.1)',
+                            border: '1px solid #EF4444',
+                            color: '#EF4444',
                           },
                         },
                         loading: {
                           style: {
-                            background: '#1e293b',
-                            border: '1px solid #475569',
+                            background: '#0A0A0A',
+                            border: '1px solid #3D3D3D',
+                            color: '#BFF009',
                           },
                         },
                       }}

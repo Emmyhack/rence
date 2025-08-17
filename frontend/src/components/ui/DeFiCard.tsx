@@ -72,7 +72,7 @@ const DeFiCard: React.FC<DeFiCardProps> = ({ className = '' }) => {
 
   if (isLoading) {
     return (
-      <div className={`card ${className}`}>
+      <div className={`glass-card ${className}`}>
         <div className="flex items-center justify-center h-64">
           <div className="loading-spinner w-8 h-8"></div>
         </div>
@@ -82,13 +82,13 @@ const DeFiCard: React.FC<DeFiCardProps> = ({ className = '' }) => {
 
   if (!defiInfo) {
     return (
-      <div className={`card ${className}`}>
-        <div className="p-6">
-          <div className="flex items-center mb-4">
-            <SparklesIcon className="h-6 w-6 text-purple-400 mr-2" />
-            <h3 className="text-lg font-semibold text-white">DeFi Strategy</h3>
+      <div className={`glass-card ${className}`}>
+        <div className="p-8">
+          <div className="flex items-center mb-6">
+            <SparklesIcon className="h-6 w-6 text-kaia-primary mr-3" />
+            <h3 className="text-xl font-semibold text-kaia-text-primary">DeFi Strategy</h3>
           </div>
-          <p className="text-gray-400">Unable to load DeFi information</p>
+          <p className="text-kaia-text-muted">Unable to load DeFi information</p>
         </div>
       </div>
     );
@@ -99,33 +99,33 @@ const DeFiCard: React.FC<DeFiCardProps> = ({ className = '' }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className={`card-hover ${className}`}
+      className={`glass-card-hover ${className}`}
     >
-      <div className="p-6">
+      <div className="p-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8">
           <div className="flex items-center">
-            <div className="p-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl mr-3">
-              <SparklesIcon className="h-6 w-6 text-purple-400" />
+            <div className="p-3 bg-gradient-to-r from-kaia-primary/20 to-kaia-primary/10 rounded-kaia-lg mr-4 border border-kaia-primary/30">
+              <SparklesIcon className="h-6 w-6 text-kaia-primary" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">DeFi Strategy</h3>
-              <p className="text-sm text-gray-400">Yield Generation Protocol</p>
+              <h3 className="text-xl font-semibold text-kaia-text-primary">DeFi Strategy</h3>
+              <p className="text-sm text-kaia-text-secondary">Yield Generation Protocol</p>
             </div>
           </div>
           <div className="text-right">
-            <div className="text-2xl font-bold text-green-400">
+            <div className="text-3xl font-bold text-kaia-primary">
               {hematService.formatAPY(defiInfo.apy)}
             </div>
-            <div className="text-xs text-gray-400">Current APY</div>
+            <div className="text-xs text-kaia-text-muted">Current APY</div>
           </div>
         </div>
 
         {/* Metrics Grid */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-6 mb-8">
           <div className="metric-card">
             <div className="flex items-center mb-2">
-              <CurrencyDollarIcon className="h-4 w-4 text-blue-400 mr-2" />
+              <CurrencyDollarIcon className="h-4 w-4 text-kaia-primary mr-2" />
               <span className="metric-label">Strategy Balance</span>
             </div>
             <div className="metric-value">
@@ -135,7 +135,7 @@ const DeFiCard: React.FC<DeFiCardProps> = ({ className = '' }) => {
 
           <div className="metric-card">
             <div className="flex items-center mb-2">
-              <ChartBarIcon className="h-4 w-4 text-green-400 mr-2" />
+              <ChartBarIcon className="h-4 w-4 text-kaia-primary mr-2" />
               <span className="metric-label">Total Value Locked</span>
             </div>
             <div className="metric-value">
@@ -145,7 +145,7 @@ const DeFiCard: React.FC<DeFiCardProps> = ({ className = '' }) => {
 
           <div className="metric-card">
             <div className="flex items-center mb-2">
-              <ArrowTrendingUpIcon className="h-4 w-4 text-emerald-400 mr-2" />
+              <ArrowTrendingUpIcon className="h-4 w-4 text-kaia-primary mr-2" />
               <span className="metric-label">Total Deposited</span>
             </div>
             <div className="metric-value">
@@ -155,7 +155,7 @@ const DeFiCard: React.FC<DeFiCardProps> = ({ className = '' }) => {
 
           <div className="metric-card">
             <div className="flex items-center mb-2">
-              <ClockIcon className="h-4 w-4 text-yellow-400 mr-2" />
+              <ClockIcon className="h-4 w-4 text-kaia-primary mr-2" />
               <span className="metric-label">Total Harvested</span>
             </div>
             <div className="metric-value">
@@ -165,45 +165,45 @@ const DeFiCard: React.FC<DeFiCardProps> = ({ className = '' }) => {
         </div>
 
         {/* Chain Feed */}
-        <div className="mb-6 p-4 bg-gray-800/50 rounded-xl border border-gray-700">
+        <div className="mb-8 p-6 bg-kaia-surface/50 rounded-kaia-lg border border-kaia-border/50">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-400">Kaia Chain TVL (DefiLlama)</p>
-            <p className="text-sm text-white">{feedsLoading ? 'Loading…' : chainTvl ? `$${chainTvl.toLocaleString()}` : 'N/A'}</p>
+            <p className="text-sm text-kaia-text-muted">Kaia Chain TVL (DefiLlama)</p>
+            <p className="text-sm text-kaia-text-primary font-medium">{feedsLoading ? 'Loading…' : chainTvl ? `$${chainTvl.toLocaleString()}` : 'N/A'}</p>
           </div>
         </div>
 
         {/* Top Pools */}
         {feedsLoading ? (
-          <div className="mb-2 text-sm text-gray-500">Loading top pools…</div>
+          <div className="mb-4 text-sm text-kaia-text-muted">Loading top pools…</div>
         ) : topPools.length > 0 ? (
-          <div className="mb-6">
-            <h4 className="text-sm text-gray-400 mb-2">Top Kaia Pools</h4>
-            <div className="space-y-2">
+          <div className="mb-8">
+            <h4 className="text-sm text-kaia-text-muted mb-4">Top Kaia Pools</h4>
+            <div className="space-y-3">
               {topPools.map((p) => (
-                <div key={p.pool} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-xl border border-gray-700">
-                  <div className="text-sm text-white">{p.project} · {p.symbol}</div>
-                  <div className="text-sm text-gray-300">APY: {p.apy.toFixed(2)}% · TVL: ${Math.round(p.tvlUsd).toLocaleString()}</div>
+                <div key={p.pool} className="flex items-center justify-between p-4 bg-kaia-surface/50 rounded-kaia-lg border border-kaia-border/50">
+                  <div className="text-sm text-kaia-text-primary font-medium">{p.project} · {p.symbol}</div>
+                  <div className="text-sm text-kaia-text-secondary">APY: {p.apy.toFixed(2)}% · TVL: ${Math.round(p.tvlUsd).toLocaleString()}</div>
                 </div>
               ))}
             </div>
           </div>
         ) : (
-          <div className="mb-2 text-sm text-gray-500">No Kaia pools available right now.</div>
+          <div className="mb-4 text-sm text-kaia-text-muted">No Kaia pools available right now.</div>
         )}
 
         {/* Last Harvest Info */}
         {parseInt(defiInfo.lastHarvestAt) > 0 && (
-          <div className="mb-6 p-4 bg-gray-800/50 rounded-xl border border-gray-700">
+          <div className="mb-8 p-6 bg-kaia-surface/50 rounded-kaia-lg border border-kaia-border/50">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-400">Last Harvest</p>
-                <p className="text-sm text-white">
+                <p className="text-sm text-kaia-text-muted">Last Harvest</p>
+                <p className="text-sm text-kaia-text-primary font-medium">
                   {new Date(parseInt(defiInfo.lastHarvestAt) * 1000).toLocaleDateString()}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-400">Time</p>
-                <p className="text-sm text-white">
+                <p className="text-sm text-kaia-text-muted">Time</p>
+                <p className="text-sm text-kaia-text-primary font-medium">
                   {new Date(parseInt(defiInfo.lastHarvestAt) * 1000).toLocaleTimeString()}
                 </p>
               </div>
@@ -212,11 +212,11 @@ const DeFiCard: React.FC<DeFiCardProps> = ({ className = '' }) => {
         )}
 
         {/* Actions */}
-        <div className="flex space-x-3">
+        <div className="flex space-x-4">
           <button
             onClick={handleHarvest}
             disabled={isHarvesting}
-            className="btn-success flex-1 flex items-center justify-center"
+            className="btn-kaia-success flex-1 flex items-center justify-center"
           >
             {isHarvesting ? (
               <>
@@ -233,19 +233,19 @@ const DeFiCard: React.FC<DeFiCardProps> = ({ className = '' }) => {
           
           <button
             onClick={loadDeFiInfo}
-            className="btn-secondary flex items-center justify-center px-4"
+            className="btn-kaia-secondary flex items-center justify-center px-6"
           >
             <ArrowTrendingUpIcon className="h-4 w-4" />
           </button>
         </div>
 
         {/* Performance Indicator */}
-        <div className="mt-4 p-3 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20">
+        <div className="mt-6 p-4 bg-gradient-to-r from-kaia-primary/10 to-kaia-primary/5 rounded-kaia-lg border border-kaia-primary/20">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-green-400 font-medium">Performance</span>
+            <span className="text-sm text-kaia-primary font-medium">Performance</span>
             <div className="flex items-center">
-              <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-              <span className="text-sm text-green-400">Active</span>
+              <div className="w-2 h-2 bg-kaia-primary rounded-full mr-2 animate-pulse"></div>
+              <span className="text-sm text-kaia-primary">Active</span>
             </div>
           </div>
         </div>

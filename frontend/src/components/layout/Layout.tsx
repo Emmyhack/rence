@@ -59,7 +59,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	}, [dispatch, isConnected]);
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+		<div className="min-h-screen bg-kaia-background relative">
+			{/* Background gradient effect */}
+			<div className="absolute inset-0 bg-kaia-radial opacity-5 pointer-events-none"></div>
+			
 			{/* Mobile menu */}
 			<AnimatePresence>
 				{mobileMenuOpen && (
@@ -69,18 +72,18 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 						exit={{ opacity: 0, x: -300 }}
 						className="fixed inset-0 z-50 lg:hidden"
 					>
-						<div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />
-						<div className="fixed inset-y-0 left-0 flex w-full max-w-xs flex-col bg-gray-900/95 backdrop-blur-md border-r border-gray-800">
-							<div className="flex h-16 items-center justify-between px-4 border-b border-gray-800">
-								<h2 className="text-lg font-semibold text-white gradient-text">Hemat</h2>
+						<div className="fixed inset-0 bg-black/60 backdrop-blur-kaia" onClick={() => setMobileMenuOpen(false)} />
+						<div className="fixed inset-y-0 left-0 flex w-full max-w-xs flex-col bg-kaia-surface/95 backdrop-blur-kaia border-r border-kaia-border">
+							<div className="flex h-16 items-center justify-between px-6 border-b border-kaia-border">
+								<h2 className="text-xl font-bold text-gradient">Hemat</h2>
 								<button
 									onClick={() => setMobileMenuOpen(false)}
-									className="text-gray-400 hover:text-white transition-colors"
+									className="text-kaia-text-muted hover:text-kaia-text-primary transition-colors p-2 rounded-kaia-md hover:bg-kaia-glass-light"
 								>
 									<XMarkIcon className="h-6 w-6" />
 								</button>
 							</div>
-							<nav className="flex-1 space-y-1 px-2 py-4">
+							<nav className="flex-1 space-y-2 px-4 py-6">
 								{navigation.map((item) => {
 									const isActive = location.pathname === item.href;
 									return (
@@ -90,13 +93,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 											onClick={() => setMobileMenuOpen(false)}
 											className={isActive ? 'nav-link-active' : 'nav-link'}
 										>
-											<item.icon className="mr-3 h-5 w-5" />
+											<item.icon className="mr-4 h-5 w-5" />
 											{item.name}
 										</Link>
 									);
 								})}
 							</nav>
-							<div className="border-t border-gray-800 p-4">
+							<div className="border-t border-kaia-border p-6">
 								<ConnectButton />
 							</div>
 						</div>
@@ -106,11 +109,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 			{/* Desktop sidebar */}
 			<div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-				<div className="flex flex-col flex-grow bg-gray-900/95 backdrop-blur-md border-r border-gray-800">
-					<div className="flex items-center h-16 px-4 border-b border-gray-800">
-						<h1 className="text-xl font-bold text-white gradient-text">Hemat</h1>
+				<div className="flex flex-col flex-grow bg-kaia-surface/95 backdrop-blur-kaia border-r border-kaia-border">
+					<div className="flex items-center h-20 px-6 border-b border-kaia-border">
+						<h1 className="text-2xl font-bold text-gradient">Hemat</h1>
 					</div>
-					<nav className="flex-1 space-y-1 px-2 py-4">
+					<nav className="flex-1 space-y-2 px-4 py-8">
 						{navigation.map((item) => {
 							const isActive = location.pathname === item.href;
 							return (
@@ -119,13 +122,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 									to={item.href}
 									className={isActive ? 'nav-link-active' : 'nav-link'}
 								>
-									<item.icon className="mr-3 h-5 w-5" />
+									<item.icon className="mr-4 h-5 w-5" />
 									{item.name}
 								</Link>
 							);
 						})}
 					</nav>
-					<div className="border-t border-gray-800 p-4">
+					<div className="border-t border-kaia-border p-6">
 						<ConnectButton />
 					</div>
 				</div>
@@ -134,19 +137,19 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 			{/* Main content */}
 			<div className="lg:pl-64">
 				{/* Top navigation */}
-				<div className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-md border-b border-gray-800">
-					<div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+				<div className="sticky top-0 z-40 bg-kaia-surface/95 backdrop-blur-kaia border-b border-kaia-border">
+					<div className="flex h-20 items-center justify-between px-6 sm:px-8 lg:px-10">
 						<div className="flex items-center">
 							<button
 								type="button"
-								className="lg:hidden -m-2.5 p-2.5 text-gray-400 hover:text-white"
+								className="lg:hidden -m-2.5 p-2.5 text-kaia-text-muted hover:text-kaia-text-primary transition-colors rounded-kaia-md hover:bg-kaia-glass-light"
 								onClick={() => setMobileMenuOpen(true)}
 							>
 								<span className="sr-only">Open sidebar</span>
 								<Bars3Icon className="h-6 w-6" />
 							</button>
 							<div className="ml-4 lg:ml-0">
-								<h2 className="text-lg font-semibold text-white">
+								<h2 className="text-xl font-semibold text-kaia-text-primary">
 									{navigation.find(item => item.href === location.pathname)?.name || 'Hemat'}
 								</h2>
 							</div>
@@ -159,7 +162,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 							</div>
 							
 							{/* Settings button */}
-							<button className="p-2 text-gray-400 hover:text-white transition-colors">
+							<button className="p-3 text-kaia-text-muted hover:text-kaia-text-primary transition-colors rounded-kaia-md hover:bg-kaia-glass-light backdrop-blur-kaia">
 								<Cog6ToothIcon className="h-5 w-5" />
 							</button>
 						</div>
@@ -168,8 +171,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 				{/* Page content */}
 				<main className="flex-1">
-					<div className="py-6">
-						<div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+					<div className="py-8">
+						<div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
 							<AnimatePresence mode="wait">
 								<motion.div
 									key={location.pathname}

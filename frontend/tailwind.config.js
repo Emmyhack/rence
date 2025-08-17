@@ -7,113 +7,62 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Kaia.io Design System Colors
+        kaia: {
+          primary: '#BFF009', // Bright lime green accent
+          primaryDark: '#9BC007', // Darker variant
+          primaryLight: '#D4FF1A', // Lighter variant
+          background: '#040404', // Very dark black
+          surface: '#0A0A0A', // Slightly lighter black
+          card: '#1A1A1A', // Card background
+          border: '#3D3D3D', // Border color
+          text: {
+            primary: '#FFFFFF', // White text
+            secondary: '#E0E0E0', // Light gray text
+            muted: '#A0A0A0', // Muted text
+            accent: '#BFF009', // Accent text
+          },
+          glass: {
+            light: '#FFFFFF1A', // Light glass effect
+            medium: '#FFFFFF4D', // Medium glass effect
+            dark: '#FFFFFF0D', // Dark glass effect
+          }
+        },
+        // Extended grays for better contrast
         gray: {
-          750: '#2d3748',
-        },
-        blue: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-        },
-        purple: {
-          50: '#faf5ff',
-          100: '#f3e8ff',
-          200: '#e9d5ff',
-          300: '#d8b4fe',
-          400: '#c084fc',
-          500: '#a855f7',
-          600: '#9333ea',
-          700: '#7c3aed',
-          800: '#6b21a8',
-          900: '#581c87',
-        },
-        green: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
-        },
-        emerald: {
-          50: '#ecfdf5',
-          100: '#d1fae5',
-          200: '#a7f3d0',
-          300: '#6ee7b7',
-          400: '#34d399',
-          500: '#10b981',
-          600: '#059669',
-          700: '#047857',
-          800: '#065f46',
-          900: '#064e3b',
-        },
-        red: {
-          50: '#fef2f2',
-          100: '#fee2e2',
-          200: '#fecaca',
-          300: '#fca5a5',
-          400: '#f87171',
-          500: '#ef4444',
-          600: '#dc2626',
-          700: '#b91c1c',
-          800: '#991b1b',
-          900: '#7f1d1d',
-        },
-        pink: {
-          50: '#fdf2f8',
-          100: '#fce7f3',
-          200: '#fbcfe8',
-          300: '#f9a8d4',
-          400: '#f472b6',
-          500: '#ec4899',
-          600: '#db2777',
-          700: '#be185d',
-          800: '#9d174d',
-          900: '#831843',
-        },
-        yellow: {
-          50: '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#f59e0b',
-          600: '#d97706',
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
-        },
-        orange: {
-          50: '#fff7ed',
-          100: '#ffedd5',
-          200: '#fed7aa',
-          300: '#fdba74',
-          400: '#fb923c',
-          500: '#f97316',
-          600: '#ea580c',
-          700: '#c2410c',
-          800: '#9a3412',
-          900: '#7c2d12',
-        },
+          50: '#FAFAFA',
+          100: '#F5F5F5',
+          200: '#E5E5E5',
+          300: '#D4D4D4',
+          400: '#A3A3A3',
+          500: '#737373',
+          600: '#525252',
+          700: '#404040',
+          800: '#262626',
+          900: '#171717',
+          950: '#0A0A0A',
+        }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'Manrope', 'Red Hat Display', 'system-ui', 'sans-serif'],
+        mono: ['IBM Plex Mono', 'monospace'],
+        display: ['Red Hat Display', 'system-ui', 'sans-serif'],
+      },
+      borderRadius: {
+        'kaia': '48px',
+        'kaia-lg': '40px',
+        'kaia-md': '32px',
+        'kaia-sm': '24px',
+      },
+      backdropBlur: {
+        'kaia': '32px',
+        'kaia-lg': '36px',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',
         'slide-in': 'slideIn 0.5s ease-out',
         'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+        'float': 'float 6s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -125,18 +74,23 @@ export default {
           '100%': { opacity: '1', transform: 'translateX(0)' },
         },
         'pulse-glow': {
-          '0%, 100%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.3)' },
-          '50%': { boxShadow: '0 0 30px rgba(59, 130, 246, 0.6)' },
+          '0%, 100%': { boxShadow: '0 0 20px rgba(191, 240, 9, 0.3)' },
+          '50%': { boxShadow: '0 0 30px rgba(191, 240, 9, 0.6)' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-20px)' },
         },
       },
-      backdropBlur: {
-        xs: '2px',
-      },
       boxShadow: {
-        'glow': '0 0 20px rgba(59, 130, 246, 0.3)',
-        'glow-purple': '0 0 20px rgba(147, 51, 234, 0.3)',
-        'glow-green': '0 0 20px rgba(34, 197, 94, 0.3)',
-        'glow-red': '0 0 20px rgba(239, 68, 68, 0.3)',
+        'kaia': '0 0 20px rgba(191, 240, 9, 0.3)',
+        'kaia-lg': '0 0 30px rgba(191, 240, 9, 0.5)',
+        'kaia-xl': '0 0 40px rgba(191, 240, 9, 0.7)',
+        'glass': '0 8px 32px rgba(0, 0, 0, 0.3)',
+      },
+      backgroundImage: {
+        'kaia-gradient': 'linear-gradient(135deg, #BFF009 0%, #9BC007 100%)',
+        'kaia-radial': 'radial-gradient(circle, #BFF009 0%, transparent 70%)',
       },
     },
   },

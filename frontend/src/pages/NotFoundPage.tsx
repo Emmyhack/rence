@@ -3,18 +3,22 @@ import { Link } from 'react-router-dom'
 
 const NotFoundPage: React.FC = () => {
   return (
-    <div className="container mx-auto px-4 py-8 text-center">
-      <h1 className="text-6xl font-bold text-gray-400 mb-4">404</h1>
-      <h2 className="text-2xl font-semibold text-gray-700 mb-4">Page Not Found</h2>
-      <p className="text-gray-600 mb-8">
-        The page you're looking for doesn't exist.
-      </p>
-      <Link 
-        to="/" 
-        className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
-      >
-        Go Home
-      </Link>
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="container-kaia text-center">
+        <div className="glass-card p-16">
+          <h1 className="text-8xl font-bold text-kaia-primary mb-6">404</h1>
+          <h2 className="text-3xl font-semibold text-kaia-text-primary mb-6">Page Not Found</h2>
+          <p className="text-kaia-text-secondary text-lg mb-12">
+            The page you're looking for doesn't exist.
+          </p>
+          <Link 
+            to="/" 
+            className="btn-kaia-primary text-lg px-8 py-4"
+          >
+            Go Home
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }

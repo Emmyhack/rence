@@ -18,20 +18,20 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 }) => {
   const IconEl = typeof icon === 'function' ? (React.createElement(icon as React.ComponentType<any>, { className: 'w-6 h-6' })) : icon;
   return (
-    <div className="glass-card p-6 hover:shadow-2xl transition-transform duration-300 hover:-translate-y-1">
+    <div className="glass-card-hover p-8 transition-all duration-300">
       {icon && (
-        <div className="flex items-center justify-center w-12 h-12 rounded-lg mb-4 bg-gradient-to-br from-blue-600/20 to-purple-600/20">
-          <div className="text-blue-400">{IconEl}</div>
+        <div className="flex items-center justify-center w-16 h-16 rounded-kaia-md mb-6 bg-kaia-primary/20 border border-kaia-primary/30">
+          <div className="text-kaia-primary">{IconEl}</div>
         </div>
       )}
       
-      <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
-      <p className="text-gray-300 mb-4">{description}</p>
+      <h3 className="text-xl font-bold text-kaia-text-primary mb-3">{title}</h3>
+      <p className="text-kaia-text-secondary mb-6 leading-relaxed">{description}</p>
       
       {action && (
         <button
           onClick={action.onClick}
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+          className="btn-outline text-sm"
         >
           {action.label}
         </button>

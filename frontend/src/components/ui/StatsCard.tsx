@@ -16,24 +16,24 @@ const StatsCard: React.FC<StatsCardProps> = ({
   changeType = 'neutral' 
 }) => {
   const changeColorClass = {
-    positive: 'text-green-400',
+    positive: 'text-kaia-primary',
     negative: 'text-red-400',
-    neutral: 'text-gray-400'
+    neutral: 'text-kaia-text-muted'
   }
 
-  const IconEl = typeof icon === 'function' ? (React.createElement(icon as React.ComponentType<any>, { className: 'w-5 h-5' })) : icon;
+  const IconEl = typeof icon === 'function' ? (React.createElement(icon as React.ComponentType<any>, { className: 'w-6 h-6' })) : icon;
 
   return (
-    <div className="glass-card p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-medium text-gray-400">{title}</h3>
-        {icon && <div className="text-gray-500">{IconEl}</div>}
+    <div className="metric-card">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-sm font-semibold text-kaia-text-muted uppercase tracking-wide">{title}</h3>
+        {icon && <div className="text-kaia-primary">{IconEl}</div>}
       </div>
       
       <div className="flex items-baseline justify-between">
-        <p className="text-2xl font-semibold text-white">{value}</p>
+        <p className="metric-value">{value}</p>
         {change && (
-          <p className={`text-sm ${changeColorClass[changeType]}`}>
+          <p className={`text-sm font-semibold ${changeColorClass[changeType]}`}>
             {change}
           </p>
         )}
