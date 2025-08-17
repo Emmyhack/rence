@@ -23,6 +23,17 @@ export const HEMAT_FACTORY_ABI = [
   "function treasuryAddress() external view returns (address)",
   "function PLATFORM_FEE_BPS() external view returns (uint256)",
   
+  // Admin functions
+  "function setMaxGroupsPerCreator(uint256 maxGroups) external",
+  "function setMinContributionAmount(uint256 minAmount) external",
+  "function setMaxContributionAmount(uint256 maxAmount) external",
+  "function setMinGroupSize(uint256 minSize) external",
+  "function setMaxGroupSize(uint256 maxSize) external",
+  "function setGroupCreationFee(uint256 fee) external",
+  "function setTreasuryAddress(address newTreasury) external",
+  "function pause() external",
+  "function unpause() external",
+  
   // Events
   "event GroupCreated(uint256 indexed groupId, address indexed creator, address indexed groupAddress, uint8 model, uint256 contributionAmount, uint256 cycleInterval, uint256 groupSize)",
   "event GroupStatusChanged(uint256 indexed groupId, address indexed groupAddress, uint8 newStatus)",
@@ -45,6 +56,10 @@ export const HEMAT_GROUP_ABI = [
   "function nextPayoutTime() external view returns (uint256)",
   "function currentPayoutIndex() external view returns (uint256)",
   "function maturityTime() external view returns (uint256)",
+  "function gracePeriod() external view returns (uint256)",
+  "function insuranceBps() external view returns (uint256)",
+  "function platformFeeBps() external view returns (uint256)",
+  "function earlyWithdrawalPenaltyBps() external view returns (uint256)",
   
   // Member management
   "function members(uint256 index) external view returns (address)",
@@ -56,6 +71,8 @@ export const HEMAT_GROUP_ABI = [
   "function hasWithdrawn(address member) external view returns (bool)",
   "function emergencyClaims(address member) external view returns (uint256)",
   "function claimCapPerMember(address member) external view returns (uint256)",
+  "function getMemberCount() external view returns (uint256)",
+  "function getActiveMemberCount() external view returns (uint256)",
   
   // Actions
   "function joinGroup() external",
@@ -66,12 +83,17 @@ export const HEMAT_GROUP_ABI = [
   "function submitEmergencyClaim(uint256 amount, string evidenceCID) external",
   "function completeCycle() external",
   "function enforceDefault(address member) external",
+  "function emergencyWithdraw() external",
   
   // Admin functions
   "function pauseGroup() external",
   "function resumeGroup() external",
   "function cancelGroup() external",
   "function updateGroupConfig(uint256 newContributionAmount, uint256 newCycleInterval, uint256 newGracePeriod) external",
+  "function addMember(address member) external",
+  "function removeMember(address member) external",
+  "function setInsuranceEnabled(bool enabled) external",
+  "function setInsuranceBps(uint256 newBps) external",
   
   // Events
   "event MemberJoined(address indexed member, uint256 stakeAmount)",
@@ -80,7 +102,11 @@ export const HEMAT_GROUP_ABI = [
   "event PayoutClaimed(address indexed member, uint256 amount)",
   "event CycleCompleted(uint256 cycleNumber)",
   "event DefaultEnforced(address indexed member, uint256 penaltyAmount)",
-  "event YieldDistributed(uint256 amount)"
+  "event YieldDistributed(uint256 amount)",
+  "event EmergencyClaimSubmitted(address indexed member, uint256 amount, string evidenceCID)",
+  "event GroupPaused(address indexed by)",
+  "event GroupResumed(address indexed by)",
+  "event GroupCancelled(address indexed by)"
 ];
 
 export const ESCROW_VAULT_ABI = [
@@ -90,79 +116,139 @@ export const ESCROW_VAULT_ABI = [
   "function totalDeposits() external view returns (uint256)",
   "function totalYield() external view returns (uint256)",
   "function lastHarvestAt() external view returns (uint256)",
+  "function defiAdapter() external view returns (address)",
   
   // Group deposits
   "function getGroupDeposits(uint256 groupId) external view returns (uint256)",
   "function getGroupYield(uint256 groupId) external view returns (uint256)",
+  "function getGroupTotalValue(uint256 groupId) external view returns (uint256)",
   
   // Actions
   "function deposit(uint256 groupId, uint256 amount) external",
   "function withdraw(uint256 groupId, uint256 amount) external",
   "function harvestYield(uint256 groupId) external",
   "function distributeYield(uint256 groupId, address[] memory recipients, uint256[] memory amounts) external",
+  "function reinvestYield(uint256 groupId) external",
   
   // Admin functions
   "function setTreasuryAddress(address newTreasury) external",
   "function setDeFiAdapter(address newAdapter) external",
   "function emergencyWithdraw(address token, uint256 amount) external",
+  "function pause() external",
+  "function unpause() external",
   
   // Events
   "event Deposit(uint256 indexed groupId, address indexed member, uint256 amount)",
   "event Withdrawal(uint256 indexed groupId, address indexed member, uint256 amount)",
   "event YieldHarvested(uint256 indexed groupId, uint256 amount)",
-  "event YieldDistributed(uint256 indexed groupId, address indexed recipient, uint256 amount)"
+  "event YieldDistributed(uint256 indexed groupId, address indexed recipient, uint256 amount)",
+  "event YieldReinvested(uint256 indexed groupId, uint256 amount)",
+  "event DeFiAdapterChanged(address indexed oldAdapter, address indexed newAdapter)"
 ];
 
 export const STAKE_MANAGER_ABI = [
   // Stake information
-  "function getMemberStake(address member) external view returns (uint256)",
-  "function getTrustScore(address member) external view returns (uint256)",
-  "function getTotalStakes() external view returns (uint256)",
-  "function getStakeHistory(address member) external view returns (uint256[] memory)",
+  "function getMemberStake(uint256 groupId, address member) external view returns (uint256)",
+  "function getTrustScore(uint256 groupId, address member) external view returns (uint256)",
+  "function getTotalStakes(uint256 groupId) external view returns (uint256)",
+  "function getStakeHistory(uint256 groupId, address member) external view returns (uint256[] memory)",
+  "function getMemberDefaultCount(uint256 groupId, address member) external view returns (uint256)",
+  "function getMemberPaymentHistory(uint256 groupId, address member) external view returns (uint256)",
+  "function isMemberBlacklisted(uint256 groupId, address member) external view returns (bool)",
   
   // Actions
-  "function stake(uint256 amount) external",
-  "function unstake(uint256 amount) external",
-  "function slashStake(address member, uint256 amount) external",
-  "function rewardStake(address member, uint256 amount) external",
-  "function updateTrustScore(address member, uint256 newScore) external",
+  "function depositStake(uint256 groupId, uint256 amount) external",
+  "function withdrawStake(uint256 groupId, uint256 amount) external",
+  "function slashStake(uint256 groupId, address member, uint256 amount) external",
+  "function rewardStake(uint256 groupId, address member, uint256 amount) external",
+  "function updateTrustScore(uint256 groupId, address member, uint256 newScore) external",
+  "function blacklistMember(uint256 groupId, address member) external",
+  "function whitelistMember(uint256 groupId, address member) external",
+  
+  // Admin functions
+  "function setStakePenaltyBps(uint256 newBps) external",
+  "function pause() external",
+  "function unpause() external",
   
   // Events
-  "event StakeDeposited(address indexed member, uint256 amount)",
-  "event StakeWithdrawn(address indexed member, uint256 amount)",
-  "event StakeSlashed(address indexed member, uint256 amount)",
-  "event TrustScoreUpdated(address indexed member, uint256 newScore)"
+  "event StakeDeposited(uint256 indexed groupId, address indexed member, uint256 amount)",
+  "event StakeWithdrawn(uint256 indexed groupId, address indexed member, uint256 amount)",
+  "event StakeSlashed(uint256 indexed groupId, address indexed member, uint256 amount)",
+  "event TrustScoreUpdated(uint256 indexed groupId, address indexed member, uint256 oldScore, uint256 newScore)",
+  "event MemberBlacklisted(uint256 indexed groupId, address indexed member)",
+  "event MemberWhitelisted(uint256 indexed groupId, address indexed member)"
 ];
 
 export const INSURANCE_POOL_ABI = [
   // Pool information
   "function totalPremiums() external view returns (uint256)",
-  "function totalClaims() external view returns (uint256)",
+  "function totalClaimsPaid() external view returns (uint256)",
+  "function totalClaimsDenied() external view returns (uint256)",
   "function reserveRatio() external view returns (uint256)",
   "function minReserveRatio() external view returns (uint256)",
   "function maxReserveRatio() external view returns (uint256)",
+  "function usdt() external view returns (address)",
   
   // Claims
-  "function getClaim(uint256 claimId) external view returns (address claimant, uint256 amount, uint256 groupId, string memory evidenceCID, uint8 status, uint256 submittedAt, uint256 processedAt)",
-  "function getClaimsByMember(address member) external view returns (uint256[] memory)",
-  "function getClaimsByGroup(uint256 groupId) external view returns (uint256[] memory)",
+  "function getClaim(bytes32 claimId) external view returns (address claimant, uint256 amount, uint256 groupId, string memory evidenceCID, uint8 status, uint256 submittedAt, uint256 processedAt)",
+  "function getClaimsByMember(address member) external view returns (bytes32[] memory)",
+  "function getClaimsByGroup(uint256 groupId) external view returns (bytes32[] memory)",
+  "function getMemberClaims(address member) external view returns (uint256)",
+  "function getGroupPremiums(uint256 groupId) external view returns (uint256)",
   
   // Actions
-  "function submitClaim(uint256 groupId, uint256 amount, string memory evidenceCID) external returns (uint256)",
-  "function approveClaim(uint256 claimId) external",
-  "function rejectClaim(uint256 claimId, string memory reason) external",
-  "function payClaim(uint256 claimId) external",
+  "function collectPremium(address group, address member, uint256 contributionAmount) external",
+  "function submitClaim(uint256 groupId, uint256 amount, string memory evidenceCID) external returns (bytes32)",
+  "function approveClaim(bytes32 claimId) external",
+  "function rejectClaim(bytes32 claimId, string memory reason) external",
+  "function payClaim(bytes32 claimId) external",
+  "function emergencyPayout(address member, uint256 amount) external",
   
   // Admin functions
   "function setReserveRatio(uint256 newRatio) external",
   "function setMinReserveRatio(uint256 newRatio) external",
   "function setMaxReserveRatio(uint256 newRatio) external",
+  "function addApprover(address approver) external",
+  "function removeApprover(address approver) external",
+  "function pause() external",
+  "function unpause() external",
   
   // Events
-  "event ClaimSubmitted(uint256 indexed claimId, address indexed claimant, uint256 amount, uint256 groupId)",
-  "event ClaimApproved(uint256 indexed claimId, uint256 payoutAmount)",
-  "event ClaimRejected(uint256 indexed claimId, string reason)",
-  "event ClaimPaid(uint256 indexed claimId, address indexed claimant, uint256 amount)"
+  "event PremiumCollected(address indexed group, address indexed member, uint256 amount)",
+  "event ClaimSubmitted(bytes32 indexed claimId, address indexed claimant, uint256 amount, uint256 groupId)",
+  "event ClaimApproved(bytes32 indexed claimId, uint256 payoutAmount)",
+  "event ClaimRejected(bytes32 indexed claimId, string reason)",
+  "event ClaimPaid(bytes32 indexed claimId, address indexed claimant, uint256 amount)",
+  "event EmergencyPayout(address indexed member, uint256 amount)"
+];
+
+export const DEFI_ADAPTER_ABI = [
+  // Strategy information
+  "function strategyBalance() external view returns (uint256)",
+  "function getAPY() external view returns (uint256)",
+  "function getTVL() external view returns (uint256)",
+  "function totalDeposited() external view returns (uint256)",
+  "function totalHarvested() external view returns (uint256)",
+  "function lastHarvestAt() external view returns (uint256)",
+  
+  // Actions
+  "function deposit(uint256 amount) external",
+  "function withdraw(uint256 amount) external",
+  "function harvest() external returns (uint256)",
+  "function emergencyWithdraw() external",
+  
+  // Admin functions
+  "function setStrategy(address newStrategy) external",
+  "function setAPY(uint256 newAPY) external",
+  "function pause() external",
+  "function unpause() external",
+  
+  // Events
+  "event Deposit(uint256 amount)",
+  "event Withdrawal(uint256 amount)",
+  "event Harvest(uint256 amount)",
+  "event EmergencyWithdraw(uint256 amount)",
+  "event StrategyChanged(address indexed oldStrategy, address indexed newStrategy)"
 ];
 
 export const USDT_ABI = [
@@ -218,6 +304,6 @@ export const getContractInstances = (signerOrProvider?: ethers.Signer | ethers.p
     stakeManager: getContractInstance(CONTRACT_ADDRESSES.STAKE_MANAGER, STAKE_MANAGER_ABI, signerOrProvider),
     insurancePool: getContractInstance(CONTRACT_ADDRESSES.INSURANCE_POOL, INSURANCE_POOL_ABI, signerOrProvider),
     hematFactory: getContractInstance(CONTRACT_ADDRESSES.HEMAT_FACTORY, HEMAT_FACTORY_ABI, signerOrProvider),
-    mockDeFiAdapter: getContractInstance(CONTRACT_ADDRESSES.MOCK_DEFI_ADAPTER, [], signerOrProvider)
+    mockDeFiAdapter: getContractInstance(CONTRACT_ADDRESSES.MOCK_DEFI_ADAPTER, DEFI_ADAPTER_ABI, signerOrProvider)
   };
 };

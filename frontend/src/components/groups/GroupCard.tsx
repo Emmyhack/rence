@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   UsersIcon,
@@ -6,46 +6,73 @@ import {
   ClockIcon,
   ShieldCheckIcon,
   ExclamationTriangleIcon,
+  CheckCircleIcon,
+  PauseIcon,
+  PlayIcon,
+  XMarkIcon,
+  ArrowRightIcon,
+  ChartBarIcon,
+  StarIcon,
 } from '@heroicons/react/24/outline';
-
-import { GroupInfo } from '@services/web3/hematService';
+import { hematService, GroupInfo } from '@services/web3/hematService';
 
 interface GroupCardProps {
   group: GroupInfo;
-  onClick: () => void;
-  isCreator: boolean;
+  onGroupClick: (group: GroupInfo) => void;
+  onAction?: (action: string, group: GroupInfo) => void;
+  className?: string;
 }
 
-const GroupCard: React.FC<GroupCardProps> = ({ group, onClick, isCreator }) => {
-  const getThriftModelName = (model: number) => {
-    const models = ['Rotational Savings', 'Fixed Savings Pool', 'Emergency Liquidity'];
-    return models[model] || 'Unknown';
-  };
+const GroupCard: React.FC<GroupCardProps> = ({ 
+  group, 
+  onGroupClick, 
+  onAction,
+  className = '' 
+}) => {
+  const [isLoading, setIsLoading] = useState(false);
 
-  const getGroupStatusColor = (status: number) => {
+  const getStatusColor = (status: number) => {
     const colors = {
-      0: 'bg-blue-100 text-blue-800', // Created
-      1: 'bg-green-100 text-green-800', // Active
-      2: 'bg-gray-100 text-gray-800', // Completed
-      3: 'bg-yellow-100 text-yellow-800', // Paused
-      4: 'bg-red-100 text-red-800', // Cancelled
+      0: 'status-created',
+      1: 'status-active',
+      2: 'status-completed',
+      3: 'status-paused',
+      4: 'status-cancelled',
     };
-    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return colors[status as keyof typeof colors] || 'status-created';
   };
 
-  const getGroupStatusName = (status: number) => {
-    const statuses = ['Created', 'Active', 'Completed', 'Paused', 'Cancelled'];
-    return statuses[status] || 'Unknown';
+  const getStatusIcon = (status: number) => {
+    switch (status) {
+      case 0: return <ClockIcon className="h-4 w-4" />;
+      case 1: return <CheckCircleIcon className="h-4 w-4" />;
+      case 2: return <CheckCircleIcon className="h-4 w-4" />;
+      case 3: return <PauseIcon className="h-4 w-4" />;
+      case 4: return <XMarkIcon className="h-4 w-4" />;
+      default: return <ClockIcon className="h-4 w-4" />;
+    }
   };
 
   const getModelIcon = (model: number) => {
-    const icons = [UsersIcon, ClockIcon, ShieldCheckIcon];
-    return icons[model] || UsersIcon;
+    switch (model) {
+      case 0: return <UsersIcon className="h-4 w-4" />;
+      case 1: return <CurrencyDollarIcon className="h-4 w-4" />;
+      case 2: return <ShieldCheckIcon className="h-4 w-4" />;
+      default: return <ChartBarIcon className="h-4 w-4" />;
+    }
   };
 
-  const getModelColor = (model: number) => {
-    const colors = ['text-blue-600', 'text-green-600', 'text-purple-600'];
-    return colors[model] || 'text-gray-600';
+  const handleAction = async (action: string) => {
+    if (!onAction) return;
+    
+    setIsLoading(true);
+    try {
+      await onAction(action, group);
+    } catch (error) {
+      console.error(`Error performing ${action}:`, error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const formatTime = (seconds: string) => {
@@ -56,136 +83,213 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, onClick, isCreator }) => {
     return `${secs / 2592000} months`;
   };
 
-  const formatAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  const formatCycleInterval = (seconds: string) => {
+    const secs = parseInt(seconds);
+    if (secs < 86400) return `${secs / 3600} hours`;
+    if (secs < 2592000) return `${secs / 86400} days`;
+    return `${secs / 2592000} months`;
   };
-
-  const ModelIcon = getModelIcon(group.model);
-  const modelColor = getModelColor(group.model);
 
   return (
     <motion.div
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      className="bg-white rounded-lg shadow-md border border-gray-200 cursor-pointer hover:shadow-lg transition-all duration-200 overflow-hidden"
-      onClick={onClick}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={`card-hover ${className}`}
     >
-      {/* Header */}
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center">
-            <ModelIcon className={`h-5 w-5 ${modelColor} mr-2`} />
-            <span className="text-sm font-medium text-gray-500">
-              {getThriftModelName(group.model)}
-            </span>
+      <div className="p-6">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1">
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="p-1.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg">
+                {getModelIcon(group.model)}
+              </div>
+              <span className="model-badge">
+                {hematService.getThriftModelName(group.model)}
+              </span>
+              <span className={`status-badge ${getStatusColor(group.status)}`}>
+                {getStatusIcon(group.status)}
+                <span className="ml-1">{hematService.getGroupStatusName(group.status)}</span>
+              </span>
+            </div>
+            <h3 className="text-lg font-semibold text-white mb-1">
+              Group #{group.id || 'N/A'}
+            </h3>
+            <p className="text-sm text-gray-400">
+              Created by {hematService.formatAddress(group.creator)}
+            </p>
           </div>
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getGroupStatusColor(group.status)}`}>
-            {getGroupStatusName(group.status)}
-          </span>
+          
+          <div className="text-right">
+            <div className="amount-display">
+              ${hematService.formatUSDT(group.contributionAmount)}
+            </div>
+            <div className="text-xs text-gray-400">per contribution</div>
+          </div>
         </div>
-        
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">
-            Group #{group.id}
-          </h3>
-          {isCreator && (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-              Creator
-            </span>
+
+        {/* Key Metrics */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="metric-card">
+            <div className="flex items-center mb-1">
+              <UsersIcon className="h-4 w-4 text-blue-400 mr-2" />
+              <span className="metric-label">Members</span>
+            </div>
+            <div className="metric-value">
+              {group.activeMemberCount}/{group.groupSize}
+            </div>
+          </div>
+
+          <div className="metric-card">
+            <div className="flex items-center mb-1">
+              <ClockIcon className="h-4 w-4 text-yellow-400 mr-2" />
+              <span className="metric-label">Cycle Interval</span>
+            </div>
+            <div className="metric-value text-sm">
+              {formatCycleInterval(group.cycleInterval)}
+            </div>
+          </div>
+
+          <div className="metric-card">
+            <div className="flex items-center mb-1">
+              <CurrencyDollarIcon className="h-4 w-4 text-green-400 mr-2" />
+              <span className="metric-label">Stake Required</span>
+            </div>
+            <div className="metric-value">
+              ${hematService.formatUSDT(group.stakeRequired)}
+            </div>
+          </div>
+
+          <div className="metric-card">
+            <div className="flex items-center mb-1">
+              <ShieldCheckIcon className="h-4 w-4 text-purple-400 mr-2" />
+              <span className="metric-label">Insurance</span>
+            </div>
+            <div className="metric-value">
+              {group.insuranceEnabled ? 'Enabled' : 'Disabled'}
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Info */}
+        <div className="space-y-3 mb-6">
+          {group.lockDuration && parseInt(group.lockDuration) > 0 && (
+            <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-xl">
+              <span className="text-sm text-gray-400">Lock Duration</span>
+              <span className="text-sm text-white font-medium">
+                {formatTime(group.lockDuration)}
+              </span>
+            </div>
+          )}
+
+          {group.insuranceEnabled && (
+            <div className="flex items-center justify-between p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
+              <span className="text-sm text-purple-400">Insurance Premium</span>
+              <span className="text-sm text-purple-400 font-medium">
+                {parseInt(group.insuranceBps) / 100}%
+              </span>
+            </div>
+          )}
+
+          {parseInt(group.currentCycle) > 0 && (
+            <div className="flex items-center justify-between p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
+              <span className="text-sm text-blue-400">Current Cycle</span>
+              <span className="text-sm text-blue-400 font-medium">
+                {group.currentCycle}
+              </span>
+            </div>
           )}
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="p-4 space-y-3">
-        {/* Basic Info */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex items-center text-sm">
-            <CurrencyDollarIcon className="h-4 w-4 text-gray-400 mr-2" />
-            <span className="text-gray-600">Contribution:</span>
-            <span className="ml-1 font-medium text-gray-900">
-              {parseFloat(group.contributionAmount).toFixed(2)} USDT
-            </span>
-          </div>
-          
-          <div className="flex items-center text-sm">
-            <UsersIcon className="h-4 w-4 text-gray-400 mr-2" />
-            <span className="text-gray-600">Members:</span>
-            <span className="ml-1 font-medium text-gray-900">
-              {group.members.length}/{group.groupSize}
-            </span>
-          </div>
+        {/* Actions */}
+        <div className="flex space-x-3">
+          <button
+            onClick={() => onGroupClick(group)}
+            className="btn-primary flex-1 flex items-center justify-center"
+          >
+            <ArrowRightIcon className="h-4 w-4 mr-2" />
+            View Details
+          </button>
+
+          {group.status === 1 && onAction && (
+            <button
+              onClick={() => handleAction('contribute')}
+              disabled={isLoading}
+              className="btn-success flex items-center justify-center px-4"
+            >
+              {isLoading ? (
+                <div className="loading-spinner w-4 h-4"></div>
+              ) : (
+                <CurrencyDollarIcon className="h-4 w-4" />
+              )}
+            </button>
+          )}
+
+          {group.status === 3 && onAction && (
+            <button
+              onClick={() => handleAction('resume')}
+              disabled={isLoading}
+              className="btn-warning flex items-center justify-center px-4"
+            >
+              {isLoading ? (
+                <div className="loading-spinner w-4 h-4"></div>
+              ) : (
+                <PlayIcon className="h-4 w-4" />
+              )}
+            </button>
+          )}
+
+          {group.status === 1 && onAction && (
+            <button
+              onClick={() => handleAction('pause')}
+              disabled={isLoading}
+              className="btn-secondary flex items-center justify-center px-4"
+            >
+              {isLoading ? (
+                <div className="loading-spinner w-4 h-4"></div>
+              ) : (
+                <PauseIcon className="h-4 w-4" />
+              )}
+            </button>
+          )}
         </div>
 
-        {/* Cycle Info */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex items-center text-sm">
-            <ClockIcon className="h-4 w-4 text-gray-400 mr-2" />
-            <span className="text-gray-600">Cycle:</span>
-            <span className="ml-1 font-medium text-gray-900">
-              {group.currentCycle}
-            </span>
-          </div>
-          
-          <div className="flex items-center text-sm">
-            <ClockIcon className="h-4 w-4 text-gray-400 mr-2" />
-            <span className="text-gray-600">Interval:</span>
-            <span className="ml-1 font-medium text-gray-900">
-              {formatTime(group.cycleInterval)}
-            </span>
-          </div>
-        </div>
-
-        {/* Advanced Info */}
-        {group.lockDuration !== '0' && (
-          <div className="flex items-center text-sm">
-            <ClockIcon className="h-4 w-4 text-gray-400 mr-2" />
-            <span className="text-gray-600">Lock Duration:</span>
-            <span className="ml-1 font-medium text-gray-900">
-              {formatTime(group.lockDuration)}
-            </span>
+        {/* Progress Indicator */}
+        {group.status === 1 && (
+          <div className="mt-4">
+            <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
+              <span>Progress</span>
+              <span>{group.activeMemberCount}/{group.groupSize} members</span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2">
+              <div
+                className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                style={{
+                  width: `${(parseInt(group.activeMemberCount) / parseInt(group.groupSize)) * 100}%`
+                }}
+              ></div>
+            </div>
           </div>
         )}
 
-        {group.stakeRequired !== '0' && (
-          <div className="flex items-center text-sm">
-            <ShieldCheckIcon className="h-4 w-4 text-gray-400 mr-2" />
-            <span className="text-gray-600">Required Stake:</span>
-            <span className="ml-1 font-medium text-gray-900">
-              {parseFloat(group.stakeRequired).toFixed(2)} USDT
-            </span>
+        {/* Trust Score Indicator */}
+        <div className="mt-4 flex items-center justify-between p-3 bg-gray-800/50 rounded-xl">
+          <div className="flex items-center">
+            <StarIcon className="h-4 w-4 text-yellow-400 mr-2" />
+            <span className="text-sm text-gray-400">Group Health</span>
           </div>
-        )}
-
-        {/* Insurance Status */}
-        <div className="flex items-center text-sm">
-          <ShieldCheckIcon className={`h-4 w-4 mr-2 ${group.insuranceEnabled ? 'text-green-500' : 'text-gray-400'}`} />
-          <span className="text-gray-600">Insurance:</span>
-          <span className={`ml-1 font-medium ${group.insuranceEnabled ? 'text-green-600' : 'text-gray-500'}`}>
-            {group.insuranceEnabled ? 'Enabled' : 'Disabled'}
-          </span>
-        </div>
-
-        {/* Creator Info */}
-        <div className="pt-2 border-t border-gray-100">
-          <div className="flex items-center justify-between text-xs text-gray-500">
-            <span>Creator: {formatAddress(group.creator)}</span>
-            <span>Next Payout: {group.nextPayoutTime !== '0' ? formatTime(group.nextPayoutTime) : 'N/A'}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Action Bar */}
-      <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600">
-            Click to view details
-          </span>
-          <div className="flex items-center text-sm text-indigo-600">
-            <span>View Group</span>
-            <svg className="ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+          <div className="flex items-center space-x-1">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <StarIcon
+                key={star}
+                className={`h-3 w-3 ${
+                  star <= Math.min(5, Math.max(1, parseInt(group.activeMemberCount)))
+                    ? 'text-yellow-400 fill-current'
+                    : 'text-gray-600'
+                }`}
+              />
+            ))}
           </div>
         </div>
       </div>

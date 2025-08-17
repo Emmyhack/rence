@@ -7,6 +7,7 @@ import {
   ESCROW_VAULT_ABI,
   STAKE_MANAGER_ABI,
   INSURANCE_POOL_ABI,
+  DEFI_ADAPTER_ABI,
   USDT_ABI,
   getContractInstances
 } from './contracts';
@@ -43,6 +44,12 @@ export interface GroupInfo {
   nextPayoutTime: string;
   currentPayoutIndex: string;
   maturityTime: string;
+  gracePeriod: string;
+  insuranceBps: string;
+  platformFeeBps: string;
+  earlyWithdrawalPenaltyBps: string;
+  memberCount: string;
+  activeMemberCount: string;
   members: string[];
 }
 
@@ -58,10 +65,13 @@ export interface MemberInfo {
   hasReceivedPayout: boolean;
   memberDeposits: string;
   hasWithdrawn: boolean;
+  defaultCount: string;
+  paymentHistory: string;
+  isBlacklisted: boolean;
 }
 
 export interface InsuranceClaim {
-  id: number;
+  id: string;
   claimant: string;
   amount: string;
   groupId: number;
@@ -76,6 +86,27 @@ export interface StakeInfo {
   trustScore: string;
   totalStakes: string;
   stakeHistory: string[];
+  defaultCount: string;
+  paymentHistory: string;
+  isBlacklisted: boolean;
+}
+
+export interface DeFiInfo {
+  strategyBalance: string;
+  apy: string;
+  tvl: string;
+  totalDeposited: string;
+  totalHarvested: string;
+  lastHarvestAt: string;
+}
+
+export interface YieldInfo {
+  groupDeposits: string;
+  groupYield: string;
+  groupTotalValue: string;
+  totalDeposits: string;
+  totalYield: string;
+  lastHarvestAt: string;
 }
 
 export class HematService {
@@ -289,7 +320,8 @@ export class HematService {
       const [
         model, contributionAmount, cycleInterval, groupSize, lockDuration, stakeRequired,
         insuranceEnabled, creator, status, currentCycle, cycleStartTime, nextPayoutTime,
-        currentPayoutIndex, maturityTime
+        currentPayoutIndex, maturityTime, gracePeriod, insuranceBps, platformFeeBps,
+        earlyWithdrawalPenaltyBps, memberCount, activeMemberCount
       ] = await Promise.all([
         groupContract.model(),
         groupContract.contributionAmount(),
@@ -304,13 +336,18 @@ export class HematService {
         groupContract.cycleStartTime(),
         groupContract.nextPayoutTime(),
         groupContract.currentPayoutIndex(),
-        groupContract.maturityTime()
+        groupContract.maturityTime(),
+        groupContract.gracePeriod(),
+        groupContract.insuranceBps(),
+        groupContract.platformFeeBps(),
+        groupContract.earlyWithdrawalPenaltyBps(),
+        groupContract.getMemberCount(),
+        groupContract.getActiveMemberCount()
       ]);
 
       // Get members
-      const memberCount = groupSize.toNumber();
       const members = [];
-      for (let i = 0; i < memberCount; i++) {
+      for (let i = 0; i < memberCount.toNumber(); i++) {
         try {
           const member = await groupContract.members(i);
           if (member !== ethers.constants.AddressZero) {
@@ -338,6 +375,12 @@ export class HematService {
         nextPayoutTime: nextPayoutTime.toString(),
         currentPayoutIndex: currentPayoutIndex.toString(),
         maturityTime: maturityTime.toString(),
+        gracePeriod: gracePeriod.toString(),
+        insuranceBps: insuranceBps.toString(),
+        platformFeeBps: platformFeeBps.toString(),
+        earlyWithdrawalPenaltyBps: earlyWithdrawalPenaltyBps.toString(),
+        memberCount: memberCount.toString(),
+        activeMemberCount: activeMemberCount.toString(),
         members
       };
     } catch (error) {
@@ -367,6 +410,26 @@ export class HematService {
     } catch (error) {
       console.error('Error joining group:', error);
       toast.error('Failed to join group');
+      return false;
+    }
+  }
+
+  async leaveGroup(groupAddress: string): Promise<boolean> {
+    try {
+      if (!this.signer) {
+        toast.error('Please connect your wallet first');
+        return false;
+      }
+
+      const groupContract = new ethers.Contract(groupAddress, HEMAT_GROUP_ABI, this.signer);
+      const tx = await groupContract.leaveGroup();
+      await tx.wait();
+      
+      toast.success('Successfully left the group!');
+      return true;
+    } catch (error) {
+      console.error('Error leaving group:', error);
+      toast.error('Failed to leave group');
       return false;
     }
   }
@@ -436,8 +499,151 @@ export class HematService {
     }
   }
 
+  async submitEmergencyClaim(groupAddress: string, amount: string, evidenceCID: string): Promise<boolean> {
+    try {
+      if (!this.signer) {
+        toast.error('Please connect your wallet first');
+        return false;
+      }
+
+      const groupContract = new ethers.Contract(groupAddress, HEMAT_GROUP_ABI, this.signer);
+      const amountWei = ethers.utils.parseUnits(amount, 6);
+
+      const tx = await groupContract.submitEmergencyClaim(amountWei, evidenceCID);
+      await tx.wait();
+      
+      toast.success('Emergency claim submitted successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error submitting emergency claim:', error);
+      toast.error('Failed to submit emergency claim');
+      return false;
+    }
+  }
+
+  async completeCycle(groupAddress: string): Promise<boolean> {
+    try {
+      if (!this.signer) {
+        toast.error('Please connect your wallet first');
+        return false;
+      }
+
+      const groupContract = new ethers.Contract(groupAddress, HEMAT_GROUP_ABI, this.signer);
+      const tx = await groupContract.completeCycle();
+      await tx.wait();
+      
+      toast.success('Cycle completed successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error completing cycle:', error);
+      toast.error('Failed to complete cycle');
+      return false;
+    }
+  }
+
+  async enforceDefault(groupAddress: string, member: string): Promise<boolean> {
+    try {
+      if (!this.signer) {
+        toast.error('Please connect your wallet first');
+        return false;
+      }
+
+      const groupContract = new ethers.Contract(groupAddress, HEMAT_GROUP_ABI, this.signer);
+      const tx = await groupContract.enforceDefault(member);
+      await tx.wait();
+      
+      toast.success('Default enforced successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error enforcing default:', error);
+      toast.error('Failed to enforce default');
+      return false;
+    }
+  }
+
+  async emergencyWithdraw(groupAddress: string): Promise<boolean> {
+    try {
+      if (!this.signer) {
+        toast.error('Please connect your wallet first');
+        return false;
+      }
+
+      const groupContract = new ethers.Contract(groupAddress, HEMAT_GROUP_ABI, this.signer);
+      const tx = await groupContract.emergencyWithdraw();
+      await tx.wait();
+      
+      toast.success('Emergency withdrawal successful!');
+      return true;
+    } catch (error) {
+      console.error('Error emergency withdrawing:', error);
+      toast.error('Failed to emergency withdraw');
+      return false;
+    }
+  }
+
+  // Group Admin Operations
+  async pauseGroup(groupAddress: string): Promise<boolean> {
+    try {
+      if (!this.signer) {
+        toast.error('Please connect your wallet first');
+        return false;
+      }
+
+      const groupContract = new ethers.Contract(groupAddress, HEMAT_GROUP_ABI, this.signer);
+      const tx = await groupContract.pauseGroup();
+      await tx.wait();
+      
+      toast.success('Group paused successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error pausing group:', error);
+      toast.error('Failed to pause group');
+      return false;
+    }
+  }
+
+  async resumeGroup(groupAddress: string): Promise<boolean> {
+    try {
+      if (!this.signer) {
+        toast.error('Please connect your wallet first');
+        return false;
+      }
+
+      const groupContract = new ethers.Contract(groupAddress, HEMAT_GROUP_ABI, this.signer);
+      const tx = await groupContract.resumeGroup();
+      await tx.wait();
+      
+      toast.success('Group resumed successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error resuming group:', error);
+      toast.error('Failed to resume group');
+      return false;
+    }
+  }
+
+  async cancelGroup(groupAddress: string): Promise<boolean> {
+    try {
+      if (!this.signer) {
+        toast.error('Please connect your wallet first');
+        return false;
+      }
+
+      const groupContract = new ethers.Contract(groupAddress, HEMAT_GROUP_ABI, this.signer);
+      const tx = await groupContract.cancelGroup();
+      await tx.wait();
+      
+      toast.success('Group cancelled successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error cancelling group:', error);
+      toast.error('Failed to cancel group');
+      return false;
+    }
+  }
+
   // Insurance Operations
-  async submitInsuranceClaim(groupId: number, amount: string, evidenceCID: string): Promise<number | null> {
+  async submitInsuranceClaim(groupId: number, amount: string, evidenceCID: string): Promise<string | null> {
     try {
       if (!this.signer) {
         toast.error('Please connect your wallet first');
@@ -453,7 +659,7 @@ export class HematService {
       if (event) {
         const claimId = event.args?.claimId;
         toast.success(`Insurance claim submitted successfully! ID: ${claimId}`);
-        return claimId.toNumber();
+        return claimId;
       }
       
       return null;
@@ -464,17 +670,17 @@ export class HematService {
     }
   }
 
-  async getInsuranceClaimsByMember(member: string): Promise<number[]> {
+  async getInsuranceClaimsByMember(member: string): Promise<string[]> {
     try {
       const claimIds = await this.contracts.insurancePool.getClaimsByMember(member);
-      return claimIds.map((id: ethers.BigNumber) => id.toNumber());
+      return claimIds;
     } catch (error) {
       console.error('Error getting member claims:', error);
       return [];
     }
   }
 
-  async getInsuranceClaim(claimId: number): Promise<InsuranceClaim | null> {
+  async getInsuranceClaim(claimId: string): Promise<InsuranceClaim | null> {
     try {
       const claim = await this.contracts.insurancePool.getClaim(claimId);
       
@@ -494,8 +700,29 @@ export class HematService {
     }
   }
 
+  async getInsurancePoolStats() {
+    try {
+      const [totalPremiums, totalClaimsPaid, totalClaimsDenied, reserveRatio] = await Promise.all([
+        this.contracts.insurancePool.totalPremiums(),
+        this.contracts.insurancePool.totalClaimsPaid(),
+        this.contracts.insurancePool.totalClaimsDenied(),
+        this.contracts.insurancePool.reserveRatio()
+      ]);
+
+      return {
+        totalPremiums: ethers.utils.formatUnits(totalPremiums, 6),
+        totalClaimsPaid: ethers.utils.formatUnits(totalClaimsPaid, 6),
+        totalClaimsDenied: ethers.utils.formatUnits(totalClaimsDenied, 6),
+        reserveRatio: reserveRatio.toString()
+      };
+    } catch (error) {
+      console.error('Error getting insurance pool stats:', error);
+      return null;
+    }
+  }
+
   // Staking Operations
-  async stake(amount: string): Promise<boolean> {
+  async depositStake(groupId: number, amount: string): Promise<boolean> {
     try {
       if (!this.signer) {
         toast.error('Please connect your wallet first');
@@ -507,19 +734,19 @@ export class HematService {
       // First approve USDT for the stake manager
       await this.approveUSDT(CONTRACT_ADDRESSES.STAKE_MANAGER, amount);
 
-      const tx = await this.contracts.stakeManager.stake(amountWei);
+      const tx = await this.contracts.stakeManager.depositStake(groupId, amountWei);
       await tx.wait();
       
       toast.success('Stake deposited successfully!');
       return true;
     } catch (error) {
-      console.error('Error staking:', error);
-      toast.error('Failed to stake');
+      console.error('Error depositing stake:', error);
+      toast.error('Failed to deposit stake');
       return false;
     }
   }
 
-  async unstake(amount: string): Promise<boolean> {
+  async withdrawStake(groupId: number, amount: string): Promise<boolean> {
     try {
       if (!this.signer) {
         toast.error('Please connect your wallet first');
@@ -527,35 +754,94 @@ export class HematService {
       }
 
       const amountWei = ethers.utils.parseUnits(amount, 6);
-      const tx = await this.contracts.stakeManager.unstake(amountWei);
+      const tx = await this.contracts.stakeManager.withdrawStake(groupId, amountWei);
       await tx.wait();
       
       toast.success('Stake withdrawn successfully!');
       return true;
     } catch (error) {
-      console.error('Error unstaking:', error);
-      toast.error('Failed to unstake');
+      console.error('Error withdrawing stake:', error);
+      toast.error('Failed to withdraw stake');
       return false;
     }
   }
 
-  async getStakeInfo(member: string): Promise<StakeInfo | null> {
+  async getStakeInfo(groupId: number, member: string): Promise<StakeInfo | null> {
     try {
-      const [stakeAmount, trustScore, totalStakes, stakeHistory] = await Promise.all([
-        this.contracts.stakeManager.getMemberStake(member),
-        this.contracts.stakeManager.getTrustScore(member),
-        this.contracts.stakeManager.getTotalStakes(),
-        this.contracts.stakeManager.getStakeHistory(member)
+      const [stakeAmount, trustScore, totalStakes, stakeHistory, defaultCount, paymentHistory, isBlacklisted] = await Promise.all([
+        this.contracts.stakeManager.getMemberStake(groupId, member),
+        this.contracts.stakeManager.getTrustScore(groupId, member),
+        this.contracts.stakeManager.getTotalStakes(groupId),
+        this.contracts.stakeManager.getStakeHistory(groupId, member),
+        this.contracts.stakeManager.getMemberDefaultCount(groupId, member),
+        this.contracts.stakeManager.getMemberPaymentHistory(groupId, member),
+        this.contracts.stakeManager.isMemberBlacklisted(groupId, member)
       ]);
 
       return {
         stakeAmount: ethers.utils.formatUnits(stakeAmount, 6),
         trustScore: trustScore.toString(),
         totalStakes: ethers.utils.formatUnits(totalStakes, 6),
-        stakeHistory: stakeHistory.map((stake: ethers.BigNumber) => ethers.utils.formatUnits(stake, 6))
+        stakeHistory: stakeHistory.map((stake: ethers.BigNumber) => ethers.utils.formatUnits(stake, 6)),
+        defaultCount: defaultCount.toString(),
+        paymentHistory: paymentHistory.toString(),
+        isBlacklisted
       };
     } catch (error) {
       console.error('Error getting stake info:', error);
+      return null;
+    }
+  }
+
+  // DeFi Adapter Operations
+  async getDeFiInfo(): Promise<DeFiInfo | null> {
+    try {
+      const [strategyBalance, apy, tvl, totalDeposited, totalHarvested, lastHarvestAt] = await Promise.all([
+        this.contracts.mockDeFiAdapter.strategyBalance(),
+        this.contracts.mockDeFiAdapter.getAPY(),
+        this.contracts.mockDeFiAdapter.getTVL(),
+        this.contracts.mockDeFiAdapter.totalDeposited(),
+        this.contracts.mockDeFiAdapter.totalHarvested(),
+        this.contracts.mockDeFiAdapter.lastHarvestAt()
+      ]);
+
+      return {
+        strategyBalance: ethers.utils.formatUnits(strategyBalance, 6),
+        apy: apy.toString(),
+        tvl: ethers.utils.formatUnits(tvl, 6),
+        totalDeposited: ethers.utils.formatUnits(totalDeposited, 6),
+        totalHarvested: ethers.utils.formatUnits(totalHarvested, 6),
+        lastHarvestAt: lastHarvestAt.toString()
+      };
+    } catch (error) {
+      console.error('Error getting DeFi info:', error);
+      return null;
+    }
+  }
+
+  async harvestDeFiYield(): Promise<string | null> {
+    try {
+      if (!this.signer) {
+        toast.error('Please connect your wallet first');
+        return null;
+      }
+
+      const tx = await this.contracts.mockDeFiAdapter.harvest();
+      const receipt = await tx.wait();
+      
+      // Find the Harvest event
+      const event = receipt.events?.find(e => e.event === 'Harvest');
+      if (event) {
+        const amount = event.args?.amount;
+        const formattedAmount = ethers.utils.formatUnits(amount, 6);
+        toast.success(`Yield harvested successfully! Amount: ${formattedAmount} USDT`);
+        return formattedAmount;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error harvesting DeFi yield:', error);
+      toast.error('Failed to harvest yield');
       return null;
     }
   }
@@ -581,6 +867,16 @@ export class HematService {
     }
   }
 
+  async getGroupTotalValue(groupId: number): Promise<string> {
+    try {
+      const totalValue = await this.contracts.escrowVault.getGroupTotalValue(groupId);
+      return ethers.utils.formatUnits(totalValue, 6);
+    } catch (error) {
+      console.error('Error getting group total value:', error);
+      return '0';
+    }
+  }
+
   async harvestYield(groupId: number): Promise<boolean> {
     try {
       if (!this.signer) {
@@ -597,6 +893,47 @@ export class HematService {
       console.error('Error harvesting yield:', error);
       toast.error('Failed to harvest yield');
       return false;
+    }
+  }
+
+  async reinvestYield(groupId: number): Promise<boolean> {
+    try {
+      if (!this.signer) {
+        toast.error('Please connect your wallet first');
+        return false;
+      }
+
+      const tx = await this.contracts.escrowVault.reinvestYield(groupId);
+      await tx.wait();
+      
+      toast.success('Yield reinvested successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error reinvesting yield:', error);
+      toast.error('Failed to reinvest yield');
+      return false;
+    }
+  }
+
+  async getYieldInfo(): Promise<YieldInfo | null> {
+    try {
+      const [totalDeposits, totalYield, lastHarvestAt] = await Promise.all([
+        this.contracts.escrowVault.totalDeposits(),
+        this.contracts.escrowVault.totalYield(),
+        this.contracts.escrowVault.lastHarvestAt()
+      ]);
+
+      return {
+        groupDeposits: '0', // This would need to be calculated per group
+        groupYield: '0', // This would need to be calculated per group
+        groupTotalValue: '0', // This would need to be calculated per group
+        totalDeposits: ethers.utils.formatUnits(totalDeposits, 6),
+        totalYield: ethers.utils.formatUnits(totalYield, 6),
+        lastHarvestAt: lastHarvestAt.toString()
+      };
+    } catch (error) {
+      console.error('Error getting yield info:', error);
+      return null;
     }
   }
 
@@ -626,6 +963,19 @@ export class HematService {
   getClaimStatusName(status: number): string {
     const statuses = ['Submitted', 'Approved', 'Rejected', 'Paid'];
     return statuses[status] || 'Unknown';
+  }
+
+  formatTime(seconds: string): string {
+    const secs = parseInt(seconds);
+    if (secs === 0) return 'No lock';
+    if (secs < 86400) return `${secs / 3600} hours`;
+    if (secs < 2592000) return `${secs / 86400} days`;
+    return `${secs / 2592000} months`;
+  }
+
+  formatAPY(bps: string): string {
+    const apy = parseInt(bps) / 100;
+    return `${apy.toFixed(2)}%`;
   }
 }
 

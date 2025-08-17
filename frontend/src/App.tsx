@@ -47,17 +47,17 @@ function App() {
           <RainbowKitProvider
             chains={chains}
             theme={darkTheme({
-              accentColor: '#4f46e5',
+              accentColor: '#3b82f6',
               accentColorForeground: 'white',
-              borderRadius: 'medium',
+              borderRadius: 'large',
               fontStack: 'system',
-              overlayBlur: 'small',
+              overlayBlur: 'medium',
             })}
             showRecentTransactions={true}
           >
             <QueryClientProvider client={queryClient}>
               <Router>
-                <div className="min-h-screen bg-gray-50">
+                <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
                   <Layout>
                     <Routes>
                       {/* Public Routes */}
@@ -83,21 +83,38 @@ function App() {
                     toastOptions={{
                       duration: 5000,
                       style: {
-                        background: '#363636',
-                        color: '#fff',
+                        background: '#1f2937',
+                        color: '#f9fafb',
+                        border: '1px solid #374151',
+                        borderRadius: '12px',
+                        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
                       },
                       success: {
                         duration: 3000,
                         iconTheme: {
                           primary: '#10b981',
-                          secondary: '#fff',
+                          secondary: '#f9fafb',
+                        },
+                        style: {
+                          background: '#064e3b',
+                          border: '1px solid #059669',
                         },
                       },
                       error: {
                         duration: 5000,
                         iconTheme: {
                           primary: '#ef4444',
-                          secondary: '#fff',
+                          secondary: '#f9fafb',
+                        },
+                        style: {
+                          background: '#7f1d1d',
+                          border: '1px solid #dc2626',
+                        },
+                      },
+                      loading: {
+                        style: {
+                          background: '#1e293b',
+                          border: '1px solid #475569',
                         },
                       },
                     }}
