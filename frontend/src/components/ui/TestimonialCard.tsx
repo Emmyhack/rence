@@ -21,6 +21,11 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
             src={avatar} 
             alt={author}
             className="w-12 h-12 rounded-full object-cover"
+            onError={(e) => {
+              const target = e.currentTarget as HTMLImageElement;
+              target.onerror = null;
+              target.src = 'https://dummyimage.com/96x96/e5e7eb/111827.png&text=' + encodeURIComponent(author.charAt(0));
+            }}
           />
         ) : (
           <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">

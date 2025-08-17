@@ -3,7 +3,7 @@ import React from 'react'
 interface StatsCardProps {
   title: string
   value: string | number
-  icon?: React.ReactNode
+  icon?: React.ReactNode | React.ComponentType<any>
   change?: string
   changeType?: 'positive' | 'negative' | 'neutral'
 }
@@ -21,11 +21,13 @@ const StatsCard: React.FC<StatsCardProps> = ({
     neutral: 'text-gray-600'
   }
 
+  const IconEl = typeof icon === 'function' ? (React.createElement(icon as React.ComponentType<any>, { className: 'w-5 h-5' })) : icon;
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-medium text-gray-600">{title}</h3>
-        {icon && <div className="text-gray-400">{icon}</div>}
+        {icon && <div className="text-gray-400">{IconEl}</div>}
       </div>
       
       <div className="flex items-baseline justify-between">

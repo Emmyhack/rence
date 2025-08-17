@@ -1,0 +1,1 @@
+Place marketing images here, e.g., hero-dashboard.png and benefits-illustration.png.
