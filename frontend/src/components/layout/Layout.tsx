@@ -18,6 +18,7 @@ import { useAppDispatch, useAppSelector } from '@hooks/redux';
 import { connectWallet, disconnectWallet } from '@store/slices/walletSlice';
 import { hematService } from '@services/web3/hematService';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { switchToKaia } from '@services/web3/chains';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -186,6 +187,22 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               {/* Connect button for desktop */}
               <div className="hidden sm:block">
                 <ConnectButton />
+              </div>
+              <div className="hidden sm:block">
+                <select
+                  onChange={async (e) => {
+                    const target = e.target.value as 'testnet' | 'mainnet'
+                    const injected: any = (window as any).ethereum || (window as any).klaytn
+                    if (injected?.request) {
+                      try { await switchToKaia(injected, target) } catch {}
+                    }
+                  }}
+                  className="bg-gray-900 border border-gray-700 text-gray-300 text-sm rounded-lg px-2 py-1"
+                  defaultValue="testnet"
+                >
+                  <option value="testnet">Kaia Testnet</option>
+                  <option value="mainnet">Kaia Mainnet</option>
+                </select>
               </div>
               
               {/* Settings button */}
