@@ -14,13 +14,13 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
   avatar 
 }) => {
   return (
-    <div className="glass-card p-6">
-      <div className="flex items-start space-x-4">
+    <div className="glass-card p-8">
+      <div className="flex items-start space-x-6">
         {avatar ? (
           <img 
             src={avatar} 
             alt={author}
-            className="w-12 h-12 rounded-full object-cover border border-gray-700"
+            className="w-16 h-16 rounded-full object-cover border-2 border-kaia-primary/30"
             onError={(e) => {
               const target = e.currentTarget as HTMLImageElement;
               target.onerror = null;
@@ -28,21 +28,21 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
             }}
           />
         ) : (
-          <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-600/20 to-purple-600/20 border border-gray-700">
-            <span className="text-gray-300 font-medium">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center bg-gradient-to-br from-kaia-primary/20 to-kaia-primary/10 border-2 border-kaia-primary/30">
+            <span className="text-kaia-primary font-semibold text-lg">
               {author.charAt(0)}
             </span>
           </div>
         )}
         
         <div className="flex-1">
-          <blockquote className="text-gray-300 italic mb-3">
+          <blockquote className="text-kaia-text-secondary italic mb-4 text-lg leading-relaxed">
             "{quote}"
           </blockquote>
           
           <div>
-            <p className="font-medium text-white">{author}</p>
-            {role && <p className="text-sm text-gray-400">{role}</p>}
+            <p className="font-semibold text-kaia-text-primary text-lg">{author}</p>
+            {role && <p className="text-sm text-kaia-text-muted">{role}</p>}
           </div>
         </div>
       </div>

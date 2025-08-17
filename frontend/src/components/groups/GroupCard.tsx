@@ -95,14 +95,14 @@ const GroupCard: React.FC<GroupCardProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`card-hover ${className}`}
+      className={`glass-card-hover ${className}`}
     >
       <div className="p-6">
         {/* Header */}
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between mb-6">
           <div className="flex-1">
-            <div className="flex items-center space-x-2 mb-2">
-              <div className="p-1.5 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg">
+            <div className="flex items-center space-x-3 mb-3">
+              <div className="p-2 bg-gradient-to-r from-kaia-primary/20 to-kaia-primary/10 rounded-kaia-lg border border-kaia-primary/30">
                 {getModelIcon(group.model)}
               </div>
               <span className="model-badge">
@@ -110,13 +110,13 @@ const GroupCard: React.FC<GroupCardProps> = ({
               </span>
               <span className={`status-badge ${getStatusColor(group.status)}`}>
                 {getStatusIcon(group.status)}
-                <span className="ml-1">{hematService.getGroupStatusName(group.status)}</span>
+                <span className="ml-2">{hematService.getGroupStatusName(group.status)}</span>
               </span>
             </div>
-            <h3 className="text-lg font-semibold text-white mb-1">
+            <h3 className="text-xl font-semibold text-kaia-text-primary mb-2">
               Group #{group.id || 'N/A'}
             </h3>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-kaia-text-muted">
               Created by {hematService.formatAddress(group.creator)}
             </p>
           </div>
@@ -125,15 +125,15 @@ const GroupCard: React.FC<GroupCardProps> = ({
             <div className="amount-display">
               ${hematService.formatUSDT(group.contributionAmount)}
             </div>
-            <div className="text-xs text-gray-400">per contribution</div>
+            <div className="text-xs text-kaia-text-muted">per contribution</div>
           </div>
         </div>
 
         {/* Key Metrics */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="metric-card">
-            <div className="flex items-center mb-1">
-              <UsersIcon className="h-4 w-4 text-blue-400 mr-2" />
+            <div className="flex items-center mb-2">
+              <UsersIcon className="h-4 w-4 text-kaia-primary mr-2" />
               <span className="metric-label">Members</span>
             </div>
             <div className="metric-value">
@@ -142,8 +142,8 @@ const GroupCard: React.FC<GroupCardProps> = ({
           </div>
 
           <div className="metric-card">
-            <div className="flex items-center mb-1">
-              <ClockIcon className="h-4 w-4 text-yellow-400 mr-2" />
+            <div className="flex items-center mb-2">
+              <ClockIcon className="h-4 w-4 text-kaia-primary mr-2" />
               <span className="metric-label">Cycle Interval</span>
             </div>
             <div className="metric-value text-sm">
@@ -152,8 +152,8 @@ const GroupCard: React.FC<GroupCardProps> = ({
           </div>
 
           <div className="metric-card">
-            <div className="flex items-center mb-1">
-              <CurrencyDollarIcon className="h-4 w-4 text-green-400 mr-2" />
+            <div className="flex items-center mb-2">
+              <CurrencyDollarIcon className="h-4 w-4 text-kaia-primary mr-2" />
               <span className="metric-label">Stake Required</span>
             </div>
             <div className="metric-value">
@@ -162,8 +162,8 @@ const GroupCard: React.FC<GroupCardProps> = ({
           </div>
 
           <div className="metric-card">
-            <div className="flex items-center mb-1">
-              <ShieldCheckIcon className="h-4 w-4 text-purple-400 mr-2" />
+            <div className="flex items-center mb-2">
+              <ShieldCheckIcon className="h-4 w-4 text-kaia-primary mr-2" />
               <span className="metric-label">Insurance</span>
             </div>
             <div className="metric-value">
@@ -175,27 +175,27 @@ const GroupCard: React.FC<GroupCardProps> = ({
         {/* Additional Info */}
         <div className="space-y-3 mb-6">
           {group.lockDuration && parseInt(group.lockDuration) > 0 && (
-            <div className="flex items-center justify-between p-3 bg-gray-800/50 rounded-xl">
-              <span className="text-sm text-gray-400">Lock Duration</span>
-              <span className="text-sm text-white font-medium">
+            <div className="flex items-center justify-between p-3 bg-kaia-surface/50 rounded-kaia-lg border border-kaia-border/50">
+              <span className="text-sm text-kaia-text-muted">Lock Duration</span>
+              <span className="text-sm text-kaia-text-primary font-medium">
                 {formatTime(group.lockDuration)}
               </span>
             </div>
           )}
 
           {group.insuranceEnabled && (
-            <div className="flex items-center justify-between p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
-              <span className="text-sm text-purple-400">Insurance Premium</span>
-              <span className="text-sm text-purple-400 font-medium">
+            <div className="flex items-center justify-between p-3 bg-kaia-primary/10 rounded-kaia-lg border border-kaia-primary/20">
+              <span className="text-sm text-kaia-primary">Insurance Premium</span>
+              <span className="text-sm text-kaia-primary font-medium">
                 {parseInt(group.insuranceBps) / 100}%
               </span>
             </div>
           )}
 
           {parseInt(group.currentCycle) > 0 && (
-            <div className="flex items-center justify-between p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
-              <span className="text-sm text-blue-400">Current Cycle</span>
-              <span className="text-sm text-blue-400 font-medium">
+            <div className="flex items-center justify-between p-3 bg-kaia-primary/10 rounded-kaia-lg border border-kaia-primary/20">
+              <span className="text-sm text-kaia-primary">Current Cycle</span>
+              <span className="text-sm text-kaia-primary font-medium">
                 {group.currentCycle}
               </span>
             </div>
@@ -206,7 +206,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
         <div className="flex space-x-3">
           <button
             onClick={() => onGroupClick(group)}
-            className="btn-primary flex-1 flex items-center justify-center"
+            className="btn-kaia-primary flex-1 flex items-center justify-center"
           >
             <ArrowRightIcon className="h-4 w-4 mr-2" />
             View Details
@@ -216,7 +216,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
             <button
               onClick={() => handleAction('contribute')}
               disabled={isLoading}
-              className="btn-success flex items-center justify-center px-4"
+              className="btn-kaia-success flex items-center justify-center px-4"
             >
               {isLoading ? (
                 <div className="loading-spinner w-4 h-4"></div>
@@ -230,7 +230,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
             <button
               onClick={() => handleAction('resume')}
               disabled={isLoading}
-              className="btn-warning flex items-center justify-center px-4"
+              className="btn-kaia-warning flex items-center justify-center px-4"
             >
               {isLoading ? (
                 <div className="loading-spinner w-4 h-4"></div>
@@ -244,7 +244,7 @@ const GroupCard: React.FC<GroupCardProps> = ({
             <button
               onClick={() => handleAction('pause')}
               disabled={isLoading}
-              className="btn-secondary flex items-center justify-center px-4"
+              className="btn-kaia-secondary flex items-center justify-center px-4"
             >
               {isLoading ? (
                 <div className="loading-spinner w-4 h-4"></div>
@@ -257,14 +257,14 @@ const GroupCard: React.FC<GroupCardProps> = ({
 
         {/* Progress Indicator */}
         {group.status === 1 && (
-          <div className="mt-4">
-            <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
+          <div className="mt-6">
+            <div className="flex items-center justify-between text-sm text-kaia-text-muted mb-3">
               <span>Progress</span>
               <span>{group.activeMemberCount}/{group.groupSize} members</span>
             </div>
-            <div className="w-full bg-gray-700 rounded-full h-2">
+            <div className="w-full bg-kaia-surface/50 rounded-full h-2 border border-kaia-border/50">
               <div
-                className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-kaia-primary to-kaia-primaryLight h-2 rounded-full transition-all duration-300"
                 style={{
                   width: `${(parseInt(group.activeMemberCount) / parseInt(group.groupSize)) * 100}%`
                 }}
@@ -274,10 +274,10 @@ const GroupCard: React.FC<GroupCardProps> = ({
         )}
 
         {/* Trust Score Indicator */}
-        <div className="mt-4 flex items-center justify-between p-3 bg-gray-800/50 rounded-xl">
+        <div className="mt-6 flex items-center justify-between p-3 bg-kaia-surface/50 rounded-kaia-lg border border-kaia-border/50">
           <div className="flex items-center">
-            <StarIcon className="h-4 w-4 text-yellow-400 mr-2" />
-            <span className="text-sm text-gray-400">Group Health</span>
+            <StarIcon className="h-4 w-4 text-kaia-primary mr-2" />
+            <span className="text-sm text-kaia-text-muted">Group Health</span>
           </div>
           <div className="flex items-center space-x-1">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -285,8 +285,8 @@ const GroupCard: React.FC<GroupCardProps> = ({
                 key={star}
                 className={`h-3 w-3 ${
                   star <= Math.min(5, Math.max(1, parseInt(group.activeMemberCount)))
-                    ? 'text-yellow-400 fill-current'
-                    : 'text-gray-600'
+                    ? 'text-kaia-primary fill-current'
+                    : 'text-kaia-text-muted'
                 }`}
               />
             ))}

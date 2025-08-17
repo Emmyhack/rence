@@ -202,35 +202,39 @@ const CreateGroupPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">Create New Thrift Group</h1>
-          <p className="mt-2 text-gray-300">
-            Set up a new thrift group with your preferred configuration and invite members to join.
-          </p>
+    <div className="min-h-screen py-8">
+      <div className="container-kaia">
+        <div className="mb-12">
+          <div className="glass-card p-8">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-kaia-text-primary to-kaia-primary bg-clip-text text-transparent">
+              Create New Thrift Group
+            </h1>
+            <p className="mt-3 text-kaia-text-secondary text-lg">
+              Set up a new thrift group with your preferred configuration and invite members to join.
+            </p>
+          </div>
         </div>
 
         {/* Platform Stats */}
         {platformStats && (
-          <div className="mb-8 glass-card p-6">
-            <h3 className="text-lg font-medium text-white mb-4">Platform Limits</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="mb-12 glass-card p-8">
+            <h3 className="text-2xl font-semibold text-kaia-text-primary mb-6">Platform Limits</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               <div className="text-center">
-                <p className="text-sm text-gray-400">Min Contribution</p>
-                <p className="text-lg font-semibold text-white">{platformStats.minContribution} USDT</p>
+                <p className="text-sm text-kaia-text-muted mb-2">Min Contribution</p>
+                <p className="text-2xl font-semibold text-kaia-text-primary">{platformStats.minContribution} USDT</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-gray-400">Max Contribution</p>
-                <p className="text-lg font-semibold text-white">{platformStats.maxContribution} USDT</p>
+                <p className="text-sm text-kaia-text-muted mb-2">Max Contribution</p>
+                <p className="text-2xl font-semibold text-kaia-text-primary">{platformStats.maxContribution} USDT</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-gray-400">Min Group Size</p>
-                <p className="text-lg font-semibold text-white">{platformStats.minGroupSize}</p>
+                <p className="text-sm text-kaia-text-muted mb-2">Min Group Size</p>
+                <p className="text-2xl font-semibold text-kaia-text-primary">{platformStats.minGroupSize}</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-gray-400">Max Group Size</p>
-                <p className="text-lg font-semibold text-white">{platformStats.maxGroupSize}</p>
+                <p className="text-sm text-kaia-text-muted mb-2">Max Group Size</p>
+                <p className="text-2xl font-semibold text-kaia-text-primary">{platformStats.maxGroupSize}</p>
               </div>
             </div>
           </div>
@@ -238,9 +242,9 @@ const CreateGroupPage: React.FC = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           {/* Thrift Model Selection */}
-          <div className="glass-card p-6">
-            <h3 className="text-lg font-medium text-white mb-4">Thrift Model</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="glass-card p-8">
+            <h3 className="text-2xl font-semibold text-kaia-text-primary mb-6">Thrift Model</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 {
                   id: 0,
@@ -266,10 +270,10 @@ const CreateGroupPage: React.FC = () => {
               ].map((model) => (
                 <div
                   key={model.id}
-                  className={`relative p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`relative p-6 border-2 rounded-kaia-lg cursor-pointer transition-all duration-300 ${
                     selectedModel === model.id
-                      ? 'border-blue-600/60 bg-gradient-to-br from-blue-600/10 to-indigo-600/10'
-                      : 'border-gray-700 hover:border-gray-600'
+                      ? 'border-kaia-primary/60 bg-gradient-to-br from-kaia-primary/10 to-kaia-primary/5'
+                      : 'border-kaia-border hover:border-kaia-primary/40 hover:bg-kaia-surface/30'
                   }`}
                   onClick={() => setSelectedModel(model.id)}
                 >
@@ -279,22 +283,24 @@ const CreateGroupPage: React.FC = () => {
                     value={model.id}
                     className="sr-only"
                   />
-                  <div className="flex items-center mb-3">
-                    <model.icon className="h-6 w-6 text-blue-400 mr-2" />
-                    <h4 className="font-medium text-white">{model.name}</h4>
+                  <div className="flex items-center mb-4">
+                    <model.icon className={`h-6 w-6 mr-3 ${
+                      selectedModel === model.id ? 'text-kaia-primary' : 'text-kaia-text-muted'
+                    }`} />
+                    <h4 className="font-semibold text-kaia-text-primary">{model.name}</h4>
                   </div>
-                  <p className="text-sm text-gray-300 mb-3">{model.description}</p>
-                  <ul className="text-xs text-gray-400 space-y-1">
+                  <p className="text-sm text-kaia-text-secondary mb-4">{model.description}</p>
+                  <ul className="text-xs text-kaia-text-muted space-y-2">
                     {model.features.map((feature, index) => (
                       <li key={index} className="flex items-center">
-                        <CheckCircleIcon className="h-3 w-3 text-green-400 mr-1" />
+                        <CheckCircleIcon className="h-3 w-3 text-kaia-primary mr-2" />
                         {feature}
                       </li>
                     ))}
                   </ul>
                   {selectedModel === model.id && (
-                    <div className="absolute top-2 right-2">
-                      <CheckCircleIcon className="h-5 w-5 text-blue-400" />
+                    <div className="absolute top-3 right-3">
+                      <CheckCircleIcon className="h-5 w-5 text-kaia-primary" />
                     </div>
                   )}
                 </div>
@@ -303,205 +309,205 @@ const CreateGroupPage: React.FC = () => {
           </div>
 
           {/* Basic Configuration */}
-          <div className="glass-card p-6">
-            <h3 className="text-lg font-medium text-white mb-4">Basic Configuration</h3>
+          <div className="glass-card p-8">
+            <h3 className="text-2xl font-semibold text-kaia-text-primary mb-6">Basic Configuration</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-kaia-text-secondary mb-3">
                   Contribution Amount (USDT)
                 </label>
                 <div className="relative">
-                  <CurrencyDollarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+                  <CurrencyDollarIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-kaia-text-muted" />
                   <input
                     type="number"
                     step="0.01"
                     {...register('contributionAmount')}
-                    className="pl-10 w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                    className="pl-12 w-full rounded-kaia-lg bg-kaia-surface/50 border border-kaia-border text-kaia-text-primary placeholder-kaia-text-muted focus:border-kaia-primary focus:ring-kaia-primary/20 focus:ring-2 transition-all duration-300"
                     placeholder="100.00"
                   />
                 </div>
                 {errors.contributionAmount && (
-                  <p className="mt-1 text-sm text-red-600">{errors.contributionAmount.message}</p>
+                  <p className="mt-2 text-sm text-red-400">{errors.contributionAmount.message}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-kaia-text-secondary mb-3">
                   Cycle Interval (seconds)
                 </label>
                 <div className="relative">
-                  <ClockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+                  <ClockIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-kaia-text-muted" />
                   <input
                     type="number"
                     {...register('cycleInterval')}
-                    className="pl-10 w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                    className="pl-12 w-full rounded-kaia-lg bg-kaia-surface/50 border border-kaia-border text-kaia-text-primary placeholder-kaia-text-muted focus:border-kaia-primary focus:ring-kaia-primary/20 focus:ring-2 transition-all duration-300"
                     placeholder="604800"
                   />
                 </div>
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-2 text-xs text-kaia-text-muted">
                   {formatTime(watch('cycleInterval'))}
                 </p>
                 {errors.cycleInterval && (
-                  <p className="mt-1 text-sm text-red-600">{errors.cycleInterval.message}</p>
+                  <p className="mt-2 text-sm text-red-400">{errors.cycleInterval.message}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-kaia-text-secondary mb-3">
                   Group Size
                 </label>
                 <div className="relative">
-                  <UsersIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+                  <UsersIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-kaia-text-muted" />
                   <input
                     type="number"
                     {...register('groupSize')}
-                    className="pl-10 w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                    className="pl-12 w-full rounded-kaia-lg bg-kaia-surface/50 border border-kaia-border text-kaia-text-primary placeholder-kaia-text-muted focus:border-kaia-primary focus:ring-kaia-primary/20 focus:ring-2 transition-all duration-300"
                     placeholder="10"
                   />
                 </div>
                 {selectedModel === 0 && (
-                  <p className="mt-1 text-xs text-yellow-400">Max 5 members for Basic model</p>
+                  <p className="mt-2 text-xs text-kaia-primary">Max 5 members for Basic model</p>
                 )}
                 {errors.groupSize && (
-                  <p className="mt-1 text-sm text-red-600">{errors.groupSize.message}</p>
+                  <p className="mt-2 text-sm text-red-400">{errors.groupSize.message}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-kaia-text-secondary mb-3">
                   Lock Duration (seconds)
                 </label>
                 <div className="relative">
-                  <ClockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+                  <ClockIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-kaia-text-muted" />
                   <input
                     type="number"
                     {...register('lockDuration')}
-                    className="pl-10 w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                    className="pl-12 w-full rounded-kaia-lg bg-kaia-surface/50 border border-kaia-border text-kaia-text-primary placeholder-kaia-text-muted focus:border-kaia-primary focus:ring-kaia-primary/20 focus:ring-2 transition-all duration-300 disabled:opacity-50"
                     placeholder="2592000"
                     disabled={selectedModel === 0}
                   />
                 </div>
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-2 text-xs text-kaia-text-muted">
                   {formatTime(watch('lockDuration'))}
                 </p>
                 {errors.lockDuration && (
-                  <p className="mt-1 text-sm text-red-600">{errors.lockDuration.message}</p>
+                  <p className="mt-2 text-sm text-red-400">{errors.lockDuration.message}</p>
                 )}
               </div>
             </div>
           </div>
 
           {/* Advanced Configuration */}
-          <div className="glass-card p-6">
-            <h3 className="text-lg font-medium text-white mb-4">Advanced Configuration</h3>
+          <div className="glass-card p-8">
+            <h3 className="text-2xl font-semibold text-kaia-text-primary mb-6">Advanced Configuration</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-kaia-text-secondary mb-3">
                   Grace Period (seconds)
                 </label>
                 <input
                   type="number"
                   {...register('gracePeriod')}
-                  className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-kaia-lg bg-kaia-surface/50 border border-kaia-border text-kaia-text-primary placeholder-kaia-text-muted focus:border-kaia-primary focus:ring-kaia-primary/20 focus:ring-2 transition-all duration-300"
                   placeholder="172800"
                 />
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-2 text-xs text-kaia-text-muted">
                   {formatTime(watch('gracePeriod'))}
                 </p>
                 {selectedModel === 0 && (
-                  <p className="mt-1 text-xs text-yellow-400">Basic has no trust lock; grace period is not used.</p>
+                  <p className="mt-2 text-xs text-kaia-primary">Basic has no trust lock; grace period is not used.</p>
                 )}
                 {errors.gracePeriod && (
-                  <p className="mt-1 text-sm text-red-600">{errors.gracePeriod.message}</p>
+                  <p className="mt-2 text-sm text-red-400">{errors.gracePeriod.message}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-kaia-text-secondary mb-3">
                   Required Stake (USDT)
                 </label>
                 <input
                   type="number"
                   step="0.01"
                   {...register('stakeRequired')}
-                  className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-kaia-lg bg-kaia-surface/50 border border-kaia-border text-kaia-text-primary placeholder-kaia-text-muted focus:border-kaia-primary focus:ring-kaia-primary/20 focus:ring-2 transition-all duration-300"
                   placeholder="50.00"
                 />
                 {errors.stakeRequired && (
-                  <p className="mt-1 text-sm text-red-600">{errors.stakeRequired.message}</p>
+                  <p className="mt-2 text-sm text-red-400">{errors.stakeRequired.message}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-kaia-text-secondary mb-3">
                   Platform Fee (basis points)
                 </label>
                 <input
                   type="number"
                   {...register('platformFeeBps')}
-                  className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-kaia-lg bg-kaia-surface/50 border border-kaia-border text-kaia-text-primary placeholder-kaia-text-muted focus:border-kaia-primary focus:ring-kaia-primary/20 focus:ring-2 transition-all duration-300"
                   placeholder="100"
                 />
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-2 text-xs text-kaia-text-muted">
                   {formatBps(watch('platformFeeBps'))}
                 </p>
                 {errors.platformFeeBps && (
-                  <p className="mt-1 text-sm text-red-600">{errors.platformFeeBps.message}</p>
+                  <p className="mt-2 text-sm text-red-400">{errors.platformFeeBps.message}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-kaia-text-secondary mb-3">
                   Early Withdrawal Penalty (basis points)
                 </label>
                 <input
                   type="number"
                   {...register('earlyWithdrawalPenaltyBps')}
-                  className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full rounded-kaia-lg bg-kaia-surface/50 border border-kaia-border text-kaia-text-primary placeholder-kaia-text-muted focus:border-kaia-primary focus:ring-kaia-primary/20 focus:ring-2 transition-all duration-300 disabled:opacity-50"
                   placeholder="500"
                   disabled={selectedModel === 0}
                 />
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-2 text-xs text-kaia-text-muted">
                   {formatBps(watch('earlyWithdrawalPenaltyBps'))}
                 </p>
                 {errors.earlyWithdrawalPenaltyBps && (
-                  <p className="mt-1 text-sm text-red-600">{errors.earlyWithdrawalPenaltyBps.message}</p>
+                  <p className="mt-2 text-sm text-red-400">{errors.earlyWithdrawalPenaltyBps.message}</p>
                 )}
               </div>
             </div>
           </div>
 
           {/* Insurance Configuration */}
-          <div className="glass-card p-6">
-            <h3 className="text-lg font-medium text-white mb-4">Insurance Configuration</h3>
-            <div className="space-y-4">
+          <div className="glass-card p-8">
+            <h3 className="text-2xl font-semibold text-kaia-text-primary mb-6">Insurance Configuration</h3>
+            <div className="space-y-6">
               <div className="flex items-center">
                 <input
                   type="checkbox"
                   {...register('insuranceEnabled')}
-                  className="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-700 rounded"
+                  className="h-5 w-5 text-kaia-primary focus:ring-kaia-primary border-kaia-border rounded transition-all duration-300"
                 />
-                <label className="ml-2 block text-sm text-gray-200">
+                <label className="ml-3 block text-sm text-kaia-text-secondary">
                   Enable insurance coverage for this group
                 </label>
               </div>
 
               {insuranceEnabled && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-kaia-text-secondary mb-3">
                     Insurance Premium Rate (basis points)
                   </label>
                   <input
                     type="number"
                     {...register('insuranceBps')}
-                    className="w-full rounded-md bg-gray-900 border border-gray-700 text-gray-200 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full rounded-kaia-lg bg-kaia-surface/50 border border-kaia-border text-kaia-text-primary placeholder-kaia-text-muted focus:border-kaia-primary focus:ring-kaia-primary/20 focus:ring-2 transition-all duration-300"
                     placeholder="200"
                   />
-                  <p className="mt-1 text-xs text-gray-400">
+                  <p className="mt-2 text-xs text-kaia-text-muted">
                     {formatBps(watch('insuranceBps'))}
                   </p>
                   {errors.insuranceBps && (
-                    <p className="mt-1 text-sm text-red-600">{errors.insuranceBps.message}</p>
+                    <p className="mt-2 text-sm text-red-400">{errors.insuranceBps.message}</p>
                   )}
                 </div>
               )}
@@ -510,7 +516,7 @@ const CreateGroupPage: React.FC = () => {
 
           {/* Error Display */}
           {error && (
-            <div className="bg-red-900/20 border border-red-700/50 rounded-md p-4">
+            <div className="glass-card p-6 border border-red-500/30 bg-red-500/10">
               <div className="flex">
                 <ExclamationTriangleIcon className="h-5 w-5 text-red-400" />
                 <div className="ml-3">
@@ -526,7 +532,7 @@ const CreateGroupPage: React.FC = () => {
             <button
               type="submit"
               disabled={!isValid || submitting}
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-kaia-primary px-8 py-4 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? (
                 <>

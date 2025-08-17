@@ -75,195 +75,168 @@ const HomePage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen bg-kaia-background relative">
+      {/* Background gradient effect */}
+      <div className="absolute inset-0 bg-kaia-radial opacity-10 pointer-events-none"></div>
+      
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-y-0 h-full w-full" aria-hidden="true">
-          <div className="relative h-full">
-            <svg
-              className="absolute right-full transform translate-y-1/3 translate-x-1/4 md:translate-y-1/2 sm:translate-x-1/2 lg:translate-x-full"
-              width={404}
-              height={784}
-              fill="none"
-              viewBox="0 0 404 784"
-            >
-              <defs>
-                <pattern
-                  id="e229dbec-10e9-49ee-8ec3-0286ca089edf"
-                  x={0}
-                  y={0}
-                  width={20}
-                  height={20}
-                  patternUnits="userSpaceOnUse"
-                >
-                  <rect x={0} y={0} width={4} height={4} className="text-gray-700" fill="currentColor" />
-                </pattern>
-              </defs>
-              <rect width={404} height={784} fill="url(#e229dbec-10e9-49ee-8ec3-0286ca089edf)" />
-            </svg>
-          </div>
-        </div>
+      <div className="hero-section relative">
+        <div className="hero-bg"></div>
+        
+        <div className="hero-content">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="hero-title">
+              <span className="block text-sm font-semibold uppercase tracking-wide text-kaia-primary mb-4">
+                DeFi Meets Tradition
+              </span>
+              <span className="block text-gradient">
+                Hemat
+              </span>
+              <span className="block text-kaia-text-primary">
+                Thrift & Insurance
+              </span>
+            </h1>
+            <p className="hero-subtitle">
+              USDT-powered thrift savings and insurance platform on Kaia blockchain. 
+              Join traditional communal savings with modern DeFi benefits.
+            </p>
+          </motion.div>
 
-        <div className="relative pt-6 pb-16 sm:pb-24">
-          <main className="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6 lg:mt-32">
-            <div className="lg:grid lg:grid-cols-12 lg:gap-8">
-              <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8 }}
-                >
-                  <h1>
-                    <span className="block text-sm font-semibold uppercase tracking-wide text-indigo-400">
-                      DeFi Meets Tradition
-                    </span>
-                    <span className="mt-1 block text-4xl tracking-tight font-extrabold sm:text-5xl xl:text-6xl">
-                      <span className="block text-white">Hemat</span>
-                      <span className="block text-indigo-400">Thrift & Insurance</span>
-                    </span>
-                  </h1>
-                  <p className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
-                    USDT-powered thrift savings and insurance platform on Kaia blockchain. 
-                    Join traditional communal savings with modern DeFi benefits.
-                  </p>
-                </motion.div>
-
-                <motion.div
-                  className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                >
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    {isConnected ? (
-                      <>
-                        <Link
-                          to="/dashboard"
-                          className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-colors duration-200"
-                        >
-                          Go to Dashboard
-                          <ArrowRightIcon className="ml-2 h-5 w-5" />
-                        </Link>
-                        <Link
-                          to="/create-group"
-                          className="inline-flex items-center justify-center px-6 py-3 border border-blue-700 text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-200"
-                        >
-                          Create Group
-                        </Link>
-                      </>
-                    ) : (
-                      <>
-                        <Link
-                          to="/groups"
-                          className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-colors duration-200"
-                        >
-                          Explore Groups
-                          <ArrowRightIcon className="ml-2 h-5 w-5" />
-                        </Link>
-                        <button className="inline-flex items-center justify-center px-6 py-3 border border-blue-700 text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-200">
-                          Connect Wallet
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </motion.div>
-              </div>
-
-              <motion.div
-                className="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-              >
-                <div className="relative mx-auto w-full lg:max-w-md">
-                  <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
-                    <div className="relative rounded-2xl bg-gray-900 border border-gray-800 overflow-hidden">
-                      {!heroLoaded && (
-                        <div className="h-[280px] sm:h-[320px] lg:h-[360px] w-full animate-pulse bg-gradient-to-r from-gray-800 to-gray-700" />
-                      )}
-                      <img
-                        className={`w-full ${heroLoaded ? 'block' : 'hidden'}`}
-                        src="/images/hero-dashboard.png"
-                        alt="Hemat Dashboard Preview"
-                        onLoad={() => setHeroLoaded(true)}
-                        onError={(e) => {
-                          const target = e.currentTarget as HTMLImageElement;
-                          target.onerror = null;
-                          target.src = 'https://dummyimage.com/800x500/111827/9ca3af.png&text=Dashboard+Preview';
-                          setHeroLoaded(true);
-                        }}
-                      />
-                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-indigo-600/20 to-transparent" />
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+          <motion.div
+            className="mt-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              {isConnected ? (
+                <>
+                  <Link
+                    to="/dashboard"
+                    className="btn-kaia-primary inline-flex items-center"
+                  >
+                    Go to Dashboard
+                    <ArrowRightIcon className="ml-2 h-5 w-5" />
+                  </Link>
+                  <Link
+                    to="/create-group"
+                    className="btn-kaia-secondary inline-flex items-center"
+                  >
+                    Create Group
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/groups"
+                    className="btn-kaia-primary inline-flex items-center"
+                  >
+                    Explore Groups
+                    <ArrowRightIcon className="ml-2 h-5 w-5" />
+                  </Link>
+                  <button className="btn-kaia-secondary inline-flex items-center">
+                    Connect Wallet
+                  </button>
+                </>
+              )}
             </div>
-          </main>
+          </motion.div>
         </div>
+
+        {/* Hero Image */}
+        <motion.div
+          className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-4xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          <div className="relative mx-auto w-full">
+            <div className="relative rounded-kaia-md p-[2px] bg-kaia-gradient">
+              <div className="relative rounded-kaia-md bg-kaia-card border border-kaia-border overflow-hidden backdrop-blur-kaia">
+                {!heroLoaded && (
+                  <div className="h-[280px] sm:h-[320px] lg:h-[360px] w-full animate-pulse bg-gradient-to-r from-kaia-surface to-kaia-card" />
+                )}
+                <img
+                  className={`w-full ${heroLoaded ? 'block' : 'hidden'}`}
+                  src="/images/hero-dashboard.png"
+                  alt="Hemat Dashboard Preview"
+                  onLoad={() => setHeroLoaded(true)}
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    target.onerror = null;
+                    target.src = 'https://dummyimage.com/800x500/111827/9ca3af.png&text=Dashboard+Preview';
+                    setHeroLoaded(true);
+                  }}
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-kaia-primary/20 to-transparent" />
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       {/* Stats Section */}
-      {platformStats && (
+      {platformStats && !statsLoading && (
         <motion.div
-          className="bg-indigo-600"
+          className="section"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <div className="max-w-7xl mx-auto py-12 px-4 sm:py-16 sm:px-6 lg:px-8 lg:py-20">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-                Trusted by the Community
-              </h2>
-              <p className="mt-3 text-xl text-indigo-200 sm:mt-4">
-                Join thousands of users building wealth together
+          <div className="container-kaia">
+            <div className="text-center mb-16">
+              <h2 className="section-title">Platform Statistics</h2>
+              <p className="section-subtitle">
+                Join thousands of users building wealth together through community savings
               </p>
             </div>
-            <dl className="mt-10 text-center sm:max-w-3xl sm:mx-auto sm:grid sm:grid-cols-3 sm:gap-8">
-              <div className="flex flex-col">
-                <dt className="order-2 mt-2 text-lg leading-6 font-medium text-indigo-200">
-                  Active Groups
-                </dt>
-                <dd className="order-1 text-5xl font-extrabold text-white">
-                  {platformStats.totalGroups.toLocaleString()}
-                </dd>
+            
+            <div className="grid-kaia-3">
+              <div className="text-center">
+                <div className="metric-card text-center">
+                  <div className="metric-value text-kaia-primary">
+                    {platformStats.totalGroups.toLocaleString()}
+                  </div>
+                  <div className="metric-label">Active Groups</div>
+                </div>
               </div>
-              <div className="flex flex-col mt-10 sm:mt-0">
-                <dt className="order-2 mt-2 text-lg leading-6 font-medium text-indigo-200">
-                  Total Volume
-                </dt>
-                <dd className="order-1 text-5xl font-extrabold text-white">
-                  ${platformStats.totalVolume?.toLocaleString() || '0'}
-                </dd>
+              <div className="text-center">
+                <div className="metric-card text-center">
+                  <div className="metric-value text-kaia-primary">
+                    ${platformStats.totalVolume?.toLocaleString() || '0'}
+                  </div>
+                  <div className="metric-label">Total Volume</div>
+                </div>
               </div>
-              <div className="flex flex-col mt-10 sm:mt-0">
-                <dt className="order-2 mt-2 text-lg leading-6 font-medium text-indigo-200">
-                  Members
-                </dt>
-                <dd className="order-1 text-5xl font-extrabold text-white">
-                  {platformStats.totalUsers?.toLocaleString() || '0'}
-                </dd>
+              <div className="text-center">
+                <div className="metric-card text-center">
+                  <div className="metric-value text-kaia-primary">
+                    {platformStats.totalUsers?.toLocaleString() || '0'}
+                  </div>
+                  <div className="metric-label">Members</div>
+                </div>
               </div>
-            </dl>
+            </div>
           </div>
         </motion.div>
       )}
 
       {/* Features Section */}
-      <div className="py-16 bg-transparent overflow-hidden lg:py-24">
-        <div className="relative max-w-xl mx-auto px-4 sm:px-6 lg:px-8 lg:max-w-7xl">
-          <div className="relative">
-            <h2 className="text-center text-3xl leading-8 font-extrabold tracking-tight text-white sm:text-4xl">
-              Three Ways to Save
-            </h2>
-            <p className="mt-4 max-w-3xl mx-auto text-center text-xl text-gray-300">
+      <div className="section">
+        <div className="container-kaia">
+          <div className="text-center mb-16">
+            <h2 className="section-title">Three Ways to Save</h2>
+            <p className="section-subtitle">
               Choose the savings model that best fits your financial goals and community needs.
             </p>
           </div>
 
-          <div className="relative mt-12 lg:mt-24 lg:grid lg:grid-cols-3 lg:gap-8 lg:items-center">
+          <div className="grid-kaia-3">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
@@ -280,48 +253,46 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Benefits Section */}
-      <div className="py-16 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
+      <div className="section">
+        <div className="container-kaia">
+          <div className="grid-kaia-2 items-center">
             <div>
-              <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-                Why Choose Hemat?
-              </h2>
-              <p className="mt-3 max-w-3xl text-lg text-gray-300">
+              <h2 className="section-title text-left">Why Choose Hemat?</h2>
+              <p className="text-xl text-kaia-text-secondary mb-8 leading-relaxed">
                 We combine the best of traditional community savings with modern blockchain technology 
                 to create a secure, transparent, and profitable savings experience.
               </p>
 
-              <dl className="mt-10 space-y-6">
+              <div className="space-y-6">
                 {benefits.map((benefit, index) => (
                   <motion.div
                     key={benefit}
-                    className="flex"
+                    className="flex items-start"
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     viewport={{ once: true }}
                   >
-                    <CheckCircleIcon className="flex-shrink-0 w-6 h-6 text-green-400" />
-                    <div className="ml-3">
-                      <p className="text-lg text-gray-300">{benefit}</p>
+                    <CheckCircleIcon className="flex-shrink-0 w-6 h-6 text-kaia-primary mt-1" />
+                    <div className="ml-4">
+                      <p className="text-lg text-kaia-text-secondary">{benefit}</p>
                     </div>
                   </motion.div>
                 ))}
-              </dl>
+              </div>
             </div>
 
             <motion.div
-              className="mt-10 lg:mt-0"
+              className="mt-12 lg:mt-0"
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-green-600 via-emerald-600 to-blue-600">
-                <div className="relative rounded-2xl bg-gray-900 border border-gray-800 overflow-hidden">
+              <div className="relative rounded-kaia-md p-[2px] bg-kaia-gradient">
+                <div className="relative rounded-kaia-md bg-kaia-card border border-kaia-border overflow-hidden backdrop-blur-kaia">
                   {!benefitsLoaded && (
-                    <div className="h-[280px] sm:h-[320px] lg:h-[360px] w-full animate-pulse bg-gradient-to-r from-gray-800 to-gray-700" />
+                    <div className="h-[280px] sm:h-[320px] lg:h-[360px] w-full animate-pulse bg-gradient-to-r from-kaia-surface to-kaia-card" />
                   )}
                   <img
                     className={`w-full ${benefitsLoaded ? 'block' : 'hidden'}`}
@@ -335,7 +306,7 @@ const HomePage: React.FC = () => {
                       setBenefitsLoaded(true);
                     }}
                   />
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-emerald-600/20 to-transparent" />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-kaia-primary/20 to-transparent" />
                 </div>
               </div>
             </motion.div>
@@ -344,18 +315,16 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Testimonials Section */}
-      <div className="py-16 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-              What Our Community Says
-            </h2>
-            <p className="mt-4 text-lg text-gray-300">
+      <div className="section">
+        <div className="container-kaia">
+          <div className="text-center mb-16">
+            <h2 className="section-title">What Our Community Says</h2>
+            <p className="section-subtitle">
               Real stories from real people building wealth with Hemat
             </p>
           </div>
 
-          <div className="mt-12 grid gap-8 lg:grid-cols-3">
+          <div className="grid-kaia-3">
             {testimonials.map((testimonial, index) => (
               <motion.div
                 key={testimonial.name}
@@ -377,31 +346,31 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-indigo-600">
-        <div className="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
+      <div className="section bg-kaia-primary">
+        <div className="container-kaia-sm text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
+            <h2 className="text-4xl md:text-5xl font-bold text-kaia-background mb-6">
               <span className="block">Ready to start saving?</span>
               <span className="block">Join a group today.</span>
             </h2>
-            <p className="mt-4 text-lg leading-6 text-indigo-200">
+            <p className="text-xl leading-6 text-kaia-background/80 mb-8">
               Connect your wallet and join thousands of users building wealth together through community savings.
             </p>
-            <div className="mt-8 flex justify-center space-x-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/groups"
-                className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gray-900 hover:bg-gray-800 transition-colors duration-200"
+                className="btn-secondary bg-kaia-background text-kaia-primary hover:bg-kaia-background/90"
               >
                 Browse Groups
               </Link>
               <Link
                 to="/create-group"
-                className="inline-flex items-center justify-center px-6 py-3 border border-white text-base font-medium rounded-md text-white hover:bg-indigo-700 transition-colors duration-200"
+                className="btn-outline border-kaia-background text-kaia-background hover:bg-kaia-background hover:text-kaia-primary"
               >
                 Create Group
               </Link>

@@ -44,39 +44,39 @@ const labelMap: Record<string, string> = {
 export default function ActivityFeed({ items }: { items: ActivityItem[] }) {
   if (!items || items.length === 0) {
     return (
-      <div className="card">
-        <div className="p-6 text-gray-400">No on-chain activity yet</div>
+      <div className="glass-card">
+        <div className="p-8 text-kaia-text-muted text-center">No on-chain activity yet</div>
       </div>
     )
   }
 
   return (
-    <div className="card">
-      <div className="p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">On-chain Activity</h3>
-        <ul className="space-y-3">
+    <div className="glass-card">
+      <div className="p-8">
+        <h3 className="text-2xl font-semibold text-kaia-text-primary mb-6">On-chain Activity</h3>
+        <ul className="space-y-4">
           {items.map((it) => (
-            <li key={`${it.txHash}-${it.blockNumber}`} className="flex items-center justify-between p-3 bg-gray-800/50 rounded-xl">
+            <li key={`${it.txHash}-${it.blockNumber}`} className="flex items-center justify-between p-4 bg-kaia-surface/50 rounded-kaia-lg border border-kaia-border/50">
               <div>
-                <div className="text-white text-sm">
+                <div className="text-kaia-text-primary text-sm font-medium">
                   {labelMap[it.type] || it.type}
                   {it.amount && (
-                    <span className="text-gray-400"> · {formatAmount(it.amount)} USDT</span>
+                    <span className="text-kaia-text-muted"> · {formatAmount(it.amount)} USDT</span>
                   )}
                 </div>
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-kaia-text-muted mt-1">
                   {it.groupId !== undefined && <span>Group #{it.groupId} · </span>}
                   <a
                     href={`https://scope.klaytn.com/tx/${it.txHash}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-blue-400 hover:text-blue-300"
+                    className="text-kaia-primary hover:text-kaia-primaryLight transition-colors duration-300"
                   >
                     View Tx
                   </a>
                 </div>
               </div>
-              <div className="text-xs text-gray-400">{timeAgo(it.timestamp)}</div>
+              <div className="text-xs text-kaia-text-muted">{timeAgo(it.timestamp)}</div>
             </li>
           ))}
         </ul>
