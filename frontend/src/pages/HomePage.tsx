@@ -15,10 +15,13 @@ import { usePlatformStats } from '@hooks/api/usePlatformStats';
 import StatsCard from '@components/ui/StatsCard';
 import FeatureCard from '@components/ui/FeatureCard';
 import TestimonialCard from '@components/ui/TestimonialCard';
+import { useState } from 'react';
 
 const HomePage: React.FC = () => {
   const { isConnected } = useAppSelector((state) => state.wallet);
   const { data: platformStats, isLoading: statsLoading } = usePlatformStats();
+  const [heroLoaded, setHeroLoaded] = useState(false);
+  const [benefitsLoaded, setBenefitsLoaded] = useState(false);
 
   const features = [
     {
@@ -93,7 +96,7 @@ const HomePage: React.FC = () => {
                   height={20}
                   patternUnits="userSpaceOnUse"
                 >
-                  <rect x={0} y={0} width={4} height={4} className="text-gray-200" fill="currentColor" />
+                  <rect x={0} y={0} width={4} height={4} className="text-gray-700" fill="currentColor" />
                 </pattern>
               </defs>
               <rect width={404} height={784} fill="url(#e229dbec-10e9-49ee-8ec3-0286ca089edf)" />
@@ -111,12 +114,12 @@ const HomePage: React.FC = () => {
                   transition={{ duration: 0.8 }}
                 >
                   <h1>
-                    <span className="block text-sm font-semibold uppercase tracking-wide text-indigo-600">
+                    <span className="block text-sm font-semibold uppercase tracking-wide text-indigo-400">
                       DeFi Meets Tradition
                     </span>
                     <span className="mt-1 block text-4xl tracking-tight font-extrabold sm:text-5xl xl:text-6xl">
                       <span className="block text-white">Hemat</span>
-                      <span className="block text-indigo-600">Thrift & Insurance</span>
+                      <span className="block text-indigo-400">Thrift & Insurance</span>
                     </span>
                   </h1>
                   <p className="mt-3 text-base text-gray-300 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
@@ -172,19 +175,26 @@ const HomePage: React.FC = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
               >
-                <div className="relative mx-auto w-full rounded-lg shadow-lg lg:max-w-md">
-                  <div className="relative block w-full bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
-                    <img
-                      className="w-full"
-                      src="/images/hero-dashboard.png"
-                      alt="Hemat Dashboard Preview"
-                      onError={(e) => {
-                        const target = e.currentTarget as HTMLImageElement;
-                        target.onerror = null;
-                        target.src = 'https://dummyimage.com/800x500/e5e7eb/111827.png&text=Dashboard+Preview';
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-indigo-600 to-transparent opacity-20"></div>
+                <div className="relative mx-auto w-full lg:max-w-md">
+                  <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
+                    <div className="relative rounded-2xl bg-gray-900 border border-gray-800 overflow-hidden">
+                      {!heroLoaded && (
+                        <div className="h-[280px] sm:h-[320px] lg:h-[360px] w-full animate-pulse bg-gradient-to-r from-gray-800 to-gray-700" />
+                      )}
+                      <img
+                        className={`w-full ${heroLoaded ? 'block' : 'hidden'}`}
+                        src="/images/hero-dashboard.png"
+                        alt="Hemat Dashboard Preview"
+                        onLoad={() => setHeroLoaded(true)}
+                        onError={(e) => {
+                          const target = e.currentTarget as HTMLImageElement;
+                          target.onerror = null;
+                          target.src = 'https://dummyimage.com/800x500/111827/9ca3af.png&text=Dashboard+Preview';
+                          setHeroLoaded(true);
+                        }}
+                      />
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-indigo-600/20 to-transparent" />
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -292,9 +302,9 @@ const HomePage: React.FC = () => {
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     viewport={{ once: true }}
                   >
-                    <CheckCircleIcon className="flex-shrink-0 w-6 h-6 text-green-500" />
+                    <CheckCircleIcon className="flex-shrink-0 w-6 h-6 text-green-400" />
                     <div className="ml-3">
-                      <p className="text-lg text-gray-500">{benefit}</p>
+                      <p className="text-lg text-gray-300">{benefit}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -308,16 +318,26 @@ const HomePage: React.FC = () => {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <img
-                className="mx-auto rounded-lg shadow-lg"
-                src="/images/benefits-illustration.png"
-                alt="Hemat Benefits"
-                onError={(e) => {
-                  const target = e.currentTarget as HTMLImageElement;
-                  target.onerror = null;
-                  target.src = 'https://dummyimage.com/800x500/e5e7eb/111827.png&text=Benefits+Illustration';
-                }}
-              />
+              <div className="relative rounded-2xl p-[1px] bg-gradient-to-r from-green-600 via-emerald-600 to-blue-600">
+                <div className="relative rounded-2xl bg-gray-900 border border-gray-800 overflow-hidden">
+                  {!benefitsLoaded && (
+                    <div className="h-[280px] sm:h-[320px] lg:h-[360px] w-full animate-pulse bg-gradient-to-r from-gray-800 to-gray-700" />
+                  )}
+                  <img
+                    className={`w-full ${benefitsLoaded ? 'block' : 'hidden'}`}
+                    src="/images/benefits-illustration.png"
+                    alt="Hemat Benefits"
+                    onLoad={() => setBenefitsLoaded(true)}
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      target.onerror = null;
+                      target.src = 'https://dummyimage.com/800x500/111827/9ca3af.png&text=Benefits+Illustration';
+                      setBenefitsLoaded(true);
+                    }}
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-emerald-600/20 to-transparent" />
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>
