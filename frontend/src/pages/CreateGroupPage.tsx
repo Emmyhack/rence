@@ -107,6 +107,7 @@ const CreateGroupPage: React.FC = () => {
   const { isLoading, error, platformStats } = useAppSelector((state) => state.groups);
 
   const [selectedModel, setSelectedModel] = useState<number>(0);
+  const [submitting, setSubmitting] = useState<boolean>(false);
 
   const {
     register,
@@ -162,6 +163,7 @@ const CreateGroupPage: React.FC = () => {
   }, [selectedModel, setValue]);
 
   const onSubmit = async (data: GroupConfig) => {
+    setSubmitting(true);
     try {
       const result = await dispatch(createGroup(data)).unwrap();
       if (result) {
@@ -169,6 +171,8 @@ const CreateGroupPage: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to create group:', error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -521,10 +525,10 @@ const CreateGroupPage: React.FC = () => {
           <div className="flex justify-end">
             <button
               type="submit"
-              disabled={!isValid || isLoading}
+              disabled={!isValid || submitting}
               className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? (
+              {submitting ? (
                 <>
                   <LoadingSpinner className="h-5 w-5 mr-2" />
                   Creating Group...
