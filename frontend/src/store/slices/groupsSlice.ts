@@ -32,8 +32,25 @@ const initialState: GroupsState = {
 // Async thunks
 export const createGroup = createAsyncThunk(
   'groups/createGroup',
-  async (config: GroupConfig, { rejectWithValue }) => {
+  async (config: GroupConfig, { rejectWithValue, getState }) => {
     try {
+      // Enforce subscription/payment and constraints
+      if (config.model === 0) {
+        // Basic model constraints
+        const totalBasic = await hematService.getPlatformBasicGroupCount();
+        if (totalBasic >= 5) return rejectWithValue('Basic groups limit reached on platform');
+        const state: any = getState();
+        const myBasic = state.groups.createdGroups.filter((g: any) => g.model === 0 && g.status !== 2);
+        if (myBasic.length >= 1) return rejectWithValue('You already have an active basic group');
+        // Basic hard limits
+        config.groupSize = String(Math.min(parseInt(config.groupSize), 5));
+        config.gracePeriod = '0'; // No trust lock system
+      } else {
+        // Trust/Super-Trust: Pay subscription before creation
+        const paid = await hematService.paySubscription(config.model);
+        if (!paid) return rejectWithValue('Subscription payment required to create this group');
+      }
+
       const groupId = await hematService.createGroup(config);
       if (groupId) {
         // Get the group address and info

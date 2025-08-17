@@ -240,24 +240,24 @@ const CreateGroupPage: React.FC = () => {
               {[
                 {
                   id: 0,
-                  name: 'Rotational Savings',
-                  description: 'Traditional rotating savings where members take turns receiving payouts',
+                  name: 'Basic',
+                  description: 'Free group with 7-day turns, up to 5 members, platform fee on payouts',
                   icon: UsersIcon,
-                  features: ['Fixed contribution cycles', 'Rotating payouts', 'No lock period']
+                  features: ['7-day intervals', 'No trust lock', 'Up to 5 members', 'Platform fee on payouts']
                 },
                 {
                   id: 1,
-                  name: 'Fixed Savings Pool',
-                  description: 'Lock funds for a fixed period and earn yield',
+                  name: 'Trust',
+                  description: 'Stake-based trust group, creator gets 75% of platform fee share',
                   icon: ClockIcon,
-                  features: ['Fixed lock period', 'Yield generation', 'Early withdrawal penalty']
+                  features: ['Stake required to join', 'Creator sets payout order', 'Up to 30 members']
                 },
                 {
                   id: 2,
-                  name: 'Emergency Liquidity',
-                  description: 'Emergency fund with instant access for verified claims',
+                  name: 'Super-Trust',
+                  description: 'Higher tier trust group, creator gets 90% of platform fee share',
                   icon: ShieldCheckIcon,
-                  features: ['Emergency access', 'Verification required', 'Higher penalties']
+                  features: ['Stake required to join', 'Creator sets payout order', 'Up to 100 members']
                 }
               ].map((model) => (
                 <div
@@ -355,6 +355,9 @@ const CreateGroupPage: React.FC = () => {
                     placeholder="10"
                   />
                 </div>
+                {selectedModel === 0 && (
+                  <p className="mt-1 text-xs text-yellow-400">Max 5 members for Basic model</p>
+                )}
                 {errors.groupSize && (
                   <p className="mt-1 text-sm text-red-600">{errors.groupSize.message}</p>
                 )}
@@ -401,6 +404,9 @@ const CreateGroupPage: React.FC = () => {
                 <p className="mt-1 text-xs text-gray-400">
                   {formatTime(watch('gracePeriod'))}
                 </p>
+                {selectedModel === 0 && (
+                  <p className="mt-1 text-xs text-yellow-400">Basic has no trust lock; grace period is not used.</p>
+                )}
                 {errors.gracePeriod && (
                   <p className="mt-1 text-sm text-red-600">{errors.gracePeriod.message}</p>
                 )}

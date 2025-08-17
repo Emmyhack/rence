@@ -113,6 +113,12 @@ export class HematService {
   private provider: ethers.providers.Web3Provider | null = null;
   private signer: ethers.Signer | null = null;
   private contracts: any = {};
+  private subscriptionPricesUSDT: Record<number, string> = {
+    // 0: Basic (free), 1: Trust, 2: Super-Trust
+    0: '0',
+    1: '10',
+    2: '25',
+  };
 
   constructor() {
     this.initializeContracts();
@@ -176,6 +182,31 @@ export class HematService {
   }
 
   // USDT Operations
+  async getTreasuryAddress(): Promise<string | null> {
+    try {
+      return await this.contracts.hematFactory.treasuryAddress();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async paySubscription(model: number): Promise<boolean> {
+    try {
+      const price = this.subscriptionPricesUSDT[model] || '0';
+      if (price === '0') return true;
+      if (!this.signer) return false;
+      const treasury = await this.getTreasuryAddress();
+      if (!treasury) return false;
+      const amountWei = ethers.utils.parseUnits(price, 6);
+      const tx = await this.contracts.usdt.transfer(treasury, amountWei);
+      await tx.wait();
+      return true;
+    } catch (e) {
+      toast.error('Subscription payment failed');
+      return false;
+    }
+  }
+
   async getUSDTBalance(address: string): Promise<string> {
     try {
       const balance = await this.contracts.usdt.balanceOf(address);
@@ -183,6 +214,15 @@ export class HematService {
     } catch (error) {
       console.error('Error getting USDT balance:', error);
       return '0';
+    }
+  }
+
+  async getPlatformBasicGroupCount(): Promise<number> {
+    try {
+      const count = await this.contracts.hematFactory.groupCountByModel(0);
+      return Number(count.toString());
+    } catch {
+      return 0;
     }
   }
 
@@ -966,7 +1006,7 @@ export class HematService {
   }
 
   getThriftModelName(model: number): string {
-    const models = ['Rotational Savings', 'Fixed Savings Pool', 'Emergency Liquidity'];
+    const models = ['Basic', 'Trust', 'Super-Trust'];
     return models[model] || 'Unknown';
   }
 
