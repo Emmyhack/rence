@@ -6,13 +6,13 @@
 
 Hemat is a decentralized thrift savings and insurance protocol built on the Kaia blockchain, using USDT as the canonical unit. It blends traditional communal thrift models (Ajo/Esusu) with DeFi primitives: on-chain escrow, automated payouts, yield optimization for idle funds, and a transparent insurance reserve.
 
-## 🌟 **Live Deployment**
+##  **Live Deployment**
 
 - **Frontend**: [https://rence-rouge.vercel.app](https://rence-rouge.vercel.app)
 - **Network**: Kaia Testnet (Kairos)
 - **Chain ID**: 1001
 
-## 🏗️ **Architecture Overview**
+##  **Architecture Overview**
 
 ### Core Components
 
@@ -25,28 +25,28 @@ Hemat is a decentralized thrift savings and insurance protocol built on the Kaia
 
 ### Thrift Models
 
-#### 🆓 **Basic Groups**
+####  **Basic Groups**
 - **Free to create** (no subscription fee)
 - Maximum **5 members**
 - **7-day** contribution cycles
 - Platform fee charged on payouts
 - No trust/stake requirements
 
-#### 🛡️ **Trust Groups**
+####  **Trust Groups**
 - Requires **10 USDT** subscription
 - Up to **30 members**
 - Stake required to join
 - Creator sets payout order
 - Creator gets **75%** of platform fee share
 
-#### ⭐ **Super-Trust Groups**
+####  **Super-Trust Groups**
 - Requires **25 USDT** subscription
 - Up to **100 members**
 - Higher stake requirements
 - Advanced features
 - Creator gets **90%** of platform fee share
 
-## 🚀 **Quick Start Guide**
+##  **Quick Start Guide**
 
 ### Prerequisites
 
@@ -132,7 +132,7 @@ Currency Symbol: KAIA
 Block Explorer: https://kaiascope.com
 ```
 
-## 💰 **Adding Mock USDT Token**
+##  **Adding Mock USDT Token**
 
 ### For MetaMask:
 
@@ -179,52 +179,52 @@ Decimals: 6
 ## 📋 **Deployed Contract Addresses (Testnet)**
 
 ```
-🏭 HematFactory:     0xCeDfe4FAad227720499F2318F92845b87144d702
-💰 MockUSDT:         0xFE77673f4BF659ef28bD0b3B66013dB5acFA0eBe
-🏦 EscrowVault:      0x6dca750C61bea425768AEbfba354C81A4122482d
-🛡️ StakeManager:     0x72a773725845E2F4BBB5b8b2C5C5b06e48B5f4e5
-🛡️ InsurancePool:    0x7054347C5fe4B2056fcbC482C32D5617978d9F0a
-📈 MockDeFiAdapter:  0xB3a49DcFa3df4a28bdac61f98893FC2854319EB7
+  HematFactory:     0xCeDfe4FAad227720499F2318F92845b87144d702
+  MockUSDT:         0xFE77673f4BF659ef28bD0b3B66013dB5acFA0eBe
+  EscrowVault:      0x6dca750C61bea425768AEbfba354C81A4122482d
+  StakeManager:     0x72a773725845E2F4BBB5b8b2C5C5b06e48B5f4e5
+  InsurancePool:    0x7054347C5fe4B2056fcbC482C32D5617978d9F0a
+  MockDeFiAdapter:  0xB3a49DcFa3df4a28bdac61f98893FC2854319EB7
 ```
 
-## 🧪 **Complete Testing Guide**
+##  **Complete Testing Guide**
 
 ### Step 1: Wallet Connection
-- ✅ Connect your wallet to the dApp
-- ✅ Ensure you're on Kaia Testnet (Chain ID: 1001)
-- ✅ Verify your address displays correctly
+-  Connect your wallet to the dApp
+-  Ensure you're on Kaia Testnet (Chain ID: 1001)
+-  Verify your address displays correctly
 
 ### Step 2: Get Test Tokens
-- ✅ Obtain KAIA tokens for gas fees
-- ✅ Get Mock USDT tokens for testing
-- ✅ Verify balances show in your wallet
+-  Obtain KAIA tokens for gas fees
+-  Get Mock USDT tokens for testing
+-  Verify balances show in your wallet
 
 ### Step 3: Basic Group Testing
 1. **Create a Basic Group**:
-   - ✅ Navigate to "Create Group"
-   - ✅ Select "Basic" model (free)
-   - ✅ Set contribution: 50 USDT
-   - ✅ Set group size: 3-5 members
-   - ✅ Submit transaction
+   -  Navigate to "Create Group"
+   -  Select "Basic" model (free)
+   -  Set contribution: 50 USDT
+   -  Set group size: 3-5 members
+   -  Submit transaction
 
 2. **Join a Group**:
-   - ✅ Browse available groups
-   - ✅ Join a group as a member
-   - ✅ Deposit required stake
+   -  Browse available groups
+   -  Join a group as a member
+   -  Deposit required stake
 
 ### Step 4: Contribution Cycle
-- ✅ Make your first contribution
-- ✅ Verify contribution is recorded
-- ✅ Check cycle progression
-- ✅ Claim payout when eligible
+-  Make your first contribution
+-  Verify contribution is recorded
+-  Check cycle progression
+-  Claim payout when eligible
 
 ### Step 5: Advanced Features
-- ✅ Test Trust/Super-Trust group creation
-- ✅ Test insurance claim submission
-- ✅ Test yield harvesting
-- ✅ Test emergency withdrawal
+-  Test Trust/Super-Trust group creation
+-  Test insurance claim submission
+-  Test yield harvesting
+-  Test emergency withdrawal
 
-## 💰 **Fee Structure**
+##  **Fee Structure**
 
 | Feature | Fee | Description |
 |---------|-----|-------------|
@@ -234,48 +234,48 @@ Decimals: 6
 | **Super-Trust Subscription** | 25 USDT | One-time payment |
 | **Early Withdrawal Penalty** | Configurable | Set by group creator |
 
-## 🔒 **Security Features**
+##  **Security Features**
 
-- ✅ **ReentrancyGuard**: Prevents reentrancy attacks
-- ✅ **Pausable**: Emergency pause functionality
-- ✅ **Ownable**: Admin controls for critical functions
-- ✅ **SafeERC20**: Secure token transfers
-- ✅ **Grace Periods**: 2-day default grace period
-- ✅ **Stake Slashing**: Penalty system for defaults
+-  **ReentrancyGuard**: Prevents reentrancy attacks
+-  **Pausable**: Emergency pause functionality
+-  **Ownable**: Admin controls for critical functions
+-  **SafeERC20**: Secure token transfers
+-  **Grace Periods**: 2-day default grace period
+-  **Stake Slashing**: Penalty system for defaults
 
-## 📊 **Key Features**
+##  **Key Features**
 
-### 🌱 Yield Optimization
+###  Yield Optimization
 - Idle funds automatically deployed to DeFi protocols
 - **80%** of yield returned to members
 - **20%** of yield to insurance pool
 - **10%** liquidity buffer maintained
 
-### 🛡️ Insurance System
+###  Insurance System
 - Automatic premium collection (2% of contributions)
 - On-chain claims with verification
 - Emergency payout system
 - Reserve threshold protection
 
-### 🎯 Trust Scoring
+###  Trust Scoring
 - Behavioral tracking for members
 - Penalty system for defaults
 - Reward system for completions
 - Reputation-based risk assessment
 
-## 🌐 **Frontend Features**
+##  **Frontend Features**
 
 The React-based frontend provides:
 
-- 🔗 **Wallet Integration**: Kaikas & MetaMask support
-- 👥 **Group Management**: Create, join, and manage groups
-- 💰 **Contribution Tracking**: Real-time cycle monitoring
-- 🏆 **Payout System**: Automated claim processing
-- 🛡️ **Insurance Interface**: Claim submission and tracking
-- 📊 **Analytics Dashboard**: Yield and performance metrics
-- 📱 **Responsive Design**: Mobile-friendly interface
+-  **Wallet Integration**: Kaikas & MetaMask support
+-  **Group Management**: Create, join, and manage groups
+-  **Contribution Tracking**: Real-time cycle monitoring
+-  **Payout System**: Automated claim processing
+-  **Insurance Interface**: Claim submission and tracking
+-  **Analytics Dashboard**: Yield and performance metrics
+-  **Responsive Design**: Mobile-friendly interface
 
-## 🛠️ **Development Commands**
+##  **Development Commands**
 
 ```bash
 # Smart Contract Commands
@@ -292,7 +292,7 @@ npm run frontend:build  # Build for production
 npm run build          # Build entire project
 ```
 
-## 🚨 **Common Issues & Solutions**
+##  **Common Issues & Solutions**
 
 ### Issue: "Insufficient USDT Balance"
 **Solution**: Ensure you have Mock USDT tokens added to your wallet and sufficient balance
@@ -315,27 +315,27 @@ npm run build          # Build entire project
 - Check minimum contribution requirements (10 USDT)
 - Ensure all form fields are valid
 
-## 📈 **Roadmap**
+##  **Roadmap**
 
-### ✅ Phase 1 - MVP (Completed)
+###  Phase 1 - MVP (Completed)
 - Core smart contracts
 - Basic frontend integration
 - Testnet deployment
 - Internal audit
 
-### 🔄 Phase 2 - Enhancement (In Progress)
+###  Phase 2 - Enhancement (In Progress)
 - Real DeFi protocol integration
 - Advanced UI/UX improvements
 - Mobile optimization
 - External security audit
 
-### 📋 Phase 3 - Scale (Upcoming)
+###  Phase 3 - Scale (Upcoming)
 - Mainnet deployment
 - Mobile application
 - Advanced analytics
 - Governance features
 
-## 🤝 **Contributing**
+##  **Contributing**
 
 We welcome contributions! Please follow these steps:
 
@@ -349,21 +349,21 @@ We welcome contributions! Please follow these steps:
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 **Support & Community**
+##  **Support & Community**
 
-- 📧 **Email**: [support@hemat.io](mailto:support@hemat.io)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/Emmyhack/rence/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/Emmyhack/rence/discussions)
-- 📱 **Telegram**: [Join our community](https://t.me/hematdefi)
+-  **Email**: [support@hemat.io](mailto:support@hemat.io)
+-  **Issues**: [GitHub Issues](https://github.com/Emmyhack/rence/issues)
+-  **Discussions**: [GitHub Discussions](https://github.com/Emmyhack/rence/discussions)
+-  **Telegram**: [Join our community](https://t.me/hematdefi)
 
-## ⚠️ **Disclaimer**
+##  **Disclaimer**
 
 This software is provided "as is" without warranty of any kind. Users should:
 
-- ✅ Conduct thorough research before using
-- ✅ Start with small amounts on testnet
-- ✅ Understand the risks involved in DeFi
-- ✅ Never invest more than you can afford to lose
+-  Conduct thorough research before using
+-  Start with small amounts on testnet
+-  Understand the risks involved in DeFi
+-  Never invest more than you can afford to lose
 
 **The developers are not responsible for any financial losses incurred through the use of this software.**
 
