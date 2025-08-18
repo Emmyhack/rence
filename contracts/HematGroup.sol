@@ -12,6 +12,11 @@ import "./EscrowVault.sol";
 import "./StakeManager.sol";
 import "./InsurancePool.sol";
 
+interface IHematFactory {
+    function updateMemberStats(address member, uint256 contributionAmount) external;
+    function updateActiveGroupCount(int256 change) external;
+}
+
 /**
  * @title HematGroup
  * @dev Main contract for managing individual thrift groups
@@ -57,6 +62,7 @@ contract HematGroup is Ownable, ReentrancyGuard, Pausable, AccessControl {
     EscrowVault public immutable escrowVault;
     StakeManager public immutable stakeManager;
     InsurancePool public immutable insurancePool;
+    address public immutable hematFactory;
     
     // Group configuration
     IThriftModel.ThriftModel public model;
@@ -122,6 +128,7 @@ contract HematGroup is Ownable, ReentrancyGuard, Pausable, AccessControl {
         address _escrowVault,
         address _stakeManager,
         address _insurancePool,
+        address _hematFactory,
         IThriftModel.ThriftModel _model,
         uint256 _contributionAmount,
         uint256 _cycleInterval,
@@ -140,6 +147,7 @@ contract HematGroup is Ownable, ReentrancyGuard, Pausable, AccessControl {
         escrowVault = EscrowVault(_escrowVault);
         stakeManager = StakeManager(_stakeManager);
         insurancePool = InsurancePool(_insurancePool);
+        hematFactory = _hematFactory;
         
         _grantRole(DEFAULT_ADMIN_ROLE, _admin);
         _grantRole(ADMIN_ROLE, _admin);
@@ -198,11 +206,17 @@ contract HematGroup is Ownable, ReentrancyGuard, Pausable, AccessControl {
         
         emit MemberJoined(msg.sender, stakeRequired);
         
+        // Report member stats to factory
+        IHematFactory(hematFactory).updateMemberStats(msg.sender, contributionAmount);
+        
         // Start group if full
         if (members.length == groupSize) {
             status = GroupStatus.ACTIVE;
             cycleStartTime = block.timestamp;
             nextPayoutTime = block.timestamp + cycleInterval;
+            
+            // Report group activation to factory
+            IHematFactory(hematFactory).updateActiveGroupCount(1);
         }
     }
     
@@ -242,6 +256,9 @@ contract HematGroup is Ownable, ReentrancyGuard, Pausable, AccessControl {
         
         // Update trust score for timely payment
         stakeManager.updateTrustScoreForPayment(groupId, msg.sender);
+        
+        // Report contribution to factory for TVL tracking
+        IHematFactory(hematFactory).updateMemberStats(msg.sender, contributionAmount);
         
         emit ContributionMade(msg.sender, contributionAmount, currentCycle);
         
@@ -342,6 +359,10 @@ contract HematGroup is Ownable, ReentrancyGuard, Pausable, AccessControl {
      */
     function _completeGroup() internal {
         status = GroupStatus.COMPLETED;
+        
+        // Report group completion to factory (decrease active count)
+        IHematFactory(hematFactory).updateActiveGroupCount(-1);
+        
         emit GroupCompleted();
     }
     

@@ -379,4 +379,55 @@ contract HematFactory is ReentrancyGuard, Pausable, AccessControlEnumerable, IHe
             payable(treasuryAddress).transfer(balance);
         }
     }
+    
+    /**
+     * @dev Get real-time platform statistics from blockchain
+     */
+    function getPlatformStats() external view returns (
+        uint256 totalGroups,
+        uint256 activeGroups,
+        uint256 totalUsers,
+        uint256 totalVolume
+    ) {
+        return (totalGroupsCreated, totalActiveGroups, totalMembers, totalValueLocked);
+    }
+    
+    /**
+     * @dev Update member count when someone joins their first group
+     * Called by group contracts
+     */
+    function updateMemberStats(address member, uint256 contributionAmount) external onlyRole(GROUP_ROLE) {
+        if (!isUniqueMember[member]) {
+            isUniqueMember[member] = true;
+            totalMembers++;
+        }
+        totalValueLocked += contributionAmount;
+    }
+    
+    /**
+     * @dev Update active group count
+     * Called by group contracts when status changes
+     */
+    function updateActiveGroupCount(int256 change) external onlyRole(GROUP_ROLE) {
+        if (change > 0) {
+            totalActiveGroups += uint256(change);
+        } else if (change < 0 && totalActiveGroups >= uint256(-change)) {
+            totalActiveGroups -= uint256(-change);
+        }
+    }
+    
+    /**
+     * @dev Get group statistics by model type
+     */
+    function getGroupStatsByModel() external view returns (
+        uint256 rotationalGroups,
+        uint256 fixedSavingsGroups,
+        uint256 emergencyGroups
+    ) {
+        return (
+            groupCountByModel[ThriftModel.ROTATIONAL],
+            groupCountByModel[ThriftModel.FIXED_SAVINGS],
+            groupCountByModel[ThriftModel.EMERGENCY_LIQUIDITY]
+        );
+    }
 }
