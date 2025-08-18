@@ -47,7 +47,10 @@ contract HematFactory is ReentrancyGuard, Pausable, AccessControlEnumerable, IHe
     // Platform statistics
     uint256 public totalGroupsCreated;
     uint256 public totalActiveGroups;
+    uint256 public totalMembers;
+    uint256 public totalValueLocked;
     mapping(ThriftModel => uint256) public groupCountByModel;
+    mapping(address => bool) public isUniqueMember;
     
     // Treasury and fee management
     address public treasuryAddress;
