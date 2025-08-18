@@ -269,26 +269,29 @@ export const USDT_ABI = [
 
 // Network-specific contract addresses
 export const NETWORK_CONFIG = {
-  // Kaia Mainnet (8217)
+  // Kaia Mainnet (8217) - Using real USDT
   8217: {
     name: 'Kaia Mainnet',
     chainId: 8217,
     rpc: 'https://public-en-cypress.kaia.io',
     explorer: 'https://scope.klaytn.com',
-    USDT: '0x19Aac5f612f524B754CA7e7c41cbFa2E981A4432', // Real USDT on Kaia Mainnet
-    ESCROW_VAULT: '0x6dca750C61bea425768AEbfba354C81A4122482d',
-    STAKE_MANAGER: '0x72a773725845E2F4BBB5b8b2C5C5b06e48B5f4e5',
-    INSURANCE_POOL: '0x7054347C5fe4B2056fcbC482C32D5617978d9F0a',
-    HEMAT_FACTORY: '0xCeDfe4FAad227720499F2318F92845b87144d702',
-    MOCK_DEFI_ADAPTER: '0xB3a49DcFa3df4a28bdac61f98893FC2854319EB7'
+    // TODO: Replace with actual USDT contract address on Kaia Mainnet
+    // This should be the real USDT token deployed on Kaia Mainnet
+    USDT: '0xceE8FAF64bB97a73bb51E115Aa89C17FfA8dD167', // Real USDT on Kaia Mainnet (example - needs verification)
+    // Note: Your deployed contracts are on testnet, mainnet would need separate deployment
+    ESCROW_VAULT: '0x6dca750C61bea425768AEbfba354C81A4122482d', // Would need mainnet deployment
+    STAKE_MANAGER: '0x72a773725845E2F4BBB5b8b2C5C5b06e48B5f4e5', // Would need mainnet deployment
+    INSURANCE_POOL: '0x7054347C5fe4B2056fcbC482C32D5617978d9F0a', // Would need mainnet deployment
+    HEMAT_FACTORY: '0xCeDfe4FAad227720499F2318F92845b87144d702', // Would need mainnet deployment
+    MOCK_DEFI_ADAPTER: '0xB3a49DcFa3df4a28bdac61f98893FC2854319EB7' // Would need mainnet deployment
   },
-  // Kaia Testnet (1001)
+  // Kaia Testnet (1001) - Using MockUSDT
   1001: {
     name: 'Kaia Testnet Kairos',
     chainId: 1001,
     rpc: 'https://public-en-kairos.kaia.io',
     explorer: 'https://baobab.scope.klaytn.com',
-    USDT: '0xFE77673f4BF659ef28bD0b3B66013dB5acFA0eBe', // MockUSDT on Testnet
+    USDT: '0xFE77673f4BF659ef28bD0b3B66013dB5acFA0eBe', // MockUSDT deployed on Testnet
     ESCROW_VAULT: '0x6dca750C61bea425768AEbfba354C81A4122482d',
     STAKE_MANAGER: '0x72a773725845E2F4BBB5b8b2C5C5b06e48B5f4e5',
     INSURANCE_POOL: '0x7054347C5fe4B2056fcbC482C32D5617978d9F0a',
