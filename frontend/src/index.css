@@ -11,7 +11,7 @@
   }
   
   body {
-    @apply bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 text-gray-100;
+    @apply bg-gradient-to-br from-slate-950 via-emerald-950/20 to-slate-950 text-gray-100;
     line-height: 1.6;
     background-attachment: fixed;
   }
@@ -30,7 +30,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-gradient-to-b from-purple-500 to-blue-600 rounded-full;
+    @apply bg-gradient-to-b from-emerald-500 to-emerald-700 rounded-full;
   }
 
   ::-webkit-scrollbar-thumb:hover {
@@ -42,7 +42,7 @@
 @layer components {
   /* Primary DeFi Button */
   .btn-primary {
-    @apply bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 hover:from-purple-500 hover:via-blue-500 hover:to-cyan-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105;
+    @apply bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 hover:from-emerald-500 hover:via-green-500 hover:to-teal-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 hover:scale-105;
     background-size: 200% 200%;
     animation: gradientShift 3s ease infinite;
   }
@@ -69,7 +69,7 @@
 
   /* DeFi Cards */
   .card-defi {
-    @apply bg-slate-800/60 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl hover:shadow-purple-500/10 transition-all duration-300 hover:border-purple-500/30;
+    @apply bg-slate-800/60 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl hover:shadow-emerald-500/10 transition-all duration-300 hover:border-emerald-500/30;
   }
 
   .card-hover {
@@ -78,7 +78,7 @@
 
   /* Gradient Text - DeFi Style */
   .gradient-text {
-    @apply bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent font-bold;
+    @apply bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400 bg-clip-text text-transparent font-bold;
   }
 
   .gradient-text-success {
@@ -95,7 +95,7 @@
   }
 
   .nav-link-active {
-    @apply flex items-center px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-xl border border-purple-500/30 backdrop-blur-sm;
+    @apply flex items-center px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-emerald-600/20 to-green-600/20 rounded-xl border border-emerald-500/30 backdrop-blur-sm;
   }
 
   /* Status Indicators - DeFi Style */
@@ -169,7 +169,7 @@
   }
 
   .progress-fill {
-    @apply h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full transition-all duration-500;
+    @apply h-full bg-gradient-to-r from-emerald-500 to-green-500 rounded-full transition-all duration-500;
   }
 
   /* Tooltips - DeFi Style */

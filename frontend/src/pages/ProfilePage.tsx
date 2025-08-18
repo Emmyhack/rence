@@ -19,6 +19,7 @@ import { useAppDispatch, useAppSelector } from '@hooks/redux';
 import { depositStake, withdrawStake, fetchStakeInfo } from '@store/slices/stakingSlice';
 import { fetchUserGroups } from '@store/slices/groupsSlice';
 import { hematService } from '@services/web3/hematService';
+import { CONTRACT_ADDRESSES } from '@services/web3/contracts';
 import LoadingSpinner from '@components/ui/LoadingSpinner';
 
 // Validation schema for staking
@@ -153,6 +154,17 @@ const ProfilePage: React.FC = () => {
               <div className="mt-2 flex items-center space-x-4">
                 <span className="text-sm text-gray-400">USDT Balance: {parseFloat(usdtBalance).toFixed(2)}</span>
                 <span className="text-sm text-gray-400">Trust Score: {stakeInfo?.trustScore || '0'}</span>
+              </div>
+              <div className="mt-3 text-sm text-gray-400">
+                <span className="mr-2">USDT Token:</span>
+                <a
+                  href={`https://baobab.scope.klaytn.com/account/${CONTRACT_ADDRESSES.USDT}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-emerald-400 hover:text-emerald-300 underline"
+                >
+                  {formatAddress(CONTRACT_ADDRESSES.USDT)}
+                </a>
               </div>
             </div>
           </div>

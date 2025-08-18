@@ -195,9 +195,11 @@ export class HematService {
       const price = this.subscriptionPricesUSDT[model] || '0';
       if (price === '0') return true;
       if (!this.signer) return false;
+      // Ensure user has approved enough USDT to treasury before transferFrom flows; fallback to transfer
       const treasury = await this.getTreasuryAddress();
       if (!treasury) return false;
       const amountWei = ethers.utils.parseUnits(price, 6);
+      // Prefer transfer for mock USDT; real USDT might require approve+transferFrom in contracts
       const tx = await this.contracts.usdt.transfer(treasury, amountWei);
       await tx.wait();
       return true;
@@ -205,6 +207,10 @@ export class HematService {
       toast.error('Subscription payment failed');
       return false;
     }
+  }
+
+  getSubscriptionPrice(model: number): string {
+    return this.subscriptionPricesUSDT[model] || '0';
   }
 
   async getUSDTBalance(address: string): Promise<string> {
@@ -296,7 +302,7 @@ export class HematService {
       return null;
     } catch (error) {
       console.error('Error creating group:', error);
-      toast.error('Failed to create group');
+      toast.error('Failed to create group. Ensure you are on Kaia Kairos (1001) and have sufficient USDT.');
       return null;
     }
   }

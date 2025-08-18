@@ -22,6 +22,7 @@ import InsurancePage from '@pages/InsurancePage';
 
 import ProfilePage from '@pages/ProfilePage';
 import NotFoundPage from '@pages/NotFoundPage';
+import HelpPage from '@pages/HelpPage';
 
 // Styles
 import '@rainbow-me/rainbowkit/styles.css';
@@ -48,7 +49,7 @@ function App() {
           <RainbowKitProvider
             chains={chains}
             theme={darkTheme({
-              accentColor: '#3b82f6',
+              accentColor: '#10b981',
               accentColorForeground: 'white',
               borderRadius: 'large',
               fontStack: 'system',
@@ -72,6 +73,7 @@ function App() {
                         <Route path="/insurance" element={<InsurancePage />} />
 
                         <Route path="/profile" element={<ProfilePage />} />
+                        <Route path="/help" element={<HelpPage />} />
                         
                         {/* 404 Route */}
                         <Route path="*" element={<NotFoundPage />} />

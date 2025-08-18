@@ -252,14 +252,14 @@ const CreateGroupPage: React.FC = () => {
                 {
                   id: 1,
                   name: 'Trust',
-                  description: 'Stake-based trust group, creator gets 75% of platform fee share',
+                  description: 'Stake-based trust group; requires subscription',
                   icon: ClockIcon,
                   features: ['Stake required to join', 'Creator sets payout order', 'Up to 30 members']
                 },
                 {
                   id: 2,
                   name: 'Super-Trust',
-                  description: 'Higher tier trust group, creator gets 90% of platform fee share',
+                  description: 'Higher tier trust group; requires subscription',
                   icon: ShieldCheckIcon,
                   features: ['Stake required to join', 'Creator sets payout order', 'Up to 100 members']
                 }
