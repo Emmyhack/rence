@@ -11,6 +11,7 @@ import {
 	ShieldCheckIcon,
 	UserIcon,
 	Cog6ToothIcon,
+	QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline';
 
 import { useAppDispatch, useAppSelector } from '@hooks/redux';
@@ -31,6 +32,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 		{ name: 'Dashboard', href: '/dashboard', icon: ChartBarIcon },
 		{ name: 'Insurance', href: '/insurance', icon: ShieldCheckIcon },
 		{ name: 'Profile', href: '/profile', icon: UserIcon },
+		{ name: 'Help', href: '/help', icon: QuestionMarkCircleIcon },
 	];
 
 	useEffect(() => {
