@@ -1,190 +1,105 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-<<<<<<< HEAD
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/Pausable.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "./IThriftModel.sol";
-=======
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "./interfaces/IHematTypes.sol";
->>>>>>> origin/cursor/create-hemat-smart-contracts-4071
+import "./IThriftModel.sol";
 import "./EscrowVault.sol";
 import "./StakeManager.sol";
 import "./InsurancePool.sol";
 
+interface IHematFactory {
+    function updateMemberStats(address member, uint256 contributionAmount) external;
+    function updateActiveGroupCount(int256 change) external;
+}
+
 /**
  * @title HematGroup
-<<<<<<< HEAD
  * @dev Main contract for managing individual thrift groups
  */
-contract HematGroup is Ownable, ReentrancyGuard, Pausable {
+contract HematGroup is Ownable, ReentrancyGuard, Pausable, AccessControl {
     using SafeERC20 for IERC20;
+    
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+    bytes32 public constant CREATOR_ROLE = keccak256("CREATOR_ROLE");
+    
+    enum GroupStatus { CREATED, ACTIVE, COMPLETED, PAUSED, CANCELLED }
+    
+    struct Member {
+        uint256 totalContributed;
+        uint256 totalReceived;
+        uint256 joinedAt;
+        bool isActive;
+        uint256 lastContribution;
+        bool hasReceivedPayout;
+        bool hasWithdrawn;
+    }
+    
+    struct Contribution {
+        uint256 amount;
+        uint256 timestamp;
+        uint256 cycle;
+    }
     
     // Events
     event MemberJoined(address indexed member, uint256 stakeAmount);
-    event MemberLeft(address indexed member);
-    event ContributionMade(address indexed member, uint256 amount);
+    event ContributionMade(address indexed member, uint256 amount, uint256 cycle);
     event PayoutClaimed(address indexed member, uint256 amount);
-    event CycleCompleted(uint256 cycleNumber);
-    event DefaultEnforced(address indexed member, uint256 penaltyAmount);
-    event YieldDistributed(uint256 amount);
-    
-
-    
-    enum GroupStatus {
-        ACTIVE,
-        PAUSED,
-        COMPLETED,
-        CANCELLED
-    }
+    event CycleCompleted(uint256 cycle, address indexed recipient, uint256 amount);
+    event GroupCompleted();
+    event GroupPaused();
+    event GroupResumed();
+    event GroupCancelled();
+    event EarlyWithdrawal(address indexed member, uint256 amount, uint256 penalty);
     
     // State variables
-    IERC20 public immutable usdt;
-    EscrowVault public escrowVault;
-    StakeManager public stakeManager;
-    InsurancePool public insurancePool;
-    address public creator;
+    uint256 public immutable groupId;
+    IERC20 public immutable usdtToken;
+    EscrowVault public immutable escrowVault;
+    StakeManager public immutable stakeManager;
+    InsurancePool public immutable insurancePool;
+    address public immutable hematFactory;
     
     // Group configuration
     IThriftModel.ThriftModel public model;
     uint256 public contributionAmount;
     uint256 public cycleInterval;
     uint256 public groupSize;
-    address[] public payoutOrder;
-    bool public insuranceEnabled;
-    uint256 public stakeRequired;
     uint256 public lockDuration;
+    uint256 public gracePeriod;
+    uint256 public stakeRequired;
+    bool public insuranceEnabled;
+    uint256 public insuranceBps;
+    uint256 public platformFeeBps;
     uint256 public earlyWithdrawalPenaltyBps;
     
     // Group state
     GroupStatus public status;
-    address[] public members;
-    mapping(address => bool) public isMember;
-    mapping(address => uint256) public memberIndex;
-    mapping(address => uint256) public lastContribution;
-    mapping(address => bool) public hasReceivedPayout;
-    
-    // Cycle tracking
+    address public creator;
     uint256 public currentCycle;
     uint256 public cycleStartTime;
     uint256 public nextPayoutTime;
     uint256 public currentPayoutIndex;
-    
-    // Fixed savings specific
     uint256 public maturityTime;
-    mapping(address => uint256) public memberDeposits;
-    mapping(address => bool) public hasWithdrawn;
     
-    // Emergency pool specific
-    mapping(address => uint256) public emergencyClaims;
-    mapping(address => uint256) public claimCapPerMember;
-    
-    // Configuration
-    uint256 public constant PLATFORM_FEE_BPS = 100; // 1% platform fee
-    uint256 public constant DEFAULT_GRACE_PERIOD = 2 days;
-    uint256 public constant MAX_GROUP_SIZE = 50;
-    
-    // Modifiers
-    modifier onlyMember() {
-        require(isMember[msg.sender], "Only members can call this function");
-        _;
-    }
-    
-    modifier onlyCreator() {
-        require(msg.sender == owner(), "Only creator can call this function");
-        _;
-    }
-    
-    modifier groupActive() {
-        require(status == GroupStatus.ACTIVE, "Group is not active");
-        _;
-    }
-    
-    modifier cycleNotCompleted() {
-        require(currentCycle < groupSize, "All cycles completed");
-        _;
-    }
-    
-
-    
-    constructor(
-        address _factory,
-        address _escrowVault,
-        address _stakeManager,
-        address _insurancePool,
-        IThriftModel.ThriftModel _model,
-        uint256 _contributionAmount,
-        uint256 _cycleInterval,
-        uint256 _groupSize,
-        address[] memory _payoutOrder,
-        bool _insuranceEnabled,
-        uint256 _stakeRequired,
-        uint256 _lockDuration,
-        uint256 _earlyWithdrawalPenaltyBps,
-        address _creator
-    ) Ownable(_creator) {
-        usdt = IERC20(0x0000000000000000000000000000000000000000); // Will be set by factory
-=======
- * @dev Core thrift group contract implementing rotational, fixed savings, and emergency liquidity models
- */
-contract HematGroup is ReentrancyGuard, Pausable, AccessControl, IHematTypes {
-    using SafeERC20 for IERC20;
-    
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant CREATOR_ROLE = keccak256("CREATOR_ROLE");
-    
-    // Group configuration
-    uint256 public immutable groupId;
-    GroupConfig public config;
-    GroupStatus public status;
-    
-    // Core contracts
-    IERC20 public immutable usdtToken;
-    EscrowVault public immutable escrowVault;
-    StakeManager public immutable stakeManager;
-    InsurancePool public immutable insurancePool;
-    
-    // Group state
-    address public creator;
+    // Members
     address[] public members;
-    mapping(address => Member) public memberInfo;
     mapping(address => bool) public isMember;
+    mapping(address => uint256) public memberIndex;
+    mapping(address => Member) public memberInfo;
     
-    // Cycle management
-    uint256 public currentCycle;
-    uint256 public cycleStartTime;
-    uint256 public nextPayoutMember; // Index for rotational model
-    address[] public payoutOrder;
-    mapping(uint256 => mapping(address => Contribution)) public contributions;
-    mapping(uint256 => Payout) public payouts;
+    // Contributions
+    mapping(uint256 => mapping(address => Contribution)) public contributions; // cycle => member => contribution
+    mapping(uint256 => uint256) public cycleTotalContributions; // cycle => total amount
+    mapping(uint256 => address) public cyclePayoutRecipient; // cycle => recipient
     
-    // Fixed savings specific
-    uint256 public maturityTime;
-    mapping(address => bool) public hasWithdrawn;
-    
-    // Emergency liquidity specific
-    mapping(address => uint256) public emergencyClaimCount;
-    
-    // Timing and defaults
-    mapping(address => uint256) public lastPaymentTime;
-    uint256 public constant DEFAULT_GRACE_PERIOD = 2 days;
-    
-    // Events
-    event MemberJoined(address indexed member, uint256 stakeAmount);
-    event ContributionMade(address indexed member, uint256 amount, uint256 cycle);
-    event PayoutExecuted(address indexed recipient, uint256 amount, uint256 cycle);
-    event CycleAdvanced(uint256 newCycle, uint256 timestamp);
-    event GroupCompleted();
-    event DefaultHandled(address indexed member, uint256 penaltyAmount);
-    event EarlyWithdrawal(address indexed member, uint256 amount, uint256 penalty);
+    // Payout tracking
+    mapping(address => uint256) public memberPayouts;
+    uint256 public totalPayouts;
     
     modifier onlyCreator() {
         require(hasRole(CREATOR_ROLE, msg.sender), "HematGroup: caller is not creator");
@@ -196,263 +111,171 @@ contract HematGroup is ReentrancyGuard, Pausable, AccessControl, IHematTypes {
         _;
     }
     
-    modifier onlyActiveGroup() {
-        require(status == GroupStatus.ACTIVE, "HematGroup: group not active");
+    modifier groupActive() {
+        require(status == GroupStatus.ACTIVE, "HematGroup: group is not active");
         _;
     }
     
     modifier validMember(address member) {
-        require(member != address(0), "HematGroup: invalid member address");
         require(stakeManager.canMemberJoin(groupId, member), "HematGroup: member cannot join");
         _;
     }
     
     constructor(
         uint256 _groupId,
-        GroupConfig memory _config,
         address _creator,
         address _usdtToken,
         address _escrowVault,
         address _stakeManager,
         address _insurancePool,
+        address _hematFactory,
+        IThriftModel.ThriftModel _model,
+        uint256 _contributionAmount,
+        uint256 _cycleInterval,
+        uint256 _groupSize,
+        uint256 _lockDuration,
+        uint256 _gracePeriod,
+        uint256 _stakeRequired,
+        bool _insuranceEnabled,
+        uint256 _insuranceBps,
+        uint256 _platformFeeBps,
+        uint256 _earlyWithdrawalPenaltyBps,
         address _admin
-    ) {
+    ) Ownable(_creator) {
         groupId = _groupId;
-        config = _config;
-        creator = _creator;
-        status = GroupStatus.CREATED;
-        
         usdtToken = IERC20(_usdtToken);
->>>>>>> origin/cursor/create-hemat-smart-contracts-4071
         escrowVault = EscrowVault(_escrowVault);
         stakeManager = StakeManager(_stakeManager);
         insurancePool = InsurancePool(_insurancePool);
+        hematFactory = _hematFactory;
         
-<<<<<<< HEAD
-        model = _model;
-        contributionAmount = _contributionAmount;
-        cycleInterval = _cycleInterval;
-        groupSize = _groupSize;
-        payoutOrder = _payoutOrder;
-        insuranceEnabled = _insuranceEnabled;
-        stakeRequired = _stakeRequired;
-        lockDuration = _lockDuration;
-        earlyWithdrawalPenaltyBps = _earlyWithdrawalPenaltyBps;
-        
-        status = GroupStatus.ACTIVE;
-        currentCycle = 0;
-        cycleStartTime = block.timestamp;
-        nextPayoutTime = block.timestamp + cycleInterval;
-        currentPayoutIndex = 0;
-        
-        if (model == IThriftModel.ThriftModel.FIXED_SAVINGS) {
-            maturityTime = block.timestamp + lockDuration;
-        }
-        
-        // Set creator
-        creator = _creator;
-=======
         _grantRole(DEFAULT_ADMIN_ROLE, _admin);
         _grantRole(ADMIN_ROLE, _admin);
         _grantRole(CREATOR_ROLE, _creator);
         
-        // Set maturity time for fixed savings
-        if (_config.model == ThriftModel.FIXED_SAVINGS) {
-            maturityTime = block.timestamp + _config.lockDuration;
-        }
+        model = _model;
+        contributionAmount = _contributionAmount;
+        cycleInterval = _cycleInterval;
+        groupSize = _groupSize;
+        lockDuration = _lockDuration;
+        gracePeriod = _gracePeriod;
+        stakeRequired = _stakeRequired;
+        insuranceEnabled = _insuranceEnabled;
+        insuranceBps = _insuranceBps;
+        platformFeeBps = _platformFeeBps;
+        earlyWithdrawalPenaltyBps = _earlyWithdrawalPenaltyBps;
         
+        status = GroupStatus.CREATED;
+        creator = _creator;
         currentCycle = 1;
         cycleStartTime = block.timestamp;
->>>>>>> origin/cursor/create-hemat-smart-contracts-4071
+        
+        // Set maturity time for fixed savings
+        if (_model == IThriftModel.ThriftModel.FIXED_SAVINGS) {
+            maturityTime = block.timestamp + _lockDuration;
+        }
     }
     
     /**
      * @dev Join the thrift group
      */
-<<<<<<< HEAD
-    function joinGroup() external nonReentrant whenNotPaused groupActive {
-        require(!isMember[msg.sender], "Already a member");
-        require(members.length < groupSize, "Group is full");
-        require(usdt.balanceOf(msg.sender) >= contributionAmount, "Insufficient USDT balance");
-=======
     function joinGroup() external nonReentrant whenNotPaused validMember(msg.sender) {
         require(status == GroupStatus.CREATED, "HematGroup: group not accepting members");
-        require(members.length < config.groupSize, "HematGroup: group full");
+        require(members.length < groupSize, "HematGroup: group full");
         require(!isMember[msg.sender], "HematGroup: already a member");
         
         // Handle stake requirement
-        if (config.stakeRequired > 0) {
-            stakeManager.depositStake(groupId, msg.sender, config.stakeRequired);
+        if (stakeRequired > 0) {
+            stakeManager.depositStake(groupId, msg.sender, stakeRequired);
         }
->>>>>>> origin/cursor/create-hemat-smart-contracts-4071
         
         // Add member
         members.push(msg.sender);
         isMember[msg.sender] = true;
-<<<<<<< HEAD
         memberIndex[msg.sender] = members.length - 1;
         
-        // Handle stake requirement
-        if (stakeRequired > 0) {
-            require(usdt.transferFrom(msg.sender, address(this), stakeRequired), "Stake transfer failed");
-            stakeManager.depositStake(msg.sender, address(this), stakeRequired);
-        }
-        
-        // Initialize trust score
-        stakeManager.initializeTrustScore(msg.sender);
-        
-        emit MemberJoined(msg.sender, stakeRequired);
-    }
-    
-    /**
-     * @dev Make a contribution to the group
-     */
-    function makeContribution() external nonReentrant whenNotPaused groupActive onlyMember cycleNotCompleted {
-        require(block.timestamp >= nextPayoutTime - cycleInterval, "Too early to contribute");
-        require(block.timestamp <= nextPayoutTime + DEFAULT_GRACE_PERIOD, "Contribution period ended");
-        require(lastContribution[msg.sender] < currentCycle, "Already contributed this cycle");
-        require(usdt.balanceOf(msg.sender) >= contributionAmount, "Insufficient USDT balance");
-        
-        // Transfer contribution
-        require(usdt.transferFrom(msg.sender, address(this), contributionAmount), "Contribution transfer failed");
-        
-        // Calculate fees and insurance
-        uint256 platformFee = (contributionAmount * PLATFORM_FEE_BPS) / 10000;
-        uint256 insuranceAmount = 0;
-        
-        if (insuranceEnabled) {
-            insuranceAmount = (contributionAmount * 200) / 10000; // 2% insurance
-            insurancePool.collectPremium(address(this), msg.sender, contributionAmount);
-        }
-        
-        uint256 netContribution = contributionAmount - platformFee - insuranceAmount;
-        
-        // Deposit to escrow vault
-        escrowVault.deposit(address(this), msg.sender, netContribution);
-        
-        lastContribution[msg.sender] = currentCycle;
-        
-        emit ContributionMade(msg.sender, contributionAmount);
-        
-        // Check if all members have contributed
-        if (_allMembersContributed()) {
-            _completeCycle();
-=======
-        
         memberInfo[msg.sender] = Member({
-            memberAddress: msg.sender,
-            stakeAmount: config.stakeRequired,
             totalContributed: 0,
             totalReceived: 0,
-            trustScore: stakeManager.getMemberTrustScore(groupId, msg.sender),
             joinedAt: block.timestamp,
-            isActive: true
+            isActive: true,
+            lastContribution: 0,
+            hasReceivedPayout: false,
+            hasWithdrawn: false
         });
         
-        emit MemberJoined(msg.sender, config.stakeRequired);
-        emit MemberJoined(groupId, msg.sender, config.stakeRequired);
+        emit MemberJoined(msg.sender, stakeRequired);
         
-        // Activate group if full
-        if (members.length == config.groupSize) {
+        // Report member stats to factory
+        IHematFactory(hematFactory).updateMemberStats(msg.sender, contributionAmount);
+        
+        // Start group if full
+        if (members.length == groupSize) {
             status = GroupStatus.ACTIVE;
-            _initializePayoutOrder();
+            cycleStartTime = block.timestamp;
+            nextPayoutTime = block.timestamp + cycleInterval;
+            
+            // Report group activation to factory
+            IHematFactory(hematFactory).updateActiveGroupCount(1);
         }
     }
     
     /**
-     * @dev Make a contribution for the current cycle
+     * @dev Make contribution to the group
      */
-    function makeContribution() external onlyMember onlyActiveGroup nonReentrant whenNotPaused {
-        require(_canMakeContribution(msg.sender), "HematGroup: contribution not allowed");
+    function contribute() external onlyMember nonReentrant whenNotPaused groupActive {
+        require(contributions[currentCycle][msg.sender].timestamp == 0, "HematGroup: already contributed this cycle");
+        require(block.timestamp <= cycleStartTime + cycleInterval + gracePeriod, "HematGroup: contribution period ended");
         
-        uint256 contributionAmount = config.contributionAmount;
-        uint256 insuranceAmount = 0;
-        
-        // Calculate insurance premium
-        if (config.insuranceEnabled) {
-            insuranceAmount = (contributionAmount * config.insuranceBps) / 10000;
+        // Handle insurance premium
+        uint256 totalAmount = contributionAmount;
+        if (insuranceEnabled) {
+            uint256 premium = (contributionAmount * insuranceBps) / 10000;
+            totalAmount += premium;
             
-            // Transfer insurance premium
-            usdtToken.safeTransferFrom(msg.sender, address(insurancePool), insuranceAmount);
-            insurancePool.depositPremium(groupId, msg.sender, insuranceAmount);
+            // Transfer premium to insurance pool
+            usdtToken.safeTransferFrom(msg.sender, address(insurancePool), premium);
+            insurancePool.collectPremium(groupId, msg.sender, premium);
         }
         
-        uint256 netContribution = contributionAmount - insuranceAmount;
-        
-        // Transfer net contribution to escrow
-        escrowVault.deposit(groupId, msg.sender, netContribution);
+        // Transfer contribution to escrow vault
+        usdtToken.safeTransferFrom(msg.sender, address(this), contributionAmount);
+        usdtToken.safeTransfer(address(escrowVault), contributionAmount);
+        escrowVault.deposit(groupId, msg.sender, contributionAmount);
         
         // Record contribution
         contributions[currentCycle][msg.sender] = Contribution({
-            member: msg.sender,
             amount: contributionAmount,
-            cycleNumber: currentCycle,
             timestamp: block.timestamp,
-            status: PaymentStatus.PAID
+            cycle: currentCycle
         });
         
-        // Update member info
+        cycleTotalContributions[currentCycle] += contributionAmount;
         memberInfo[msg.sender].totalContributed += contributionAmount;
-        lastPaymentTime[msg.sender] = block.timestamp;
+        memberInfo[msg.sender].lastContribution = currentCycle;
         
-        // Update trust score
-        stakeManager.recordSuccessfulPayment(groupId, msg.sender);
+        // Update trust score for timely payment
+        stakeManager.updateTrustScoreForPayment(groupId, msg.sender);
+        
+        // Report contribution to factory for TVL tracking
+        IHematFactory(hematFactory).updateMemberStats(msg.sender, contributionAmount);
         
         emit ContributionMade(msg.sender, contributionAmount, currentCycle);
-        emit ContributionMade(groupId, msg.sender, contributionAmount, currentCycle);
         
-        // Check if cycle is complete and execute payout
+        // Check if cycle is complete
         if (_isCycleComplete()) {
             _executeCyclePayout();
->>>>>>> origin/cursor/create-hemat-smart-contracts-4071
         }
     }
     
     /**
-<<<<<<< HEAD
-     * @dev Claim payout (for rotational model)
-     */
-    function claimPayout() external nonReentrant whenNotPaused groupActive onlyMember {
-        require(model == IThriftModel.ThriftModel.ROTATIONAL, "Only for rotational model");
-        require(currentPayoutIndex < payoutOrder.length, "No more payouts");
-        require(payoutOrder[currentPayoutIndex] == msg.sender, "Not your turn");
-        require(!hasReceivedPayout[msg.sender], "Already received payout");
-        
-        uint256 payoutAmount = _calculatePayoutAmount();
-        escrowVault.withdraw(address(this), msg.sender, payoutAmount);
-        
-        hasReceivedPayout[msg.sender] = true;
-        currentPayoutIndex++;
-        
-        emit PayoutClaimed(msg.sender, payoutAmount);
-    }
-    
-    /**
-     * @dev Withdraw from fixed savings (for fixed savings model)
-     */
-    function withdrawFixedSavings() external nonReentrant whenNotPaused groupActive onlyMember {
-        require(model == IThriftModel.ThriftModel.FIXED_SAVINGS, "Only for fixed savings model");
-        require(block.timestamp >= maturityTime, "Lock period not ended");
-        require(!hasWithdrawn[msg.sender], "Already withdrawn");
-        
-        uint256 memberShare = _calculateMemberShare(msg.sender);
-        escrowVault.withdraw(address(this), msg.sender, memberShare);
-        
-        hasWithdrawn[msg.sender] = true;
-        
-        emit PayoutClaimed(msg.sender, memberShare);
-=======
      * @dev Execute payout for the current cycle
      */
     function _executeCyclePayout() internal {
-        if (config.model == ThriftModel.ROTATIONAL) {
+        if (model == IThriftModel.ThriftModel.ROTATIONAL) {
             _executeRotationalPayout();
-        } else if (config.model == ThriftModel.FIXED_SAVINGS) {
-            // No payouts until maturity
-            _advanceCycle();
-        } else if (config.model == ThriftModel.EMERGENCY_LIQUIDITY) {
-            // Emergency payouts are claim-based, just advance cycle
-            _advanceCycle();
+        } else if (model == IThriftModel.ThriftModel.FIXED_SAVINGS) {
+            _executeFixedSavingsPayout();
         }
     }
     
@@ -460,269 +283,75 @@ contract HematGroup is ReentrancyGuard, Pausable, AccessControl, IHematTypes {
      * @dev Execute rotational payout
      */
     function _executeRotationalPayout() internal {
-        require(nextPayoutMember < payoutOrder.length, "HematGroup: all payouts completed");
+        require(currentPayoutIndex < members.length, "HematGroup: all members have received payout");
         
-        address recipient = payoutOrder[nextPayoutMember];
-        uint256 totalPot = config.contributionAmount * members.length;
+        address recipient = members[currentPayoutIndex];
+        uint256 payoutAmount = cycleTotalContributions[currentCycle];
         
-        // Execute payout through escrow
-        escrowVault.executePayout(groupId, recipient, totalPot);
+        // Deduct platform fee
+        uint256 platformFee = (payoutAmount * platformFeeBps) / 10000;
+        uint256 memberPayout = payoutAmount - platformFee;
         
         // Record payout
-        payouts[currentCycle] = Payout({
-            recipient: recipient,
-            amount: totalPot,
-            cycleNumber: currentCycle,
-            timestamp: block.timestamp,
-            executed: true
-        });
+        cyclePayoutRecipient[currentCycle] = recipient;
+        memberPayouts[recipient] += memberPayout;
+        memberInfo[recipient].totalReceived += memberPayout;
+        memberInfo[recipient].hasReceivedPayout = true;
+        totalPayouts += memberPayout;
         
-        memberInfo[recipient].totalReceived += totalPot;
-        nextPayoutMember++;
+        // Add pending payout to escrow
+        escrowVault.addPendingPayout(groupId, memberPayout);
         
-        emit PayoutExecuted(recipient, totalPot, currentCycle);
-        emit PayoutExecuted(groupId, recipient, totalPot, currentCycle);
+        emit CycleCompleted(currentCycle, recipient, memberPayout);
+        
+        currentPayoutIndex++;
         
         // Check if group is complete
-        if (nextPayoutMember >= members.length) {
+        if (currentPayoutIndex >= members.length) {
             _completeGroup();
         } else {
-            _advanceCycle();
+            _startNextCycle();
         }
     }
     
     /**
-     * @dev Advance to next cycle
+     * @dev Execute fixed savings payout (at maturity)
      */
-    function _advanceCycle() internal {
+    function _executeFixedSavingsPayout() internal {
+        require(block.timestamp >= maturityTime, "HematGroup: not yet matured");
+        
+        uint256 totalContributions = 0;
+        for (uint256 i = 1; i <= currentCycle; i++) {
+            totalContributions += cycleTotalContributions[i];
+        }
+        
+        // Harvest any yield
+        escrowVault.harvestYield(groupId);
+        
+        // Calculate equal distribution
+        uint256 memberShare = totalContributions / members.length;
+        
+        for (uint256 i = 0; i < members.length; i++) {
+            address member = members[i];
+            memberPayouts[member] += memberShare;
+            memberInfo[member].totalReceived += memberShare;
+            memberInfo[member].hasReceivedPayout = true;
+            
+            // Add pending payout to escrow
+            escrowVault.addPendingPayout(groupId, memberShare);
+        }
+        
+        totalPayouts += totalContributions;
+        _completeGroup();
+    }
+    
+    /**
+     * @dev Start next cycle
+     */
+    function _startNextCycle() internal {
         currentCycle++;
         cycleStartTime = block.timestamp;
-        
-        emit CycleAdvanced(currentCycle, block.timestamp);
-    }
-    
-    /**
-     * @dev Withdraw from fixed savings pool (after maturity)
-     */
-    function withdrawFixedSavings() external onlyMember nonReentrant {
-        require(config.model == ThriftModel.FIXED_SAVINGS, "HematGroup: not fixed savings");
-        require(block.timestamp >= maturityTime, "HematGroup: not yet matured");
-        require(!hasWithdrawn[msg.sender], "HematGroup: already withdrawn");
-        
-        hasWithdrawn[msg.sender] = true;
-        
-        // Calculate member's share including yield
-        uint256 memberContributions = memberInfo[msg.sender].totalContributed;
-        uint256 yieldShare = _calculateYieldShare(msg.sender);
-        uint256 totalWithdrawal = memberContributions + yieldShare;
-        
-        if (totalWithdrawal > 0) {
-            escrowVault.executePayout(groupId, msg.sender, totalWithdrawal);
-            memberInfo[msg.sender].totalReceived += totalWithdrawal;
-        }
-        
-        // Return stake
-        if (config.stakeRequired > 0) {
-            stakeManager.withdrawStake(groupId, msg.sender);
-        }
-        
-        // Check if all members have withdrawn
-        bool allWithdrawn = true;
-        for (uint256 i = 0; i < members.length; i++) {
-            if (!hasWithdrawn[members[i]]) {
-                allWithdrawn = false;
-                break;
-            }
-        }
-        
-        if (allWithdrawn) {
-            _completeGroup();
-        }
->>>>>>> origin/cursor/create-hemat-smart-contracts-4071
-    }
-    
-    /**
-     * @dev Early withdrawal from fixed savings (with penalty)
-     */
-<<<<<<< HEAD
-    function earlyWithdraw() external nonReentrant whenNotPaused groupActive onlyMember {
-        require(model == IThriftModel.ThriftModel.FIXED_SAVINGS, "Only for fixed savings model");
-        require(block.timestamp < maturityTime, "Lock period ended");
-        require(!hasWithdrawn[msg.sender], "Already withdrawn");
-        
-        uint256 memberShare = _calculateMemberShare(msg.sender);
-        uint256 penalty = (memberShare * earlyWithdrawalPenaltyBps) / 10000;
-        uint256 netAmount = memberShare - penalty;
-        
-        escrowVault.withdraw(address(this), msg.sender, netAmount);
-        
-        // Transfer penalty to insurance pool
-        if (penalty > 0) {
-            require(usdt.transfer(address(insurancePool), penalty), "Penalty transfer failed");
-        }
-        
-        hasWithdrawn[msg.sender] = true;
-        
-        emit PayoutClaimed(msg.sender, netAmount);
-    }
-    
-    /**
-     * @dev Submit emergency claim (for emergency model)
-     */
-    function submitEmergencyClaim(uint256 amount, string memory evidenceCID) external nonReentrant whenNotPaused groupActive onlyMember {
-        require(model == IThriftModel.ThriftModel.EMERGENCY, "Only for emergency model");
-        require(amount > 0, "Amount must be greater than 0");
-        require(amount <= claimCapPerMember[msg.sender], "Amount exceeds claim cap");
-        require(emergencyClaims[msg.sender] + amount <= claimCapPerMember[msg.sender], "Would exceed claim cap");
-        
-        insurancePool.submitClaim(address(this), amount, evidenceCID);
-        emergencyClaims[msg.sender] += amount;
-    }
-    
-    /**
-     * @dev Enforce missed payment penalty
-     */
-    function enforceMissedPayment(address member) external onlyCreator {
-        require(isMember[member], "Not a member");
-        require(lastContribution[member] < currentCycle, "Member has contributed");
-        require(block.timestamp > nextPayoutTime + DEFAULT_GRACE_PERIOD, "Grace period not ended");
-        
-        uint256 penaltyAmount = stakeRequired > 0 ? stakeRequired : contributionAmount;
-        
-        if (stakeRequired > 0) {
-            stakeManager.penalizeStake(member, address(this), penaltyAmount, "Missed payment");
-        }
-        
-        emit DefaultEnforced(member, penaltyAmount);
-    }
-    
-    /**
-     * @dev Complete current cycle
-     */
-    function _completeCycle() internal {
-        currentCycle++;
-        
-        if (model == IThriftModel.ThriftModel.ROTATIONAL) {
-            if (currentPayoutIndex < payoutOrder.length) {
-                nextPayoutTime = block.timestamp + cycleInterval;
-            }
-        }
-        
-        // Distribute yield if available
-        _distributeYield();
-        
-        emit CycleCompleted(currentCycle);
-        
-        // Check if group is completed
-        if (currentCycle >= groupSize) {
-            status = GroupStatus.COMPLETED;
-        }
-    }
-    
-    /**
-     * @dev Distribute yield to members
-     */
-    function _distributeYield() internal {
-        uint256 yieldAmount = escrowVault.getGroupTotalBalance(address(this)) - 
-                             escrowVault.getGroupAvailableBalance(address(this));
-        
-        if (yieldAmount > 0) {
-            escrowVault.distributeYield(address(this), yieldAmount);
-            emit YieldDistributed(yieldAmount);
-        }
-    }
-    
-    /**
-     * @dev Calculate payout amount for current cycle
-     */
-    function _calculatePayoutAmount() internal view returns (uint256) {
-        uint256 groupBalance = escrowVault.getGroupAvailableBalance(address(this));
-        uint256 platformFee = (groupBalance * PLATFORM_FEE_BPS) / 10000;
-        return groupBalance - platformFee;
-    }
-    
-    /**
-     * @dev Calculate member share for fixed savings
-     */
-    function _calculateMemberShare(address member) internal view returns (uint256) {
-        uint256 totalDeposits = 0;
-        for (uint256 i = 0; i < members.length; i++) {
-            totalDeposits += memberDeposits[members[i]];
-        }
-        
-        if (totalDeposits == 0) return 0;
-        
-        uint256 groupBalance = escrowVault.getGroupTotalBalance(address(this));
-        return (groupBalance * memberDeposits[member]) / totalDeposits;
-    }
-    
-    /**
-     * @dev Check if all members have contributed
-     */
-    function _allMembersContributed() internal view returns (bool) {
-        for (uint256 i = 0; i < members.length; i++) {
-            if (lastContribution[members[i]] < currentCycle) {
-=======
-    function earlyWithdraw() external onlyMember nonReentrant {
-        require(config.model == ThriftModel.FIXED_SAVINGS, "HematGroup: not fixed savings");
-        require(block.timestamp < maturityTime, "HematGroup: already matured");
-        require(!hasWithdrawn[msg.sender], "HematGroup: already withdrawn");
-        
-        hasWithdrawn[msg.sender] = true;
-        
-        uint256 memberContributions = memberInfo[msg.sender].totalContributed;
-        uint256 penalty = (memberContributions * config.earlyWithdrawalPenaltyBps) / 10000;
-        uint256 netWithdrawal = memberContributions - penalty;
-        
-        if (netWithdrawal > 0) {
-            escrowVault.executePayout(groupId, msg.sender, netWithdrawal);
-            memberInfo[msg.sender].totalReceived += netWithdrawal;
-        }
-        
-        // Penalty goes to insurance pool
-        if (penalty > 0) {
-            insurancePool.depositPremium(groupId, msg.sender, penalty);
-        }
-        
-        emit EarlyWithdrawal(msg.sender, netWithdrawal, penalty);
-    }
-    
-    /**
-     * @dev Handle missed payment (called by external scheduler)
-     */
-    function enforceMissedPayment(address member) external {
-        require(isMember[member], "HematGroup: not a member");
-        require(_isPaymentOverdue(member), "HematGroup: payment not overdue");
-        
-        uint256 missedAmount = config.contributionAmount;
-        
-        // Try to slash stake first
-        uint256 slashedAmount = stakeManager.slashStake(groupId, member, missedAmount);
-        uint256 shortfall = missedAmount - slashedAmount;
-        
-        // Cover shortfall with insurance if needed
-        if (shortfall > 0 && config.insuranceEnabled) {
-            // This would typically be handled by insurance pool logic
-            // For simplicity, we mark as covered by insurance
-            contributions[currentCycle][member] = Contribution({
-                member: member,
-                amount: missedAmount,
-                cycleNumber: currentCycle,
-                timestamp: block.timestamp,
-                status: PaymentStatus.COVERED_BY_INSURANCE
-            });
-        } else {
-            contributions[currentCycle][member] = Contribution({
-                member: member,
-                amount: missedAmount,
-                cycleNumber: currentCycle,
-                timestamp: block.timestamp,
-                status: PaymentStatus.DEFAULTED
-            });
-        }
-        
-        emit DefaultHandled(member, slashedAmount);
-        emit DefaultHandled(groupId, member, slashedAmount);
+        nextPayoutTime = block.timestamp + cycleInterval;
     }
     
     /**
@@ -731,71 +360,52 @@ contract HematGroup is ReentrancyGuard, Pausable, AccessControl, IHematTypes {
     function _completeGroup() internal {
         status = GroupStatus.COMPLETED;
         
-        // Return remaining stakes for rotational and emergency models
-        if (config.model != ThriftModel.FIXED_SAVINGS) {
-            for (uint256 i = 0; i < members.length; i++) {
-                address member = members[i];
-                if (config.stakeRequired > 0 && memberInfo[member].isActive) {
-                    stakeManager.withdrawStake(groupId, member);
-                }
-            }
-        }
+        // Report group completion to factory (decrease active count)
+        IHematFactory(hematFactory).updateActiveGroupCount(-1);
         
         emit GroupCompleted();
     }
     
     /**
-     * @dev Initialize payout order for rotational model
+     * @dev Claim payout
      */
-    function _initializePayoutOrder() internal {
-        require(config.model == ThriftModel.ROTATIONAL, "HematGroup: not rotational model");
+    function claimPayout() external onlyMember nonReentrant {
+        uint256 amount = memberPayouts[msg.sender];
+        require(amount > 0, "HematGroup: no payout available");
         
-        // For simplicity, use member join order. In production, this could be randomized
-        for (uint256 i = 0; i < members.length; i++) {
-            payoutOrder.push(members[i]);
-        }
+        memberPayouts[msg.sender] = 0;
+        escrowVault.processPayout(groupId, msg.sender, amount);
+        
+        emit PayoutClaimed(msg.sender, amount);
     }
     
     /**
-     * @dev Set custom payout order (creator only, before group starts)
+     * @dev Early withdrawal from fixed savings (with penalty)
      */
-    function setPayoutOrder(address[] calldata _payoutOrder) external onlyCreator {
-        require(status == GroupStatus.CREATED, "HematGroup: group already started");
-        require(_payoutOrder.length == members.length, "HematGroup: invalid order length");
+    function earlyWithdraw() external onlyMember nonReentrant {
+        require(model == IThriftModel.ThriftModel.FIXED_SAVINGS, "HematGroup: not fixed savings");
+        require(!memberInfo[msg.sender].hasWithdrawn, "HematGroup: already withdrawn");
+        require(block.timestamp < maturityTime, "HematGroup: group has matured");
         
-        // Verify all members are included
-        for (uint256 i = 0; i < _payoutOrder.length; i++) {
-            require(isMember[_payoutOrder[i]], "HematGroup: invalid member in order");
+        uint256 contributed = memberInfo[msg.sender].totalContributed;
+        require(contributed > 0, "HematGroup: no contributions");
+        
+        // Calculate penalty
+        uint256 penalty = (contributed * earlyWithdrawalPenaltyBps) / 10000;
+        uint256 withdrawAmount = contributed - penalty;
+        
+        memberInfo[msg.sender].hasWithdrawn = true;
+        memberInfo[msg.sender].isActive = false;
+        
+        // Transfer penalty to insurance pool
+        if (penalty > 0) {
+            escrowVault.withdraw(groupId, address(insurancePool), penalty);
         }
         
-        delete payoutOrder;
-        for (uint256 i = 0; i < _payoutOrder.length; i++) {
-            payoutOrder.push(_payoutOrder[i]);
-        }
-    }
-    
-    /**
-     * @dev Calculate yield share for fixed savings member
-     */
-    function _calculateYieldShare(address member) internal view returns (uint256) {
-        uint256 memberContributions = memberInfo[member].totalContributed;
-        uint256 totalContributions = _getTotalContributions();
+        // Process withdrawal
+        escrowVault.withdraw(groupId, msg.sender, withdrawAmount);
         
-        if (totalContributions == 0) return 0;
-        
-        // Get yield from escrow vault
-        IHematTypes.YieldInfo memory yieldInfo = escrowVault.getYieldInfo(groupId);
-        uint256 totalYield = escrowVault.yieldReserve(groupId);
-        
-        return (totalYield * memberContributions) / totalContributions;
-    }
-    
-    /**
-     * @dev Check if member can make contribution
-     */
-    function _canMakeContribution(address member) internal view returns (bool) {
-        // Check if already contributed this cycle
-        return contributions[currentCycle][member].timestamp == 0;
+        emit EarlyWithdrawal(msg.sender, withdrawAmount, penalty);
     }
     
     /**
@@ -804,7 +414,6 @@ contract HematGroup is ReentrancyGuard, Pausable, AccessControl, IHematTypes {
     function _isCycleComplete() internal view returns (bool) {
         for (uint256 i = 0; i < members.length; i++) {
             if (contributions[currentCycle][members[i]].timestamp == 0) {
->>>>>>> origin/cursor/create-hemat-smart-contracts-4071
                 return false;
             }
         }
@@ -812,151 +421,97 @@ contract HematGroup is ReentrancyGuard, Pausable, AccessControl, IHematTypes {
     }
     
     /**
-<<<<<<< HEAD
+     * @dev Check if payment is overdue
+     */
+    function isPaymentOverdue(address member) external view returns (bool) {
+        if (!isMember[member] || status != GroupStatus.ACTIVE) {
+            return false;
+        }
+        
+        if (contributions[currentCycle][member].timestamp > 0) {
+            return false; // Already contributed this cycle
+        }
+        
+        return block.timestamp > cycleStartTime + cycleInterval;
+    }
+    
+    /**
+     * @dev Get time remaining in current cycle
+     */
+    function getTimeRemaining() external view returns (uint256) {
+        if (status != GroupStatus.ACTIVE) {
+            return 0;
+        }
+        
+        uint256 deadline = cycleStartTime + cycleInterval;
+        return deadline > block.timestamp ? deadline - block.timestamp : 0;
+    }
+    
+    /**
      * @dev Get group information
      */
     function getGroupInfo() external view returns (
-        IThriftModel.ThriftModel _model,
-        uint256 _contributionAmount,
-        uint256 _cycleInterval,
-        uint256 _groupSize,
-        bool _insuranceEnabled,
-        uint256 _stakeRequired,
-        GroupStatus _status,
-        uint256 _currentCycle,
-        uint256 _nextPayoutTime,
-        uint256 _memberCount
+        IThriftModel.ThriftModel groupModel,
+        uint256 contribution,
+        uint256 interval,
+        uint256 size,
+        uint256 currentMembers,
+        GroupStatus groupStatus,
+        uint256 cycle,
+        uint256 payoutIndex
     ) {
         return (
             model,
             contributionAmount,
             cycleInterval,
             groupSize,
-            insuranceEnabled,
-            stakeRequired,
+            members.length,
             status,
             currentCycle,
-            nextPayoutTime,
-            members.length
+            currentPayoutIndex
         );
     }
     
     /**
      * @dev Get member information
      */
-    function getMemberInfo(address member) external view returns (
-        bool _isMember,
-        uint256 _lastContribution,
-        bool _hasReceivedPayout,
-        uint256 _stake,
-        uint256 _trustScore
-    ) {
-        return (
-            isMember[member],
-            lastContribution[member],
-            hasReceivedPayout[member],
-            stakeManager.getMemberStake(member, address(this)),
-            stakeManager.getTrustScore(member)
-        );
+    function getMemberInfo(address member) external view returns (Member memory) {
+        return memberInfo[member];
     }
     
     /**
      * @dev Get all members
      */
-=======
-     * @dev Check if payment is overdue
-     */
-    function _isPaymentOverdue(address member) internal view returns (bool) {
-        uint256 deadline = cycleStartTime + config.cycleInterval + config.gracePeriod;
-        return block.timestamp > deadline && contributions[currentCycle][member].timestamp == 0;
-    }
-    
-    /**
-     * @dev Get total contributions across all cycles
-     */
-    function _getTotalContributions() internal view returns (uint256) {
-        uint256 total = 0;
-        for (uint256 i = 0; i < members.length; i++) {
-            total += memberInfo[members[i]].totalContributed;
-        }
-        return total;
-    }
-    
-    // Admin functions
-    function pauseGroup() external onlyCreator {
-        _pause();
-    }
-    
-    function unpauseGroup() external onlyCreator {
-        _unpause();
-    }
-    
-    // View functions
->>>>>>> origin/cursor/create-hemat-smart-contracts-4071
     function getMembers() external view returns (address[] memory) {
         return members;
     }
     
-<<<<<<< HEAD
     /**
      * @dev Pause group (only creator)
      */
-    function pause() external onlyCreator {
+    function pauseGroup() external onlyCreator {
+        require(status == GroupStatus.ACTIVE, "HematGroup: group is not active");
+        status = GroupStatus.PAUSED;
         _pause();
+        emit GroupPaused();
     }
     
     /**
-     * @dev Unpause group (only creator)
+     * @dev Resume group (only creator)
      */
-    function unpause() external onlyCreator {
+    function resumeGroup() external onlyCreator {
+        require(status == GroupStatus.PAUSED, "HematGroup: group is not paused");
+        status = GroupStatus.ACTIVE;
         _unpause();
+        emit GroupResumed();
     }
     
     /**
      * @dev Cancel group (only creator)
      */
     function cancelGroup() external onlyCreator {
-        require(status == GroupStatus.ACTIVE, "Group is not active");
+        require(status == GroupStatus.ACTIVE || status == GroupStatus.PAUSED, "HematGroup: cannot cancel");
         status = GroupStatus.CANCELLED;
-=======
-    function getMemberInfo(address member) external view returns (Member memory) {
-        return memberInfo[member];
-    }
-    
-    function getContribution(uint256 cycle, address member) external view returns (Contribution memory) {
-        return contributions[cycle][member];
-    }
-    
-    function getPayout(uint256 cycle) external view returns (Payout memory) {
-        return payouts[cycle];
-    }
-    
-    function getPayoutOrder() external view returns (address[] memory) {
-        return payoutOrder;
-    }
-    
-    function getGroupStatus() external view returns (
-        GroupStatus groupStatus,
-        uint256 memberCount,
-        uint256 cycle,
-        uint256 nextPayout,
-        uint256 maturity
-    ) {
-        return (status, members.length, currentCycle, nextPayoutMember, maturityTime);
-    }
-    
-    function isPaymentDue(address member) external view returns (bool) {
-        if (!isMember[member] || status != GroupStatus.ACTIVE) return false;
-        
-        uint256 deadline = cycleStartTime + config.cycleInterval;
-        return block.timestamp >= deadline && contributions[currentCycle][member].timestamp == 0;
-    }
-    
-    function getTimeToNextDeadline() external view returns (uint256) {
-        if (status != GroupStatus.ACTIVE) return 0;
-        
-        uint256 deadline = cycleStartTime + config.cycleInterval;
-        return deadline > block.timestamp ? deadline - block.timestamp : 0;
->>>>>>> origin/cursor/create-hemat-smart-contracts-4071
+        emit GroupCancelled();
     }
 }
