@@ -11,9 +11,10 @@
   }
   
   body {
-    @apply bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 text-gray-100;
+    @apply bg-gradient-to-br from-slate-900 via-purple-900/30 to-slate-900 text-gray-100;
     line-height: 1.6;
     background-attachment: fixed;
+    overflow-x: hidden;
   }
 
   * {
@@ -312,3 +313,28 @@
     @apply bg-black/10 border-white/5;
   }
 }
+/* Kaia-themed Enhancements */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.kaia-gradient {
+  background: linear-gradient(135deg, #6B46C1 0%, #8B5CF6 25%, #06B6D4 50%, #8B5CF6 75%, #6B46C1 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+}
+
+.kaia-text-gradient {
+  background: linear-gradient(135deg, #A855F7, #06B6D4, #A855F7);
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+

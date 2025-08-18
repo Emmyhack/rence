@@ -1,0 +1,143 @@
+<svg width="800" height="500" viewBox="0 0 800 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="800" y2="500" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F172A"/>
+      <stop offset="0.5" stop-color="#1E293B"/>
+      <stop offset="1" stop-color="#334155"/>
+    </linearGradient>
+    <linearGradient id="coinGrad" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F59E0B"/>
+      <stop offset="1" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0" y1="0" x2="50" y2="50" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#10B981"/>
+      <stop offset="1" stop-color="#059669"/>
+    </linearGradient>
+    <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+      <stop stop-color="#06B6D4" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#06B6D4" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bgGrad)"/>
+  
+  <!-- Central Glow -->
+  <circle cx="400" cy="250" r="200" fill="url(#glowGrad)"/>
+  
+  <!-- Main Plant/Tree Structure -->
+  <path d="M400 450 Q390 400 380 350 Q370 300 375 250 Q380 200 390 150 Q395 120 400 100" 
+        stroke="#10B981" stroke-width="8" fill="none" stroke-linecap="round"/>
+  
+  <!-- Branches -->
+  <path d="M380 300 Q350 280 320 270 Q300 265 280 275" 
+        stroke="#059669" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M390 200 Q420 180 450 170 Q470 165 490 175" 
+        stroke="#059669" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M385 350 Q360 330 340 320 Q320 315 300 325" 
+        stroke="#059669" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M395 150 Q425 130 455 120 Q475 115 495 125" 
+        stroke="#059669" stroke-width="4" fill="none" stroke-linecap="round"/>
+  
+  <!-- Leaves/Money Symbols -->
+  <!-- USDT Coins as leaves -->
+  <g transform="translate(280, 275)">
+    <circle r="20" fill="url(#coinGrad)"/>
+    <text x="0" y="6" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="bold">$</text>
+  </g>
+  
+  <g transform="translate(490, 175)">
+    <circle r="18" fill="url(#coinGrad)"/>
+    <text x="0" y="5" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">$</text>
+  </g>
+  
+  <g transform="translate(300, 325)">
+    <circle r="16" fill="url(#coinGrad)"/>
+    <text x="0" y="4" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10" font-weight="bold">$</text>
+  </g>
+  
+  <g transform="translate(495, 125)">
+    <circle r="22" fill="url(#coinGrad)"/>
+    <text x="0" y="7" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="16" font-weight="bold">$</text>
+  </g>
+  
+  <!-- Additional floating coins -->
+  <g transform="translate(200, 200)">
+    <circle r="14" fill="url(#coinGrad)" opacity="0.8"/>
+    <text x="0" y="4" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="10" font-weight="bold">$</text>
+  </g>
+  
+  <g transform="translate(600, 300)">
+    <circle r="16" fill="url(#coinGrad)" opacity="0.8"/>
+    <text x="0" y="5" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">$</text>
+  </g>
+  
+  <g transform="translate(150, 350)">
+    <circle r="12" fill="url(#coinGrad)" opacity="0.6"/>
+    <text x="0" y="3" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">$</text>
+  </g>
+  
+  <g transform="translate(650, 180)">
+    <circle r="18" fill="url(#coinGrad)" opacity="0.7"/>
+    <text x="0" y="5" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">$</text>
+  </g>
+  
+  <!-- Community Circles (representing group savings) -->
+  <circle cx="150" cy="100" r="30" fill="none" stroke="#06B6D4" stroke-width="3" opacity="0.6"/>
+  <circle cx="150" cy="100" r="20" fill="none" stroke="#06B6D4" stroke-width="2" opacity="0.8"/>
+  <circle cx="150" cy="100" r="10" fill="#06B6D4" opacity="0.4"/>
+  
+  <circle cx="650" cy="400" r="35" fill="none" stroke="#8B5CF6" stroke-width="3" opacity="0.6"/>
+  <circle cx="650" cy="400" r="25" fill="none" stroke="#8B5CF6" stroke-width="2" opacity="0.8"/>
+  <circle cx="650" cy="400" r="15" fill="#8B5CF6" opacity="0.4"/>
+  
+  <!-- Growth Arrows -->
+  <path d="M100 400 L120 380 L140 360" stroke="#10B981" stroke-width="4" fill="none" stroke-linecap="round" marker-end="url(#arrowhead)"/>
+  <path d="M700 100 L680 120 L660 140" stroke="#10B981" stroke-width="4" fill="none" stroke-linecap="round" marker-end="url(#arrowhead)"/>
+  
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#10B981"/>
+    </marker>
+  </defs>
+  
+  <!-- Shield (Security/Insurance) -->
+  <g transform="translate(550, 50)">
+    <path d="M0 0 Q-15 -5 -30 0 L-30 25 Q-15 40 0 35 Q15 40 30 25 L30 0 Q15 -5 0 0 Z" 
+          fill="#4F46E5" opacity="0.8"/>
+    <path d="M0 5 Q-10 0 -20 5 L-20 22 Q-10 32 0 28 Q10 32 20 22 L20 5 Q10 0 0 5 Z" 
+          fill="#6366F1"/>
+    <text x="0" y="20" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">✓</text>
+  </g>
+  
+  <!-- Connecting Lines (Network Effect) -->
+  <path d="M280 275 Q350 250 400 250" stroke="#06B6D4" stroke-width="2" opacity="0.4" stroke-dasharray="5,5"/>
+  <path d="M490 175 Q450 200 400 250" stroke="#06B6D4" stroke-width="2" opacity="0.4" stroke-dasharray="5,5"/>
+  <path d="M300 325 Q350 300 400 250" stroke="#06B6D4" stroke-width="2" opacity="0.4" stroke-dasharray="5,5"/>
+  
+  <!-- Percentage Indicators -->
+  <g transform="translate(120, 250)">
+    <rect x="-25" y="-10" width="50" height="20" rx="10" fill="#1E293B" stroke="#06B6D4" stroke-width="1"/>
+    <text x="0" y="4" text-anchor="middle" fill="#06B6D4" font-family="Arial, sans-serif" font-size="12" font-weight="bold">+8%</text>
+  </g>
+  
+  <g transform="translate(680, 250)">
+    <rect x="-30" y="-10" width="60" height="20" rx="10" fill="#1E293B" stroke="#10B981" stroke-width="1"/>
+    <text x="0" y="4" text-anchor="middle" fill="#10B981" font-family="Arial, sans-serif" font-size="12" font-weight="bold">+12%</text>
+  </g>
+  
+  <!-- Sparkles/Stars -->
+  <g fill="#F59E0B" opacity="0.7">
+    <path d="M100 150 L102 154 L106 154 L103 157 L104 161 L100 159 L96 161 L97 157 L94 154 L98 154 Z"/>
+    <path d="M720 320 L722 324 L726 324 L723 327 L724 331 L720 329 L716 331 L717 327 L714 324 L718 324 Z"/>
+    <path d="M50 300 L52 304 L56 304 L53 307 L54 311 L50 309 L46 311 L47 307 L44 304 L48 304 Z"/>
+  </g>
+  
+  <!-- Bottom root system -->
+  <g opacity="0.3">
+    <path d="M400 450 Q380 460 360 465 Q340 470 320 465" stroke="#059669" stroke-width="3" fill="none"/>
+    <path d="M400 450 Q420 460 440 465 Q460 470 480 465" stroke="#059669" stroke-width="3" fill="none"/>
+    <path d="M400 450 Q400 470 395 485 Q390 495 385 500" stroke="#059669" stroke-width="3" fill="none"/>
+  </g>
+</svg>
