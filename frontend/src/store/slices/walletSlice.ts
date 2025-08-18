@@ -7,6 +7,19 @@ export interface WalletState {
   usdtBalance: string;
   isLoading: boolean;
   error: string | null;
+  networkInfo: {
+    chainId: number;
+    name: string;
+    isMainnet: boolean;
+    isTestnet: boolean;
+  } | null;
+  tokenInfo: {
+    address: string;
+    symbol: string;
+    name: string;
+    decimals: number;
+    isTestnet: boolean;
+  } | null;
 }
 
 const initialState: WalletState = {
@@ -15,6 +28,8 @@ const initialState: WalletState = {
   usdtBalance: '0',
   isLoading: false,
   error: null,
+  networkInfo: null,
+  tokenInfo: null,
 };
 
 // Async thunks
@@ -25,7 +40,20 @@ export const connectWallet = createAsyncThunk(
       const address = await hematService.connectWallet();
       if (address) {
         const balance = await hematService.getUSDTBalance(address);
-        return { address, balance };
+        const networkInfo = hematService.getCurrentNetwork();
+        const tokenInfo = hematService.getCurrentTokenInfo();
+        
+        return { 
+          address, 
+          balance,
+          networkInfo: {
+            chainId: networkInfo.chainId,
+            name: networkInfo.config.name,
+            isMainnet: networkInfo.isMainnet,
+            isTestnet: networkInfo.isTestnet
+          },
+          tokenInfo
+        };
       }
       return rejectWithValue('Failed to connect wallet');
     } catch (error) {
@@ -75,6 +103,8 @@ const walletSlice = createSlice({
       state.isConnected = false;
       state.address = null;
       state.usdtBalance = '0';
+      state.networkInfo = null;
+      state.tokenInfo = null;
       state.error = null;
     },
   },
@@ -90,6 +120,8 @@ const walletSlice = createSlice({
         state.isConnected = true;
         state.address = action.payload.address;
         state.usdtBalance = action.payload.balance;
+        state.networkInfo = action.payload.networkInfo;
+        state.tokenInfo = action.payload.tokenInfo;
         state.error = null;
       })
       .addCase(connectWallet.rejected, (state, action) => {
@@ -101,6 +133,8 @@ const walletSlice = createSlice({
         state.isConnected = false;
         state.address = null;
         state.usdtBalance = '0';
+        state.networkInfo = null;
+        state.tokenInfo = null;
         state.error = null;
       })
       // Update balance

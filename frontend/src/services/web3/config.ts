@@ -66,21 +66,25 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
   ]
 )
 
-// Configure wallets (excluding Safe wallet to avoid dependency issues)
+// Configure wallets - Prioritize Kaikas for Kaia network
 const walletConnectProjectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || undefined;
 const connectors = connectorsForWallets([
   {
-    groupName: 'Recommended',
+    groupName: 'Recommended for Kaia',
+    wallets: [
+      kaikasWallet({ chains }), // Prioritize Kaikas first
+    ],
+  },
+  {
+    groupName: 'Other Wallets',
     wallets: walletConnectProjectId
       ? [
           injectedWallet({ chains }),
-          kaikasWallet({ chains }),
           metaMaskWallet({ projectId: walletConnectProjectId, chains }),
           walletConnectWallet({ projectId: walletConnectProjectId, chains }),
         ]
       : [
           injectedWallet({ chains }),
-          kaikasWallet({ chains }),
         ],
   },
 ])

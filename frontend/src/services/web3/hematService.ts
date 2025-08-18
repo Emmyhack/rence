@@ -2,6 +2,9 @@ import { ethers } from 'ethers';
 import { toast } from 'react-hot-toast';
 import {
   CONTRACT_ADDRESSES,
+  NETWORK_CONFIG,
+  getContractAddresses,
+  getUSDTTokenInfo,
   HEMAT_FACTORY_ABI,
   HEMAT_GROUP_ABI,
   ESCROW_VAULT_ABI,
@@ -113,6 +116,8 @@ export class HematService {
   private provider: ethers.providers.Web3Provider | null = null;
   private signer: ethers.Signer | null = null;
   private contracts: any = {};
+  private currentChainId: number = 1001; // Default to testnet
+  private currentTokenInfo: any = null;
   private subscriptionPricesUSDT: Record<number, string> = {
     // 0: Basic (free), 1: Trust, 2: Super-Trust
     0: '0',
@@ -127,45 +132,182 @@ export class HematService {
   private async initializeContracts() {
     if (typeof window !== 'undefined') {
       const anyWindow: any = window as any;
-      const injected = anyWindow.ethereum || anyWindow.klaytn;
+      // PRIORITIZE KAIKAS for Kaia network
+      const injected = anyWindow.klaytn || anyWindow.ethereum;
+      
       if (injected) {
         this.provider = new ethers.providers.Web3Provider(injected);
-        this.signer = this.provider.getSigner();
-        this.contracts = getContractInstances(this.signer);
+        
+        try {
+          // Get current network
+          const network = await this.provider.getNetwork();
+          this.currentChainId = network.chainId;
+          console.log(`Connected to network: ${network.name} (${this.currentChainId})`);
+          
+          // Update token info based on network
+          this.currentTokenInfo = getUSDTTokenInfo(this.currentChainId);
+          console.log('Token info:', this.currentTokenInfo);
+          
+          // Initialize contracts with correct addresses for this network
+          this.signer = this.provider.getSigner();
+          this.contracts = getContractInstances(this.signer, this.currentChainId);
+          
+          // Validate network (only Kaia mainnet and testnet are supported)
+          if (this.currentChainId !== 8217 && this.currentChainId !== 1001) {
+            console.warn(`Unsupported network: ${this.currentChainId}. Defaulting to Kaia Testnet.`);
+            toast.warning('Please switch to Kaia Mainnet or Testnet');
+          }
+          
+        } catch (error) {
+          console.error('Error initializing contracts:', error);
+          // Fallback to testnet configuration
+          this.currentChainId = 1001;
+          this.currentTokenInfo = getUSDTTokenInfo(1001);
+          this.signer = this.provider.getSigner();
+          this.contracts = getContractInstances(this.signer, 1001);
+        }
       }
     }
   }
 
-  // Connect wallet
+  // Get current network info
+  getCurrentNetwork() {
+    return {
+      chainId: this.currentChainId,
+      config: getContractAddresses(this.currentChainId),
+      tokenInfo: this.currentTokenInfo,
+      isMainnet: this.currentChainId === 8217,
+      isTestnet: this.currentChainId === 1001
+    };
+  }
+
+  // Get current USDT token info
+  getCurrentTokenInfo() {
+    return this.currentTokenInfo || getUSDTTokenInfo(this.currentChainId);
+  }
+
+  // Connect wallet with Kaikas priority
   async connectWallet(): Promise<string | null> {
     try {
-      if (!this.provider) {
-        await this.initializeContracts();
+      console.log('Starting wallet connection with Kaikas priority...');
+      
+      const anyWindow: any = window as any;
+      // PRIORITIZE KAIKAS WALLET
+      const injected = anyWindow.klaytn || anyWindow.ethereum;
+      
+      if (!injected) {
+        toast.error('No wallet found. Please install Kaikas wallet for the best Kaia experience.');
+        return null;
+      }
+
+      // Detect wallet type
+      const walletType = anyWindow.klaytn ? 'Kaikas' : 'MetaMask/Other';
+      console.log(`Detected wallet: ${walletType}`);
+      
+      if (anyWindow.klaytn) {
+        toast.success('Kaikas wallet detected! 🎉');
+      }
+
+      // Request accounts with multiple fallback methods
+      let accounts: string[] = [];
+      try {
+        accounts = await injected.request({ method: 'eth_requestAccounts' });
+      } catch (e) {
+        try {
+          // Try Kaikas-specific method
+          accounts = await injected.request({ method: 'klaytn_requestAccounts' });
+        } catch (e2) {
+          console.error('Failed to connect with any method:', e, e2);
+          toast.error('Failed to connect wallet. Please try again.');
+          return null;
+        }
+      }
+
+      if (!accounts || accounts.length === 0) {
+        toast.error('No accounts found. Please unlock your wallet.');
+        return null;
+      }
+
+      const address = accounts[0];
+      console.log(`Connected to address: ${address}`);
+
+      // Reinitialize with connected provider
+      this.provider = new ethers.providers.Web3Provider(injected);
+      
+      try {
+        // Get network info
+        const network = await this.provider.getNetwork();
+        this.currentChainId = network.chainId;
+        this.currentTokenInfo = getUSDTTokenInfo(this.currentChainId);
+        
+        console.log(`Network: ${network.name} (${this.currentChainId})`);
+        console.log(`Token: ${this.currentTokenInfo.name} at ${this.currentTokenInfo.address}`);
+        
+        // Initialize contracts for current network
+        this.signer = this.provider.getSigner();
+        this.contracts = getContractInstances(this.signer, this.currentChainId);
+        
+        // Show network-specific connection message
+        if (this.currentChainId === 8217) {
+          toast.success(`Connected to Kaia Mainnet! Using real USDT.`);
+        } else if (this.currentChainId === 1001) {
+          toast.success(`Connected to Kaia Testnet! Using Mock USDT.`);
+        } else {
+          toast.warning(`Connected to network ${this.currentChainId}. Please switch to Kaia Mainnet or Testnet.`);
+        }
+
+        // Add appropriate USDT token to wallet
+        setTimeout(() => {
+          this.addCurrentUSDTToWallet();
+        }, 1500);
+
+        return address;
+        
+      } catch (error) {
+        console.error('Error getting network info:', error);
+        toast.error('Failed to get network information');
+        return null;
       }
       
-      if (this.provider) {
-        let accounts: string[] = [];
-        try {
-          accounts = await this.provider.send('eth_requestAccounts', []);
-        } catch (e) {
-          // Fallback for Kaikas-specific method names if needed
-          const injected: any = (window as any).klaytn || (window as any).ethereum;
-          if (injected?.request) {
-            accounts = await injected.request({ method: 'eth_requestAccounts' }).catch(async () => {
-              return injected.request({ method: 'klaytn_requestAccounts' });
-            });
-          }
-        }
-        const address = accounts[0];
-        this.signer = this.provider.getSigner();
-        this.contracts = getContractInstances(this.signer);
-        return address;
-      }
-      return null;
     } catch (error) {
       console.error('Error connecting wallet:', error);
       toast.error('Failed to connect wallet');
       return null;
+    }
+  }
+
+  // Add current network's USDT token to wallet
+  async addCurrentUSDTToWallet(): Promise<boolean> {
+    try {
+      const anyWindow: any = window as any;
+      const injected = anyWindow.klaytn || anyWindow.ethereum;
+      
+      if (!injected) return false;
+
+      const tokenInfo = this.getCurrentTokenInfo();
+      
+      console.log(`Adding ${tokenInfo.name} token to wallet...`);
+
+      await injected.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: tokenInfo.address,
+            symbol: tokenInfo.symbol,
+            decimals: tokenInfo.decimals,
+            image: tokenInfo.image,
+          },
+        },
+      });
+      
+      const networkName = this.currentChainId === 8217 ? 'Mainnet' : 'Testnet';
+      toast.success(`${tokenInfo.name} token added to wallet! (${networkName})`);
+      return true;
+    } catch (error) {
+      console.warn('Failed to add USDT token to wallet:', error);
+      // Don't show error toast as this is not critical
+      return false;
     }
   }
 
@@ -228,14 +370,18 @@ export class HematService {
 
   async approveUSDT(spender: string, amount: string): Promise<boolean> {
     try {
+      const tokenInfo = this.getCurrentTokenInfo();
       const amountWei = ethers.utils.parseUnits(amount, 6);
       const tx = await this.contracts.usdt.approve(spender, amountWei);
       await tx.wait();
-      toast.success('USDT approval successful');
+      
+      const networkName = this.currentChainId === 8217 ? 'Mainnet' : 'Testnet';
+      toast.success(`${tokenInfo.name} approval successful (${networkName})`);
       return true;
     } catch (error) {
-      console.error('Error approving USDT:', error);
-      toast.error('USDT approval failed');
+      const tokenInfo = this.getCurrentTokenInfo();
+      console.error(`Error approving ${tokenInfo.name}:`, error);
+      toast.error(`${tokenInfo.name} approval failed`);
       return false;
     }
   }
@@ -901,6 +1047,56 @@ export class HematService {
     } catch (error) {
       console.error('Error getting user stake info:', error);
       return null;
+    }
+  }
+
+  // General stake methods for profile page
+  async stake(amount: string): Promise<boolean> {
+    try {
+      if (!this.signer) {
+        toast.error('Please connect your wallet first');
+        return false;
+      }
+
+      const tokenInfo = this.getCurrentTokenInfo();
+      const contractAddresses = getContractAddresses(this.currentChainId);
+      const amountWei = ethers.utils.parseUnits(amount, 6);
+      
+      // First approve USDT for the stake manager
+      await this.approveUSDT(contractAddresses.STAKE_MANAGER, amount);
+
+      // For general staking, we'll use groupId 0 as default
+      const tx = await this.contracts.stakeManager.depositStake(0, amountWei);
+      await tx.wait();
+      
+      const networkName = this.currentChainId === 8217 ? 'Mainnet' : 'Testnet';
+      toast.success(`Stake deposited successfully! (${networkName})`);
+      return true;
+    } catch (error) {
+      console.error('Error staking:', error);
+      toast.error('Failed to deposit stake');
+      return false;
+    }
+  }
+
+  async unstake(amount: string): Promise<boolean> {
+    try {
+      if (!this.signer) {
+        toast.error('Please connect your wallet first');
+        return false;
+      }
+
+      const amountWei = ethers.utils.parseUnits(amount, 6);
+      const tx = await this.contracts.stakeManager.withdrawStake(0, amountWei);
+      await tx.wait();
+      
+      const networkName = this.currentChainId === 8217 ? 'Mainnet' : 'Testnet';
+      toast.success(`Stake withdrawn successfully! (${networkName})`);
+      return true;
+    } catch (error) {
+      console.error('Error unstaking:', error);
+      toast.error('Failed to withdraw stake');
+      return false;
     }
   }
 
