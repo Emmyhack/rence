@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-<<<<<<< HEAD
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
@@ -12,193 +12,74 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  * @title InsurancePool
  * @dev Manages insurance premiums, claims, and payouts
  */
-contract InsurancePool is Ownable, ReentrancyGuard, Pausable {
-    using SafeERC20 for IERC20;
-    
-    // Events
-    event PremiumCollected(address indexed group, address indexed member, uint256 amount);
-    event ClaimSubmitted(address indexed member, address indexed group, uint256 amount, string evidenceCID);
-    event ClaimApproved(address indexed member, address indexed group, uint256 amount);
-    event ClaimDenied(address indexed member, address indexed group, uint256 amount, string reason);
-    event EmergencyPayout(address indexed member, uint256 amount);
-    
-    // State variables
-    IERC20 public immutable usdt;
-    
-    // Insurance pool balance
-    uint256 public totalPremiums;
-    uint256 public totalClaimsPaid;
-    uint256 public totalClaimsDenied;
-    
-    // Claims tracking
-    mapping(bytes32 => Claim) public claims;
-    mapping(address => uint256) public memberClaims; // member => total claims paid
-    mapping(address => uint256) public groupPremiums; // group => total premiums collected
-    
-    // Configuration
-    uint256 public constant INSURANCE_BPS = 200; // 2% of contributions
-    uint256 public constant MAX_CLAIM_PER_MEMBER = 1000 * 10**6; // 1000 USDT (assuming 6 decimals)
-    uint256 public constant MAX_CLAIM_PER_PERIOD = 10000 * 10**6; // 10000 USDT per period
-    uint256 public constant MIN_RESERVE_THRESHOLD = 1000 * 10**6; // 1000 USDT minimum reserve
-    uint256 public constant CLAIM_APPROVAL_THRESHOLD = 2; // Number of approvals needed
-    
-    // Claim structure
-    struct Claim {
-        address member;
-        address group;
-        uint256 amount;
-        string evidenceCID;
-        uint256 timestamp;
-        ClaimStatus status;
-        uint256 approvals;
-        mapping(address => bool) approvedBy;
-    }
-    
-    enum ClaimStatus {
-        PENDING,
-        APPROVED,
-        DENIED,
-        PAID
-    }
-    
-    // Modifiers
-    modifier onlyGroup() {
-        require(isGroup(msg.sender), "Only groups can call this function");
-        _;
-    }
-    
-    modifier onlyApprover() {
-        require(isApprover(msg.sender), "Only approvers can call this function");
-        _;
-    }
-    
-    modifier validClaim(bytes32 claimId) {
-        require(claims[claimId].timestamp > 0, "Claim does not exist");
-        _;
-    }
-    
-    constructor(address _usdt) Ownable(msg.sender) {
-        usdt = IERC20(_usdt);
-    }
-    
-    /**
-     * @dev Collect insurance premium from contribution
-     */
-    function collectPremium(address group, address member, uint256 contributionAmount) external onlyGroup nonReentrant whenNotPaused {
-        uint256 premiumAmount = (contributionAmount * INSURANCE_BPS) / 10000;
-        require(premiumAmount > 0, "Premium amount must be greater than 0");
-        require(usdt.transferFrom(msg.sender, address(this), premiumAmount), "Premium transfer failed");
-        
-        totalPremiums += premiumAmount;
-        groupPremiums[group] += premiumAmount;
-        
-        emit PremiumCollected(group, member, premiumAmount);
-    }
-    
-    /**
-     * @dev Submit a claim for insurance payout
-     */
-    function submitClaim(
-        address group,
-        uint256 amount,
-        string memory evidenceCID
-    ) external nonReentrant whenNotPaused {
-        require(amount > 0, "Claim amount must be greater than 0");
-        require(amount <= MAX_CLAIM_PER_MEMBER, "Claim amount exceeds maximum");
-        require(bytes(evidenceCID).length > 0, "Evidence CID is required");
-        
-        // Check if member has sufficient premium history
-        require(groupPremiums[group] > 0, "No premium history for this group");
-        
-        // Check if claim period limit is not exceeded
-        require(totalClaimsPaid + amount <= MAX_CLAIM_PER_PERIOD, "Period claim limit exceeded");
-        
-        bytes32 claimId = keccak256(abi.encodePacked(msg.sender, group, amount, evidenceCID, block.timestamp));
-        require(claims[claimId].timestamp == 0, "Claim already exists");
-        
-        Claim storage claim = claims[claimId];
-        claim.member = msg.sender;
-        claim.group = group;
-        claim.amount = amount;
-        claim.evidenceCID = evidenceCID;
-        claim.timestamp = block.timestamp;
-        claim.status = ClaimStatus.PENDING;
-        claim.approvals = 0;
-        
-        emit ClaimSubmitted(msg.sender, group, amount, evidenceCID);
-    }
-    
-    /**
-     * @dev Approve a claim (only approvers)
-     */
-    function approveClaim(bytes32 claimId) external onlyApprover validClaim(claimId) {
-        Claim storage claim = claims[claimId];
-        require(claim.status == ClaimStatus.PENDING, "Claim is not pending");
-        require(!claim.approvedBy[msg.sender], "Already approved by this approver");
-        
-        claim.approvedBy[msg.sender] = true;
-        claim.approvals++;
-        
-        if (claim.approvals >= CLAIM_APPROVAL_THRESHOLD) {
-            _processClaim(claimId);
-=======
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/Pausable.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "./interfaces/IHematTypes.sol";
-
-/**
- * @title InsurancePool
- * @dev Manages insurance premiums, claims processing, and emergency payouts
- */
-contract InsurancePool is ReentrancyGuard, Pausable, AccessControl, IHematTypes {
+contract InsurancePool is Ownable, ReentrancyGuard, Pausable, AccessControl {
     using SafeERC20 for IERC20;
     
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant GROUP_ROLE = keccak256("GROUP_ROLE");
     bytes32 public constant CLAIM_PROCESSOR_ROLE = keccak256("CLAIM_PROCESSOR_ROLE");
     
-    IERC20 public immutable usdtToken;
+    enum ClaimStatus { SUBMITTED, APPROVED, REJECTED, PAID }
     
-    // Insurance pool configuration
-    uint256 public constant DEFAULT_INSURANCE_BPS = 200; // 2%
-    uint256 public constant BPS_DENOMINATOR = 10000;
-    uint256 public constant MIN_RESERVE_RATIO = 1000; // 10% minimum reserve
-    
-    // Pool balances
-    mapping(uint256 => uint256) public groupInsuranceBalance;
-    mapping(uint256 => uint256) public groupTotalPremiums;
-    mapping(uint256 => uint256) public groupTotalClaims;
-    
-    // Claims management
-    mapping(uint256 => InsuranceClaim) public claims;
-    mapping(uint256 => mapping(address => uint256[])) public memberClaims;
-    uint256 public nextClaimId;
-    
-    // Claim limits and configuration
-    mapping(uint256 => uint256) public groupClaimCapPerMember;
-    mapping(uint256 => uint256) public groupClaimCooldown;
-    mapping(uint256 => mapping(address => uint256)) public lastClaimTime;
-    
-    // Emergency configurations
-    mapping(uint256 => bool) public emergencyModeEnabled;
-    mapping(uint256 => uint256) public emergencyClaimCap;
-    
-    // Global pool stats
-    uint256 public totalPoolBalance;
-    uint256 public totalClaimsPaid;
-    uint256 public reserveFund;
+    struct Claim {
+        address claimant;
+        uint256 amount;
+        uint256 groupId;
+        string evidenceCID;
+        ClaimStatus status;
+        uint256 submittedAt;
+        uint256 processedAt;
+        uint256 approvals;
+        mapping(address => bool) hasApproved;
+    }
     
     // Events
-    event PremiumDeposited(uint256 indexed groupId, address indexed member, uint256 amount);
-    event ClaimSubmitted(uint256 indexed claimId, uint256 indexed groupId, address indexed claimant, uint256 amount);
-    event ClaimApproved(uint256 indexed claimId, uint256 payoutAmount);
-    event ClaimRejected(uint256 indexed claimId, string reason);
-    event ClaimPaid(uint256 indexed claimId, address indexed recipient, uint256 amount);
-    event EmergencyModeToggled(uint256 indexed groupId, bool enabled);
-    event ReserveFundUpdated(uint256 oldAmount, uint256 newAmount);
+    event PremiumCollected(uint256 indexed groupId, address indexed member, uint256 amount);
+    event ClaimSubmitted(bytes32 indexed claimId, address indexed claimant, uint256 indexed groupId, uint256 amount, string evidenceCID);
+    event ClaimApproved(bytes32 indexed claimId, address indexed approver);
+    event ClaimRejected(bytes32 indexed claimId, string reason);
+    event ClaimPaid(bytes32 indexed claimId, address indexed claimant, uint256 amount);
+    event InsuranceClaimProcessed(bytes32 indexed claimId, bool approved, uint256 amount);
+    event ReserveRatioUpdated(uint256 oldRatio, uint256 newRatio);
+    
+    // State variables
+    IERC20 public immutable usdt;
+    
+    // Pool balances
+    uint256 public totalPoolBalance;
+    uint256 public totalReserves;
+    uint256 public totalClaims;
+    uint256 public totalPremiums;
+    
+    // Configuration
+    uint256 public reserveRatio = 2000; // 20% in basis points
+    uint256 public minReserveRatio = 1000; // 10%
+    uint256 public maxReserveRatio = 5000; // 50%
+    uint256 public constant CLAIM_APPROVAL_THRESHOLD = 2;
+    
+    // Group configurations
+    mapping(uint256 => uint256) public groupPremiumRates; // groupId => premium rate in basis points
+    mapping(uint256 => uint256) public groupPoolBalances; // groupId => pool balance
+    mapping(uint256 => uint256) public groupClaimCooldown; // groupId => cooldown period
+    mapping(uint256 => mapping(address => uint256)) public lastClaimTime; // groupId => member => timestamp
+    
+    // Claims
+    mapping(bytes32 => Claim) public claims;
+    mapping(uint256 => bytes32[]) public groupClaims; // groupId => claim IDs
+    bytes32[] public allClaims;
+    
+    // Claim limits
+    mapping(uint256 => uint256) public maxClaimAmount; // groupId => max claim amount
+    mapping(uint256 => uint256) public dailyClaimLimit; // groupId => daily limit
+    mapping(uint256 => uint256) public dailyClaimsUsed; // groupId => amount used today
+    mapping(uint256 => uint256) public lastClaimDay; // groupId => last claim day
+    
+    constructor(address _usdt, address _admin) Ownable(msg.sender) {
+        usdt = IERC20(_usdt);
+        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
+        _grantRole(ADMIN_ROLE, _admin);
+        _grantRole(CLAIM_PROCESSOR_ROLE, _admin);
+    }
     
     modifier onlyGroup() {
         require(hasRole(GROUP_ROLE, msg.sender), "InsurancePool: caller is not a group");
@@ -215,448 +96,246 @@ contract InsurancePool is ReentrancyGuard, Pausable, AccessControl, IHematTypes 
         _;
     }
     
-    constructor(address _usdtToken, address _admin) {
-        require(_usdtToken != address(0), "InsurancePool: invalid USDT token");
-        require(_admin != address(0), "InsurancePool: invalid admin");
-        
-        usdtToken = IERC20(_usdtToken);
-        nextClaimId = 1;
-        
-        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
-        _grantRole(ADMIN_ROLE, _admin);
-        _grantRole(CLAIM_PROCESSOR_ROLE, _admin);
+    /**
+     * @dev Add a group contract
+     */
+    function addGroup(address group) external onlyAdmin {
+        _grantRole(GROUP_ROLE, group);
     }
     
     /**
-     * @dev Deposit insurance premium for a group
-     * @param groupId Group identifier
-     * @param member Member address
-     * @param amount Premium amount
+     * @dev Configure group insurance parameters
      */
-    function depositPremium(
+    function configureGroup(
         uint256 groupId,
-        address member,
-        uint256 amount
-    ) external onlyGroup nonReentrant whenNotPaused {
-        require(amount > 0, "InsurancePool: invalid premium amount");
+        uint256 premiumRate,
+        uint256 maxClaim,
+        uint256 dailyLimit,
+        uint256 claimCooldown
+    ) external onlyAdmin {
+        groupPremiumRates[groupId] = premiumRate;
+        maxClaimAmount[groupId] = maxClaim;
+        dailyClaimLimit[groupId] = dailyLimit;
+        groupClaimCooldown[groupId] = claimCooldown;
+    }
+    
+    /**
+     * @dev Collect premium from a member
+     */
+    function collectPremium(uint256 groupId, address member, uint256 amount) external onlyGroup nonReentrant whenNotPaused {
+        require(amount > 0, "InsurancePool: amount must be greater than 0");
         
-        usdtToken.safeTransferFrom(member, address(this), amount);
+        usdt.safeTransferFrom(member, address(this), amount);
         
-        groupInsuranceBalance[groupId] += amount;
-        groupTotalPremiums[groupId] += amount;
+        groupPoolBalances[groupId] += amount;
         totalPoolBalance += amount;
+        totalPremiums += amount;
         
-        // Allocate 10% to reserve fund
-        uint256 reserveAmount = (amount * MIN_RESERVE_RATIO) / BPS_DENOMINATOR;
-        reserveFund += reserveAmount;
+        // Calculate reserves
+        uint256 reserveAmount = (amount * reserveRatio) / 10000;
+        totalReserves += reserveAmount;
         
-        emit PremiumDeposited(groupId, member, amount);
+        emit PremiumCollected(groupId, member, amount);
     }
     
     /**
      * @dev Submit an insurance claim
-     * @param groupId Group identifier
-     * @param amount Claim amount
-     * @param evidenceCID IPFS hash of supporting evidence
-     * @return claimId Generated claim ID
      */
     function submitClaim(
         uint256 groupId,
+        address claimant,
         uint256 amount,
         string calldata evidenceCID
-    ) external nonReentrant whenNotPaused returns (uint256) {
-        require(amount > 0, "InsurancePool: invalid claim amount");
-        require(bytes(evidenceCID).length > 0, "InsurancePool: evidence required");
+    ) external onlyGroup nonReentrant whenNotPaused returns (bytes32) {
+        require(amount > 0, "InsurancePool: amount must be greater than 0");
+        require(amount <= maxClaimAmount[groupId], "InsurancePool: amount exceeds maximum");
+        require(_canMemberClaim(groupId, claimant), "InsurancePool: claim cooldown not met");
         
-        // Check claim cooldown
-        require(
-            block.timestamp >= lastClaimTime[groupId][msg.sender] + groupClaimCooldown[groupId],
-            "InsurancePool: claim cooldown active"
-        );
-        
-        // Check claim cap
-        uint256 claimCap = groupClaimCapPerMember[groupId];
-        if (claimCap > 0) {
-            require(amount <= claimCap, "InsurancePool: exceeds claim cap");
+        // Check daily limits
+        uint256 today = block.timestamp / 86400;
+        if (lastClaimDay[groupId] != today) {
+            dailyClaimsUsed[groupId] = 0;
+            lastClaimDay[groupId] = today;
         }
+        require(dailyClaimsUsed[groupId] + amount <= dailyClaimLimit[groupId], "InsurancePool: daily limit exceeded");
         
-        // Check emergency mode limits
-        if (emergencyModeEnabled[groupId] && emergencyClaimCap[groupId] > 0) {
-            require(amount <= emergencyClaimCap[groupId], "InsurancePool: exceeds emergency cap");
-        }
+        bytes32 claimId = keccak256(abi.encodePacked(groupId, claimant, amount, evidenceCID, block.timestamp));
         
-        uint256 claimId = nextClaimId++;
+        Claim storage claim = claims[claimId];
+        claim.claimant = claimant;
+        claim.amount = amount;
+        claim.groupId = groupId;
+        claim.evidenceCID = evidenceCID;
+        claim.status = ClaimStatus.SUBMITTED;
+        claim.submittedAt = block.timestamp;
         
-        claims[claimId] = InsuranceClaim({
-            claimant: msg.sender,
-            amount: amount,
-            groupId: groupId,
-            evidenceCID: evidenceCID,
-            status: ClaimStatus.SUBMITTED,
-            submittedAt: block.timestamp,
-            processedAt: 0
-        });
+        groupClaims[groupId].push(claimId);
+        allClaims.push(claimId);
         
-        memberClaims[groupId][msg.sender].push(claimId);
-        lastClaimTime[groupId][msg.sender] = block.timestamp;
+        dailyClaimsUsed[groupId] += amount;
+        lastClaimTime[groupId][claimant] = block.timestamp;
         
-        emit ClaimSubmitted(claimId, groupId, msg.sender, amount);
-        emit InsuranceClaimSubmitted(claimId, msg.sender, amount);
+        emit ClaimSubmitted(claimId, claimant, groupId, amount, evidenceCID);
         
         return claimId;
     }
     
     /**
-     * @dev Process an insurance claim (approve or reject)
-     * @param claimId Claim identifier
-     * @param approved Whether to approve the claim
-     * @param payoutAmount Actual payout amount (can be less than requested)
-     * @param reason Reason for rejection (if applicable)
+     * @dev Approve a claim
      */
-    function processClaim(
-        uint256 claimId,
-        bool approved,
-        uint256 payoutAmount,
-        string calldata reason
-    ) external onlyClaimProcessor nonReentrant {
-        InsuranceClaim storage claim = claims[claimId];
-        require(claim.claimant != address(0), "InsurancePool: claim not found");
-        require(claim.status == ClaimStatus.SUBMITTED, "InsurancePool: claim already processed");
+    function approveClaim(bytes32 claimId) external onlyClaimProcessor {
+        Claim storage claim = claims[claimId];
+        require(claim.status == ClaimStatus.SUBMITTED, "InsurancePool: claim not in submitted status");
+        require(!claim.hasApproved[msg.sender], "InsurancePool: already approved by this processor");
         
-        claim.processedAt = block.timestamp;
+        claim.hasApproved[msg.sender] = true;
+        claim.approvals++;
         
-        if (approved) {
-            require(payoutAmount > 0 && payoutAmount <= claim.amount, "InsurancePool: invalid payout amount");
-            
-            uint256 groupId = claim.groupId;
-            require(groupInsuranceBalance[groupId] >= payoutAmount, "InsurancePool: insufficient group balance");
-            
-            claim.status = ClaimStatus.APPROVED;
-            claim.amount = payoutAmount; // Update to actual payout amount
-            
-            emit ClaimApproved(claimId, payoutAmount);
-            emit InsuranceClaimProcessed(claimId, true, payoutAmount);
-            
-        } else {
-            claim.status = ClaimStatus.REJECTED;
-            emit ClaimRejected(claimId, reason);
-            emit InsuranceClaimProcessed(claimId, false, 0);
->>>>>>> origin/cursor/create-hemat-smart-contracts-4071
+        emit ClaimApproved(claimId, msg.sender);
+        
+        if (claim.approvals >= CLAIM_APPROVAL_THRESHOLD) {
+            _processClaim(claimId);
         }
     }
     
     /**
-<<<<<<< HEAD
-     * @dev Deny a claim (only approvers)
+     * @dev Reject a claim
      */
-    function denyClaim(bytes32 claimId, string memory reason) external onlyApprover validClaim(claimId) {
+    function rejectClaim(bytes32 claimId, string calldata reason) external onlyClaimProcessor {
         Claim storage claim = claims[claimId];
-        require(claim.status == ClaimStatus.PENDING, "Claim is not pending");
+        require(claim.status == ClaimStatus.SUBMITTED, "InsurancePool: claim not in submitted status");
         
-        claim.status = ClaimStatus.DENIED;
-        totalClaimsDenied += claim.amount;
+        claim.status = ClaimStatus.REJECTED;
+        claim.processedAt = block.timestamp;
         
-        emit ClaimDenied(claim.member, claim.group, claim.amount, reason);
+        emit ClaimRejected(claimId, reason);
+        emit InsuranceClaimProcessed(claimId, false, 0);
     }
     
     /**
-     * @dev Emergency payout for verified emergencies
+     * @dev Process an approved claim (internal)
      */
-    function emergencyPayout(address member, uint256 amount) external onlyOwner nonReentrant whenNotPaused {
-        require(amount > 0, "Payout amount must be greater than 0");
-        require(amount <= MAX_CLAIM_PER_MEMBER, "Payout amount exceeds maximum");
-        require(usdt.balanceOf(address(this)) >= amount, "Insufficient insurance pool balance");
+    function _processClaim(bytes32 claimId) internal {
+        Claim storage claim = claims[claimId];
+        require(claim.status == ClaimStatus.SUBMITTED, "InsurancePool: claim not in submitted status");
         
-        require(usdt.transfer(member, amount), "Emergency payout transfer failed");
+        uint256 availableBalance = groupPoolBalances[claim.groupId];
+        require(availableBalance >= claim.amount, "InsurancePool: insufficient pool balance");
         
-        totalClaimsPaid += amount;
-        memberClaims[member] += amount;
+        claim.status = ClaimStatus.APPROVED;
+        claim.processedAt = block.timestamp;
         
-        emit EmergencyPayout(member, amount);
+        // Execute payout
+        _executePayout(claimId);
     }
     
     /**
-     * @dev Get claim details
+     * @dev Execute payout for approved claim
+     */
+    function _executePayout(bytes32 claimId) internal {
+        Claim storage claim = claims[claimId];
+        require(claim.status == ClaimStatus.APPROVED, "InsurancePool: claim not approved");
+        
+        groupPoolBalances[claim.groupId] -= claim.amount;
+        totalPoolBalance -= claim.amount;
+        totalClaims += claim.amount;
+        
+        claim.status = ClaimStatus.PAID;
+        
+        usdt.safeTransfer(claim.claimant, claim.amount);
+        
+        emit ClaimPaid(claimId, claim.claimant, claim.amount);
+        emit InsuranceClaimProcessed(claimId, true, claim.amount);
+    }
+    
+    /**
+     * @dev Set reserve ratio
+     */
+    function setReserveRatio(uint256 newRatio) external onlyAdmin {
+        require(newRatio >= minReserveRatio && newRatio <= maxReserveRatio, "InsurancePool: invalid reserve ratio");
+        uint256 oldRatio = reserveRatio;
+        reserveRatio = newRatio;
+        emit ReserveRatioUpdated(oldRatio, newRatio);
+    }
+    
+    /**
+     * @dev Get claim information
      */
     function getClaim(bytes32 claimId) external view returns (
-        address member,
-        address group,
+        address claimant,
         uint256 amount,
+        uint256 groupId,
         string memory evidenceCID,
-        uint256 timestamp,
         ClaimStatus status,
-        uint256 approvals
+        uint256 submittedAt,
+        uint256 processedAt
     ) {
         Claim storage claim = claims[claimId];
         return (
-            claim.member,
-            claim.group,
+            claim.claimant,
             claim.amount,
+            claim.groupId,
             claim.evidenceCID,
-            claim.timestamp,
             claim.status,
-            claim.approvals
+            claim.submittedAt,
+            claim.processedAt
         );
     }
     
     /**
-     * @dev Check if address is approved for a claim
+     * @dev Get group claims
      */
-    function isClaimApprovedBy(bytes32 claimId, address approver) external view validClaim(claimId) returns (bool) {
-        return claims[claimId].approvedBy[approver];
+    function getGroupClaims(uint256 groupId) external view returns (bytes32[] memory) {
+        return groupClaims[groupId];
     }
     
     /**
-     * @dev Get insurance pool statistics
+     * @dev Get pool statistics
      */
     function getPoolStats() external view returns (
-        uint256 _totalPremium,
-        uint256 _totalClaimsPaid,
-        uint256 _totalClaimsDenied,
-        uint256 currentBalance,
-        uint256 availableForClaims
+        uint256 totalBalance,
+        uint256 totalRes,
+        uint256 totalClaimsAmount,
+        uint256 totalPrems
     ) {
-        currentBalance = usdt.balanceOf(address(this));
-        availableForClaims = currentBalance > MIN_RESERVE_THRESHOLD ? 
-            currentBalance - MIN_RESERVE_THRESHOLD : 0;
-        
-        return (totalPremiums, totalClaimsPaid, totalClaimsDenied, currentBalance, availableForClaims);
+        return (totalPoolBalance, totalReserves, totalClaims, totalPremiums);
     }
     
     /**
-     * @dev Get member's claim history
+     * @dev Check if member can submit claim (internal)
      */
-    function getMemberClaims(address member) external view returns (uint256) {
-        return memberClaims[member];
+    function _canMemberClaim(uint256 groupId, address member) internal view returns (bool) {
+        return block.timestamp >= lastClaimTime[groupId][member] + groupClaimCooldown[groupId];
     }
     
     /**
-     * @dev Get group's premium history
+     * @dev Check if member can submit claim (external)
      */
-    function getGroupPremiums(address group) external view returns (uint256) {
-        return groupPremiums[group];
+    function canMemberClaim(uint256 groupId, address member) external view returns (bool) {
+        return _canMemberClaim(groupId, member);
     }
     
     /**
-     * @dev Pause insurance pool (only owner)
-     */
-    function pause() external onlyOwner {
-        _pause();
-    }
-    
-    /**
-     * @dev Unpause insurance pool (only owner)
-     */
-    function unpause() external onlyOwner {
-        _unpause();
-    }
-    
-    /**
-     * @dev Emergency withdraw all funds (only owner)
+     * @dev Emergency withdraw (only owner)
      */
     function emergencyWithdraw() external onlyOwner {
         uint256 balance = usdt.balanceOf(address(this));
         if (balance > 0) {
-            require(usdt.transfer(owner(), balance), "Emergency transfer failed");
+            usdt.safeTransfer(owner(), balance);
         }
     }
     
     /**
-     * @dev Process approved claim
+     * @dev Pause contract
      */
-    function _processClaim(bytes32 claimId) internal {
-        Claim storage claim = claims[claimId];
-        
-        // Check if pool has sufficient funds
-        uint256 poolBalance = usdt.balanceOf(address(this));
-        require(poolBalance >= claim.amount, "Insufficient insurance pool balance");
-        
-        // Check reserve threshold
-        require(poolBalance - claim.amount >= MIN_RESERVE_THRESHOLD, "Would violate minimum reserve");
-        
-        claim.status = ClaimStatus.APPROVED;
-        
-        // Transfer payout
-        require(usdt.transfer(claim.member, claim.amount), "Claim payout transfer failed");
-        
-        totalClaimsPaid += claim.amount;
-        memberClaims[claim.member] += claim.amount;
-        
-        emit ClaimApproved(claim.member, claim.group, claim.amount);
-    }
-    
-    /**
-     * @dev Check if address is a registered group
-     */
-    function isGroup(address group) internal view returns (bool) {
-        // This would be implemented with a mapping from factory
-        // For now, we'll use a simple check
-        return group != address(0);
-    }
-    
-    /**
-     * @dev Check if address is an approved claim approver
-     */
-    function isApprover(address approver) internal view returns (bool) {
-        // This would be implemented with a mapping of approved approvers
-        // For now, we'll use owner as the only approver
-        return approver == owner();
-=======
-     * @dev Execute payout for approved claim
-     * @param claimId Claim identifier
-     */
-    function executeClaimPayout(uint256 claimId) external nonReentrant whenNotPaused {
-        InsuranceClaim storage claim = claims[claimId];
-        require(claim.status == ClaimStatus.APPROVED, "InsurancePool: claim not approved");
-        
-        uint256 groupId = claim.groupId;
-        uint256 payoutAmount = claim.amount;
-        
-        require(groupInsuranceBalance[groupId] >= payoutAmount, "InsurancePool: insufficient balance");
-        
-        claim.status = ClaimStatus.PAID;
-        groupInsuranceBalance[groupId] -= payoutAmount;
-        groupTotalClaims[groupId] += payoutAmount;
-        totalPoolBalance -= payoutAmount;
-        totalClaimsPaid += payoutAmount;
-        
-        usdtToken.safeTransfer(claim.claimant, payoutAmount);
-        
-        emit ClaimPaid(claimId, claim.claimant, payoutAmount);
-    }
-    
-    /**
-     * @dev Cover shortfall from another group or system
-     * @param fromGroupId Source group ID
-     * @param toGroupId Target group ID
-     * @param amount Amount to cover
-     */
-    function coverShortfall(
-        uint256 fromGroupId,
-        uint256 toGroupId,
-        uint256 amount
-    ) external onlyGroup nonReentrant {
-        require(amount > 0, "InsurancePool: invalid amount");
-        require(groupInsuranceBalance[fromGroupId] >= amount, "InsurancePool: insufficient source balance");
-        
-        groupInsuranceBalance[fromGroupId] -= amount;
-        groupInsuranceBalance[toGroupId] += amount;
-    }
-    
-    /**
-     * @dev Emergency withdrawal from reserve fund
-     * @param recipient Recipient address
-     * @param amount Amount to withdraw
-     */
-    function emergencyWithdraw(
-        address recipient,
-        uint256 amount
-    ) external onlyAdmin nonReentrant {
-        require(recipient != address(0), "InsurancePool: invalid recipient");
-        require(amount > 0 && amount <= reserveFund, "InsurancePool: invalid amount");
-        
-        reserveFund -= amount;
-        totalPoolBalance -= amount;
-        
-        usdtToken.safeTransfer(recipient, amount);
-    }
-    
-    /**
-     * @dev Set group claim configuration
-     * @param groupId Group identifier
-     * @param claimCap Maximum claim amount per member
-     * @param cooldown Cooldown period between claims
-     */
-    function setGroupClaimConfig(
-        uint256 groupId,
-        uint256 claimCap,
-        uint256 cooldown
-    ) external onlyAdmin {
-        groupClaimCapPerMember[groupId] = claimCap;
-        groupClaimCooldown[groupId] = cooldown;
-    }
-    
-    /**
-     * @dev Toggle emergency mode for a group
-     * @param groupId Group identifier
-     * @param enabled Whether to enable emergency mode
-     * @param emergencyCap Emergency claim cap
-     */
-    function setEmergencyMode(
-        uint256 groupId,
-        bool enabled,
-        uint256 emergencyCap
-    ) external onlyAdmin {
-        emergencyModeEnabled[groupId] = enabled;
-        emergencyClaimCap[groupId] = emergencyCap;
-        
-        emit EmergencyModeToggled(groupId, enabled);
-    }
-    
-    /**
-     * @dev Add to reserve fund
-     * @param amount Amount to add
-     */
-    function addToReserveFund(uint256 amount) external onlyAdmin {
-        require(amount > 0, "InsurancePool: invalid amount");
-        
-        usdtToken.safeTransferFrom(msg.sender, address(this), amount);
-        
-        uint256 oldReserve = reserveFund;
-        reserveFund += amount;
-        totalPoolBalance += amount;
-        
-        emit ReserveFundUpdated(oldReserve, reserveFund);
-    }
-    
     function pause() external onlyAdmin {
         _pause();
     }
     
+    /**
+     * @dev Unpause contract
+     */
     function unpause() external onlyAdmin {
         _unpause();
-    }
-    
-    // View functions
-    function getGroupInsuranceBalance(uint256 groupId) external view returns (uint256) {
-        return groupInsuranceBalance[groupId];
-    }
-    
-    function getClaim(uint256 claimId) external view returns (InsuranceClaim memory) {
-        return claims[claimId];
-    }
-    
-    function getMemberClaims(uint256 groupId, address member) external view returns (uint256[] memory) {
-        return memberClaims[groupId][member];
-    }
-    
-    function getGroupStats(uint256 groupId) external view returns (
-        uint256 balance,
-        uint256 totalPremiums,
-        uint256 totalClaims,
-        bool emergencyMode
-    ) {
-        return (
-            groupInsuranceBalance[groupId],
-            groupTotalPremiums[groupId],
-            groupTotalClaims[groupId],
-            emergencyModeEnabled[groupId]
-        );
-    }
-    
-    function getPoolHealth() external view returns (
-        uint256 totalBalance,
-        uint256 reserve,
-        uint256 utilizationRate
-    ) {
-        uint256 utilization = totalPoolBalance > 0 ? 
-            (totalClaimsPaid * BPS_DENOMINATOR) / totalPoolBalance : 0;
-            
-        return (totalPoolBalance, reserveFund, utilization);
-    }
-    
-    function canMemberClaim(uint256 groupId, address member) external view returns (bool) {
-        return block.timestamp >= lastClaimTime[groupId][member] + groupClaimCooldown[groupId];
->>>>>>> origin/cursor/create-hemat-smart-contracts-4071
     }
 }
