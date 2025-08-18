@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 /* Base styles - Modern DeFi Design */
 @layer base {
@@ -91,7 +91,7 @@
 
   /* Navigation - DeFi Style */
   .nav-link {
-    @apply flex items-center px-4 py-3 text-sm font-medium text-gray-300 rounded-xl hover:text-white hover:bg-slate-700/50 transition-all duration-200 group;
+    @apply flex items-center px-4 py-3 text-sm font-medium text-gray-300 rounded-xl hover:text-white hover:bg-slate-700/50 transition-all duration-200;
   }
 
   .nav-link-active {
