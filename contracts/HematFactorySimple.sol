@@ -15,8 +15,6 @@ import "./InsurancePool.sol";
  * @dev Simplified factory contract for creating Hemat thrift groups (MVP)
  */
 contract HematFactorySimple is ReentrancyGuard, Pausable, AccessControlEnumerable, IHematTypes {
-    using Counters for Counters.Counter;
-    
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     
     // Core contract addresses
@@ -26,7 +24,7 @@ contract HematFactorySimple is ReentrancyGuard, Pausable, AccessControlEnumerabl
     InsurancePool public immutable insurancePool;
     
     // Group management
-    Counters.Counter private groupIdCounter;
+    uint256 private groupIdCounter;
     mapping(uint256 => address) public groups; // groupId => group contract
     mapping(address => uint256[]) public creatorGroups; // creator => group IDs
     
@@ -77,8 +75,8 @@ contract HematFactorySimple is ReentrancyGuard, Pausable, AccessControlEnumerabl
                 "HematFactory: max groups per creator exceeded");
         
         // Generate group ID
-        groupIdCounter.increment();
-        groupId = groupIdCounter.current();
+        groupIdCounter++;
+        groupId = groupIdCounter;
         
         // Deploy new group contract
         HematGroup newGroup = new HematGroup(
