@@ -848,6 +848,62 @@ export class HematService {
     }
   }
 
+  // General stake methods for profile page
+  async stake(amount: string): Promise<boolean> {
+    try {
+      if (!this.signer) {
+        toast.error('Please connect your wallet first');
+        return false;
+      }
+
+      const amountWei = ethers.utils.parseUnits(amount, 6);
+      
+      // First approve USDT for the stake manager
+      await this.approveUSDT(CONTRACT_ADDRESSES.STAKE_MANAGER, amount);
+
+      // For general staking, we'll use groupId 0 as default
+      const tx = await this.contracts.stakeManager.depositStake(0, amountWei);
+      await tx.wait();
+      
+      toast.success('Stake deposited successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error staking:', error);
+      toast.error('Failed to deposit stake');
+      return false;
+    }
+  }
+
+  async unstake(amount: string): Promise<boolean> {
+    try {
+      if (!this.signer) {
+        toast.error('Please connect your wallet first');
+        return false;
+      }
+
+      const amountWei = ethers.utils.parseUnits(amount, 6);
+      const tx = await this.contracts.stakeManager.withdrawStake(0, amountWei);
+      await tx.wait();
+      
+      toast.success('Stake withdrawn successfully!');
+      return true;
+    } catch (error) {
+      console.error('Error unstaking:', error);
+      toast.error('Failed to withdraw stake');
+      return false;
+    }
+  }
+
+  // Get stake info for a user (using default groupId 0)
+  async getUserStakeInfo(member: string): Promise<StakeInfo | null> {
+    try {
+      return await this.getStakeInfo(0, member);
+    } catch (error) {
+      console.error('Error getting user stake info:', error);
+      return null;
+    }
+  }
+
   // DeFi Adapter Operations
   async getDeFiInfo(): Promise<DeFiInfo | null> {
     try {

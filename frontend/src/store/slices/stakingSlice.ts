@@ -58,7 +58,7 @@ export const fetchStakeInfo = createAsyncThunk(
   'staking/fetchStakeInfo',
   async (address: string, { rejectWithValue }) => {
     try {
-      const stakeInfo = await hematService.getStakeInfo(address);
+      const stakeInfo = await hematService.getUserStakeInfo(address);
       if (stakeInfo) {
         return stakeInfo;
       }
