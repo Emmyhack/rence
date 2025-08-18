@@ -267,14 +267,55 @@ export const USDT_ABI = [
   "event Approval(address indexed owner, address indexed spender, uint256 value)"
 ];
 
-// Contract addresses from deployment
-export const CONTRACT_ADDRESSES = {
-  USDT: '0xFE77673f4BF659ef28bD0b3B66013dB5acFA0eBe',
-  ESCROW_VAULT: '0x6dca750C61bea425768AEbfba354C81A4122482d',
-  STAKE_MANAGER: '0x72a773725845E2F4BBB5b8b2C5C5b06e48B5f4e5',
-  INSURANCE_POOL: '0x7054347C5fe4B2056fcbC482C32D5617978d9F0a',
-  HEMAT_FACTORY: '0xCeDfe4FAad227720499F2318F92845b87144d702',
-  MOCK_DEFI_ADAPTER: '0xB3a49DcFa3df4a28bdac61f98893FC2854319EB7'
+// Network-specific contract addresses
+export const NETWORK_CONFIG = {
+  // Kaia Mainnet (8217)
+  8217: {
+    name: 'Kaia Mainnet',
+    chainId: 8217,
+    rpc: 'https://public-en-cypress.kaia.io',
+    explorer: 'https://scope.klaytn.com',
+    USDT: '0x19Aac5f612f524B754CA7e7c41cbFa2E981A4432', // Real USDT on Kaia Mainnet
+    ESCROW_VAULT: '0x6dca750C61bea425768AEbfba354C81A4122482d',
+    STAKE_MANAGER: '0x72a773725845E2F4BBB5b8b2C5C5b06e48B5f4e5',
+    INSURANCE_POOL: '0x7054347C5fe4B2056fcbC482C32D5617978d9F0a',
+    HEMAT_FACTORY: '0xCeDfe4FAad227720499F2318F92845b87144d702',
+    MOCK_DEFI_ADAPTER: '0xB3a49DcFa3df4a28bdac61f98893FC2854319EB7'
+  },
+  // Kaia Testnet (1001)
+  1001: {
+    name: 'Kaia Testnet Kairos',
+    chainId: 1001,
+    rpc: 'https://public-en-kairos.kaia.io',
+    explorer: 'https://baobab.scope.klaytn.com',
+    USDT: '0xFE77673f4BF659ef28bD0b3B66013dB5acFA0eBe', // MockUSDT on Testnet
+    ESCROW_VAULT: '0x6dca750C61bea425768AEbfba354C81A4122482d',
+    STAKE_MANAGER: '0x72a773725845E2F4BBB5b8b2C5C5b06e48B5f4e5',
+    INSURANCE_POOL: '0x7054347C5fe4B2056fcbC482C32D5617978d9F0a',
+    HEMAT_FACTORY: '0xCeDfe4FAad227720499F2318F92845b87144d702',
+    MOCK_DEFI_ADAPTER: '0xB3a49DcFa3df4a28bdac61f98893FC2854319EB7'
+  }
+};
+
+// Legacy contract addresses (for backward compatibility) - defaults to testnet
+export const CONTRACT_ADDRESSES = NETWORK_CONFIG[1001];
+
+// Get contract addresses for specific network
+export const getContractAddresses = (chainId: number) => {
+  return NETWORK_CONFIG[chainId] || NETWORK_CONFIG[1001]; // Default to testnet if unknown network
+};
+
+// Get USDT token info based on network
+export const getUSDTTokenInfo = (chainId: number) => {
+  const config = getContractAddresses(chainId);
+  return {
+    address: config.USDT,
+    symbol: chainId === 8217 ? 'USDT' : 'USDT', // Both use USDT symbol
+    name: chainId === 8217 ? 'Tether USD' : 'Mock USDT',
+    decimals: 6,
+    isTestnet: chainId !== 8217,
+    image: 'https://cryptologos.cc/logos/tether-usdt-logo.png'
+  };
 };
 
 // Contract types
@@ -296,14 +337,16 @@ export const getContractInstance = (
   return new ethers.Contract(address, abi, signerOrProvider);
 };
 
-// Get all contract instances
-export const getContractInstances = (signerOrProvider?: ethers.Signer | ethers.providers.Provider): ContractInstances => {
+// Get all contract instances for specific network
+export const getContractInstances = (signerOrProvider?: ethers.Signer | ethers.providers.Provider, chainId?: number): ContractInstances => {
+  const addresses = chainId ? getContractAddresses(chainId) : CONTRACT_ADDRESSES;
+  
   return {
-    usdt: getContractInstance(CONTRACT_ADDRESSES.USDT, USDT_ABI, signerOrProvider),
-    escrowVault: getContractInstance(CONTRACT_ADDRESSES.ESCROW_VAULT, ESCROW_VAULT_ABI, signerOrProvider),
-    stakeManager: getContractInstance(CONTRACT_ADDRESSES.STAKE_MANAGER, STAKE_MANAGER_ABI, signerOrProvider),
-    insurancePool: getContractInstance(CONTRACT_ADDRESSES.INSURANCE_POOL, INSURANCE_POOL_ABI, signerOrProvider),
-    hematFactory: getContractInstance(CONTRACT_ADDRESSES.HEMAT_FACTORY, HEMAT_FACTORY_ABI, signerOrProvider),
-    mockDeFiAdapter: getContractInstance(CONTRACT_ADDRESSES.MOCK_DEFI_ADAPTER, DEFI_ADAPTER_ABI, signerOrProvider)
+    usdt: getContractInstance(addresses.USDT, USDT_ABI, signerOrProvider),
+    escrowVault: getContractInstance(addresses.ESCROW_VAULT, ESCROW_VAULT_ABI, signerOrProvider),
+    stakeManager: getContractInstance(addresses.STAKE_MANAGER, STAKE_MANAGER_ABI, signerOrProvider),
+    insurancePool: getContractInstance(addresses.INSURANCE_POOL, INSURANCE_POOL_ABI, signerOrProvider),
+    hematFactory: getContractInstance(addresses.HEMAT_FACTORY, HEMAT_FACTORY_ABI, signerOrProvider),
+    mockDeFiAdapter: getContractInstance(addresses.MOCK_DEFI_ADAPTER, DEFI_ADAPTER_ABI, signerOrProvider)
   };
 };

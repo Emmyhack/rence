@@ -39,7 +39,7 @@ interface StakeFormData {
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { isConnected, address, usdtBalance } = useAppSelector((state) => state.wallet);
+  const { isConnected, address, usdtBalance, networkInfo, tokenInfo } = useAppSelector((state) => state.wallet);
   const { userGroups, createdGroups } = useAppSelector((state) => state.groups);
   const { stakeInfo, isLoading: stakingLoading } = useAppSelector((state) => state.staking);
 
@@ -151,7 +151,16 @@ const ProfilePage: React.FC = () => {
               <h2 className="text-2xl font-bold text-white">Wallet Address</h2>
               <p className="text-lg text-gray-300 font-mono">{formatAddress(address!)}</p>
               <div className="mt-2 flex items-center space-x-4">
-                <span className="text-sm text-gray-400">USDT Balance: {parseFloat(usdtBalance).toFixed(2)}</span>
+                <span className="text-sm text-gray-400">
+                  {tokenInfo?.name || 'USDT'} Balance: {parseFloat(usdtBalance).toFixed(2)}
+                  {networkInfo && (
+                    <span className={`ml-1 px-2 py-0.5 rounded text-xs ${
+                      networkInfo.isMainnet ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                    }`}>
+                      {networkInfo.isMainnet ? 'Mainnet' : 'Testnet'}
+                    </span>
+                  )}
+                </span>
                 <span className="text-sm text-gray-400">Trust Score: {stakeInfo?.trustScore || '0'}</span>
               </div>
             </div>
@@ -197,7 +206,16 @@ const ProfilePage: React.FC = () => {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-300">Network</label>
-                        <p className="mt-1 text-sm text-gray-200">Kaia Testnet (Kairos)</p>
+                        <p className="mt-1 text-sm text-gray-200 flex items-center">
+                          {networkInfo?.name || 'Unknown Network'}
+                          {networkInfo && (
+                            <span className={`ml-2 px-2 py-0.5 rounded text-xs ${
+                              networkInfo.isMainnet ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                            }`}>
+                              {networkInfo.isMainnet ? 'Mainnet' : 'Testnet'}
+                            </span>
+                          )}
+                        </p>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-300">Connected Since</label>
@@ -206,8 +224,22 @@ const ProfilePage: React.FC = () => {
                     </div>
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-300">USDT Balance</label>
-                        <p className="mt-1 text-2xl font-semibold text-white">{parseFloat(usdtBalance).toFixed(2)} USDT</p>
+                        <label className="block text-sm font-medium text-gray-300">
+                          {tokenInfo?.name || 'USDT'} Balance
+                          {tokenInfo && (
+                            <span className="ml-1 text-xs text-gray-500">
+                              ({tokenInfo.isTestnet ? 'Mock' : 'Real'})
+                            </span>
+                          )}
+                        </label>
+                        <p className="mt-1 text-2xl font-semibold text-white">
+                          {parseFloat(usdtBalance).toFixed(2)} {tokenInfo?.symbol || 'USDT'}
+                        </p>
+                        {tokenInfo && (
+                          <p className="text-xs text-gray-400 mt-1">
+                            Contract: {tokenInfo.address.slice(0, 8)}...{tokenInfo.address.slice(-6)}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-300">Total Staked</label>

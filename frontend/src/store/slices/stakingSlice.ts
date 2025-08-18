@@ -23,7 +23,7 @@ export const depositStake = createAsyncThunk(
         // Refresh stake info
         const address = await hematService.getConnectedAddress();
         if (address) {
-          const stakeInfo = await hematService.getStakeInfo(address);
+          const stakeInfo = await hematService.getUserStakeInfo(address);
           return stakeInfo;
         }
       }
@@ -43,7 +43,7 @@ export const withdrawStake = createAsyncThunk(
         // Refresh stake info
         const address = await hematService.getConnectedAddress();
         if (address) {
-          const stakeInfo = await hematService.getStakeInfo(address);
+          const stakeInfo = await hematService.getUserStakeInfo(address);
           return stakeInfo;
         }
       }
